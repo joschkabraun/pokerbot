@@ -27,8 +27,6 @@ import javax.swing.*;
  * @author Joschka J. Braun
  *
  */
-
-
 public class Bot_v1_0_0 extends Thread
 
 {
