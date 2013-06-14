@@ -6,11 +6,12 @@ import handHistory.HandHistory;
 import handHistory.SeatNumberPlayer;
 import handHistory.PlayerAction;
 import handHistory.PlayerActionList;
+import gameBasics.GameState;
 import gameBasics.Player;
 import gameBasics.SeatPosition;
 import gameBasics.Action;
 import gameBasics.Pot;
-import other.Other;
+import other.Tools;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class ParserPokerStars
 	public static  HandHistory parserMainPS( File f )
 	{
 		File heapParserPokerStars = new File( "c://pokerBot//bot_v1_0_0//heapParserPS.txt" );		// This file does not exist in  bot version 1.0.0!! Because the bot does not
-		String[] allLines = Other.allLines( f );													// play at PokerStars!
+		String[] allLines = Tools.allLines( f );													// play at PokerStars!
 		
 		try {
 		FileWriter heapW = new FileWriter( heapParserPokerStars, false );
@@ -87,7 +88,7 @@ public class ParserPokerStars
 		
 		// in which line the individual phases starts 
 		
-		String[] allLines = Other.allLines( file );
+		String[] allLines = Tools.allLines( file );
 		
 		int linePreFlop = 0;											// In this line starts the pre-flop-phase.
 		for ( int i = 3; i < allLines.length; i++ )
@@ -149,18 +150,18 @@ public class ParserPokerStars
 		
 		// in which stage the game is / handHistory.stage
 		
-		handHistory.stage = "pre-flop";
+		handHistory.state = GameState.PRE_FLOP;
 		
 		if ( lineSummary > 0 )
-			handHistory.stage = "summary";
+			handHistory.state = GameState.SUMMARY;
 		else if ( lineFlop > 0 ) {
-			handHistory.stage = "flop";
+			handHistory.state = GameState.FLOP;
 			if ( lineTurn > 0 ) {
-				handHistory.stage = "turn";
+				handHistory.state = GameState.TURN;
 				if ( lineRiver > 0 ) {
-					handHistory.stage = "river";
+					handHistory.state = GameState.RIVER;
 					if ( lineShowDown > 0 )
-						handHistory.stage = "showDown";
+						handHistory.state = GameState.SHOW_DOWN;
 		}	}	}
 		
 		

@@ -1,4 +1,4 @@
-package strategyForTexasHoldEmFixedLimit;
+package strategy.strategyPokerStrategy;
 
 import cardBasics.CardList;
 import cardBasics.CardsStack;
@@ -8,7 +8,7 @@ import handHistory.HandHistory;
 import handHistory.PreFlop;
 
 /**
- * This class implements the poker strategy of www.PokerStars.com for texas hold'em fixed limit.
+ * This class implements the poker strategy of www.PokerStrategy.com for texas hold'em fixed limit.
  * 
  * @author Joschka
  * @version 1.0
@@ -19,37 +19,19 @@ public class StrategyOne
 	
 	public static Action actionFor( HandHistory hh, PlayerYou you )
 	{
-		Action act = new Action();
-		
-		int phase = 0;
-		switch( hh.stage )
+		switch( hh.state )
 		{
-		case "pre-flop":
-			phase = 1; break;
-		case "flop":
-			phase = 2; break;
-		case "turn":
-			phase = 3; break;
-		case "river":
-			phase = 4; break;
+		case PRE_FLOP:
+			return preFlopAction(hh, you);
+		case FLOP:
+			return flopAction(hh, you);
+		case TURN:
+			return turnAction(hh, you);
+		case RIVER:
+			return riverAction(hh, you);
+		default: 
+			throw new IllegalArgumentException( "The passed hand history is not correct because there is not any GameState!" );
 		}
-		
-		if ( phase == 0 )
-			throw new IllegalArgumentException( "The passed hand history is not correct!" );
-		
-		switch ( phase )
-		{
-		case 1:
-			act.set( preFlopAction(hh, you) ); break;
-		case 2:
-			act.set( flopAction(hh, you) ); break;
-		case 3:
-			act.set( turnAction(hh, you) ); break;
-		case 4:
-			act.set( riverAction(hh, you) ); break;
-		}
-		
-		return act;
 	}
 	
 	public static Action preFlopAction( HandHistory handHistory, PlayerYou you )	// The algorithm is documented in a article of www.pokerStrategy.com and

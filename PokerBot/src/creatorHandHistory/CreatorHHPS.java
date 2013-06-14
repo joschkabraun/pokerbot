@@ -1,6 +1,6 @@
 package creatorHandHistory;
 
-import other.Other;
+import other.Tools;
 
 import java.awt.Rectangle;
 import java.awt.Robot;
@@ -53,12 +53,12 @@ public class CreatorHHPS implements Runnable
 				lock.lock();
 				BufferedImage bfNext = r.createScreenCapture( rect );
 				
-				if ( ! Other.compare(bfStart, bfNext, 1) )
+				if ( ! Tools.compare(bfStart, bfNext, 1) )
 				{
-					Point p = Other.createPointIn( rect );
+					Point p = Tools.createPointIn( rect );
 					r.mouseMove( p.x, p.y );								// getting the new text in the clipboard
 					r.mousePress( InputEvent.BUTTON1_DOWN_MASK );
-					Point p2 = Other.createPointIn( new Rectangle( 836, 121, 1048, 5 ) );
+					Point p2 = Tools.createPointIn( new Rectangle( 836, 121, 1048, 5 ) );
 					r.mouseMove( p2.x, p2.y );
 					r.mouseRelease( InputEvent.BUTTON1_DOWN_MASK );
 					r.keyPress( KeyEvent.VK_CONTROL );
@@ -70,8 +70,8 @@ public class CreatorHHPS implements Runnable
 					
 					synchronized( r ) { r.wait( 30 ); }			// It takes some time until the system has had time to update the clipboard.
 					
-					String line = Other.getClipboardS();
-					Other.clearClipboard();
+					String line = Tools.getClipboardS();
+					Tools.clearClipboard();
 					
 					String[] lSplit = line.split( "\n" );
 					
@@ -121,9 +121,9 @@ public class CreatorHHPS implements Runnable
 		for ( int i = 0; i < b.length; i++ )
 			if ( i == b.length -1 )
 				return ret;
-			else if ( Other.indexOf(a, b[i]) > -1 )
+			else if ( Tools.indexOf(a, b[i]) > -1 )
 			{
-				index = Other.indexOf(a,  b[i]);
+				index = Tools.indexOf(a,  b[i]);
 				arg = i;
 				ret = Arrays.copyOfRange( ret, i, ret.length );
 				aC = Arrays.copyOfRange( aC, index, aC.length );
@@ -132,7 +132,7 @@ public class CreatorHHPS implements Runnable
 		
 		if ( index > -1 )
 			for ( int i = arg; i < b.length; i++ )
-				if ( Other.indexOf(aC, b[i]) + index + i == index + i - arg )			// the addition on the left side is for having the index in a not in aC
+				if ( Tools.indexOf(aC, b[i]) + index + i == index + i - arg )			// the addition on the left side is for having the index in a not in aC
 				{
 					aC = Arrays.copyOfRange( aC, 1, aC.length );
 					ret = Arrays.copyOfRange( ret,  1, ret.length );

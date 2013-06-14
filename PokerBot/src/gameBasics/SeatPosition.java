@@ -74,7 +74,7 @@ public class SeatPosition
 		int numberOfPlayersOnTable = possibleSeatNumbers.length;
 		
 		if ( seatNumberAbsolute > seatNumberOfButton )
-			behindBU = Other.entriesBetween( possibleSeatNumbers, seatNumberOfButton, seatNumberAbsolute );
+			behindBU = Tools.entriesBetween( possibleSeatNumbers, seatNumberOfButton, seatNumberAbsolute );
 		else if ( seatNumberAbsolute == seatNumberOfButton )
 			behindBU = numberOfPlayersOnTable;
 		else

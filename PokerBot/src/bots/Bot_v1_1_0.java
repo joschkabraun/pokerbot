@@ -30,9 +30,9 @@ import javax.swing.JTextArea;
 
 import creatorHandHistory.CreatorHHWPClass;
 
-import other.Other;
+import other.Tools;
 import parser.ParserCreatorWinnerPoker4Tables;
-import strategyForTexasHoldEmFixedLimit.StrategyOne;
+import strategy.strategyPokerStrategy.StrategyOne;
 
 public class Bot_v1_1_0 extends Thread
 
@@ -168,7 +168,7 @@ public class Bot_v1_1_0 extends Thread
 				BufferedImage f3 = r.createScreenCapture( SPACE_BUTTON_BET_RAISE );
 				
 				lock.lock();
-				if ( Other.compare(f1, PICTURE_BUTTON_FOLD, 0.65) || Other.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.65) || Other.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.65) )
+				if ( Tools.compare(f1, PICTURE_BUTTON_FOLD, 0.65) || Tools.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.65) || Tools.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.65) )
 				{
 					log.info( "Beginning creating the hand-history. Table: " + table.toString() );
 					try {
@@ -476,7 +476,7 @@ public class Bot_v1_1_0 extends Thread
 	{
 		try {
 			Rectangle re = actionToButton( action );													// mouse clicking
-			Point p = Other.createPointIn( re );
+			Point p = Tools.createPointIn( re );
 			Robot r = new Robot();
 //			synchronized ( r ) { r.wait( (long) Math.random() * 100 ); }				// thereby the bot does not react at once and the bot is not so much conspicuous
 //			sleep( (long) Math.random() * 10000  );
@@ -489,11 +489,11 @@ public class Bot_v1_1_0 extends Thread
 			BufferedImage f2 = r.createScreenCapture( SPACE_BUTTON_CHECK_CALL );
 			BufferedImage f3 = r.createScreenCapture( SPACE_BUTTON_BET_RAISE );
 			
-			if ( Other.compare(f1, PICTURE_BUTTON_FOLD, 0.8) || Other.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.8) || Other.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.8) )
+			if ( Tools.compare(f1, PICTURE_BUTTON_FOLD, 0.8) || Tools.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.8) || Tools.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.8) )
 			{
 				gameBasics.Action act = new Action( "check" );
 				re = actionToButton( act );
-				p = Other.createPointIn( re );
+				p = Tools.createPointIn( re );
 				r.mouseMove(p.x, p.y);
 				r.mousePress( InputEvent.BUTTON1_DOWN_MASK );
 				r.mouseRelease( InputEvent.BUTTON1_DOWN_MASK );

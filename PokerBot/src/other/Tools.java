@@ -28,7 +28,7 @@ import java.util.Arrays;
  * @author Joschka J. Braun
  *
  */
-public class Other
+public class Tools
 
 {
 	

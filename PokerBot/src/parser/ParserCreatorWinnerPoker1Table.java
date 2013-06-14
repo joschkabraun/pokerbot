@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import javax.imageio.ImageIO;
 
-import other.Other;
+import other.Tools;
 
 public class ParserCreatorWinnerPoker1Table
 
@@ -38,7 +38,7 @@ public class ParserCreatorWinnerPoker1Table
 			throw new IllegalArgumentException( "The ParserCreatorWinnerPoker does not work for maxSeatOnTable != 9!" );
 		
 		File heapParserCWP = new File( "c://pokerBot//bot_v1_0_0//heapParserCWP.txt" );
-		String[] allLinesWithoutTrim = Other.allLines( f );
+		String[] allLinesWithoutTrim = Tools.allLines( f );
 		
 		int length = allLinesWithoutTrim.length;
 		String[] allLines = new String[ length ];
@@ -80,7 +80,7 @@ public class ParserCreatorWinnerPoker1Table
 		if ( ( ! f.exists() ) )
 			throw new IllegalArgumentException( "The passed file f does not exist" );
 		
-		String[] allLines = clearLines( clearCurrency( arraysTrim( Other.allLines( f ) ) ) );
+		String[] allLines = clearLines( clearCurrency( arraysTrim( Tools.allLines( f ) ) ) );
 		
 		if ( allLines[0].equals( "null" ) )
 			throw new IllegalArgumentException( "The passed file f is empty" );
@@ -142,16 +142,16 @@ public class ParserCreatorWinnerPoker1Table
 		
 		// in which stage the game is / handHistory.stage
 		
-		handHistory.stage = "pre-flop";
+		handHistory.state = GameState.PRE_FLOP;
 		
 		if ( lineFlop > 0 ) {
-			handHistory.stage = "flop";
+			handHistory.state = GameState.FLOP;
 			if ( lineTurn > 0 ) {
-				handHistory.stage = "turn";
+				handHistory.state = GameState.TURN;
 				if ( lineRiver > 0 ) {
-					handHistory.stage = "river";
+					handHistory.state = GameState.RIVER;
 					if ( lineShowDown > 0 )
-						handHistory.stage = "showDown";
+						handHistory.state = GameState.SHOW_DOWN;
 		}	}	}
 		
 		
@@ -391,7 +391,7 @@ public class ParserCreatorWinnerPoker1Table
 				Player player = new Player( playerName, seatBU, seatNumber, playerMoney );
 				sB.add( player );
 				
-				sb = Other.parseDouble( s.split( " setzt Small Blind " )[ 1 ].trim() );
+				sb = Tools.parseDouble( s.split( " setzt Small Blind " )[ 1 ].trim() );
 				pot.addM( sb );
 				
 				if ( indexOf(allPlayers, playerName) > -1 )
@@ -438,7 +438,7 @@ public class ParserCreatorWinnerPoker1Table
 				Player player = new Player( playerName, seatBU, seatNumber, playerMoney );
 				bB.add( player );
 				
-				bb = Other.parseDouble( s.split( " setzt Big Blind " )[ 1 ].trim() );
+				bb = Tools.parseDouble( s.split( " setzt Big Blind " )[ 1 ].trim() );
 				pot.addM( bb );
 				
 				if ( indexOf(allPlayers, playerName) > -1 )
@@ -511,19 +511,19 @@ public class ParserCreatorWinnerPoker1Table
 				actPreFlop.set( "check", 0 );
 				playActListPreFlop.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actPreFlop ) );
 			} else if ( s.matches( ".+ geht mit bei .+" ) ) {
-				money = Other.parseDouble( s.split( ".+ geht mit bei " )[ 1 ].trim() );
+				money = Tools.parseDouble( s.split( ".+ geht mit bei " )[ 1 ].trim() );
 				playerName = s.split( " geht mit bei .+" )[ 0 ].trim();
 				actPreFlop.set( "call", money );
 				playActListPreFlop.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actPreFlop ) );
 				potPreFlop.addM( money );
 			} else if ( s.matches( ".+ setzt .+" ) ) {
-				money = Other.parseDouble( s.split( ".+ setzt ")[ 1 ].trim() );
+				money = Tools.parseDouble( s.split( ".+ setzt ")[ 1 ].trim() );
 				playerName = s.split( " setzt .+" )[ 0 ].trim();
 				actPreFlop.set( "bet", money );
 				playActListPreFlop.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actPreFlop ) );
 				potPreFlop.addM( money );
 			} else if ( s.matches( ".+ erhöht auf .+" ) ) {
-				money = Other.parseDouble( s.split( ".+ erhöht auf ")[ 1 ].trim() );
+				money = Tools.parseDouble( s.split( ".+ erhöht auf ")[ 1 ].trim() );
 				playerName = s.split( " erhöht auf .+" )[ 0 ].trim();
 				actPreFlop.set( "raise", money );
 				playActListPreFlop.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actPreFlop ) );
@@ -575,19 +575,19 @@ public class ParserCreatorWinnerPoker1Table
 					actFlop.set( "check", 0 );
 					playActListFlop.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actFlop ) );
 				} else if ( s.matches( ".+ geht mit bei .+" ) ) {
-					money = Other.parseDouble( s.split( ".+ geht mit bei " )[ 1 ].trim() );
+					money = Tools.parseDouble( s.split( ".+ geht mit bei " )[ 1 ].trim() );
 					playerName = s.split( " geht mit bei .+" )[ 0 ].trim();
 					actFlop.set( "call", money );
 					playActListFlop.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actFlop ) );
 					potFlop.addM( money );
 				} else if ( s.matches( ".+ setzt .+" ) ) {
-					money = Other.parseDouble( s.split( ".+ setzt ")[ 1 ].trim() );
+					money = Tools.parseDouble( s.split( ".+ setzt ")[ 1 ].trim() );
 					playerName = s.split( " setzt .+" )[ 0 ].trim();
 					actFlop.set( "bet", money );
 					playActListFlop.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actFlop ) );
 					potFlop.addM( money );
 				} else if ( s.matches( ".+ erhöht auf .+" ) ) {
-					money = Other.parseDouble( s.split( ".+ erhöht auf ")[ 1 ].trim() );
+					money = Tools.parseDouble( s.split( ".+ erhöht auf ")[ 1 ].trim() );
 					playerName = s.split( " erhöht auf .+" )[ 0 ].trim();
 					actFlop.set( "raise", money );
 					playActListFlop.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actFlop ) );
@@ -641,19 +641,19 @@ public class ParserCreatorWinnerPoker1Table
 					actTurn.set( "check", 0 );
 					playActListTurn.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actTurn ) );
 				} else if ( s.matches( ".+ geht mit bei .+" ) ) {
-					money = Other.parseDouble( s.split( ".+ geht mit bei " )[ 1 ].trim() );
+					money = Tools.parseDouble( s.split( ".+ geht mit bei " )[ 1 ].trim() );
 					playerName = s.split( " geht mit bei .+" )[ 0 ].trim();
 					actTurn.set( "call", money );
 					playActListTurn.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actTurn ) );
 					potTurn.addM( money );
 				} else if ( s.matches( ".+ setzt .+" ) ) {
-					money = Other.parseDouble( s.split( ".+ setzt ")[ 1 ].trim() );
+					money = Tools.parseDouble( s.split( ".+ setzt ")[ 1 ].trim() );
 					playerName = s.split( " setzt .+" )[ 0 ].trim();
 					actTurn.set( "bet", money );
 					playActListTurn.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actTurn ) );
 					potTurn.addM( money );
 				} else if ( s.matches( ".+ erhöht auf .+" ) ) {
-					money = Other.parseDouble( s.split( ".+ erhöht auf ")[ 1 ].trim() );
+					money = Tools.parseDouble( s.split( ".+ erhöht auf ")[ 1 ].trim() );
 					playerName = s.split( " erhöht auf .+" )[ 0 ].trim();
 					actTurn.set( "raise", money );
 					playActListTurn.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actTurn ) );
@@ -707,19 +707,19 @@ public class ParserCreatorWinnerPoker1Table
 					actRiver.set( "check", 0 );
 					playActListRiver.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actRiver ) );
 				} else if ( s.matches( ".+ geht mit bei .+" ) ) {
-					money = Other.parseDouble( s.split( ".+ geht mit bei " )[ 1 ].trim() );
+					money = Tools.parseDouble( s.split( ".+ geht mit bei " )[ 1 ].trim() );
 					playerName = s.split( " geht mit bei .+" )[ 0 ].trim();
 					actRiver.set( "call", money );
 					playActListRiver.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actRiver ) );
 					potRiver.addM( money );
 				} else if ( s.matches( ".+ setzt .+" ) ) {
-					money = Other.parseDouble( s.split( ".+ setzt ")[ 1 ].trim() );
+					money = Tools.parseDouble( s.split( ".+ setzt ")[ 1 ].trim() );
 					playerName = s.split( " setzt .+" )[ 0 ].trim();
 					actRiver.set( "bet", money );
 					playActListRiver.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actRiver ) );
 					potRiver.addM( money );
 				} else if ( s.matches( ".+ erhöht auf .+" ) ) {
-					money = Other.parseDouble( s.split( ".+ erhöht auf ")[ 1 ].trim() );
+					money = Tools.parseDouble( s.split( ".+ erhöht auf ")[ 1 ].trim() );
 					playerName = s.split( " erhöht auf .+" )[ 0 ].trim();
 					actRiver.set( "raise", money );
 					playActListRiver.add( new PlayerAction( allPlayers.get(indexOf(allPlayers, playerName)), actRiver ) );
@@ -837,23 +837,23 @@ public class ParserCreatorWinnerPoker1Table
 		
 		int counter = 0;
 		
-		if ( Other.compare( bi1, pi1, 0.5 ) )
+		if ( Tools.compare( bi1, pi1, 0.5 ) )
 			++counter;
-		if ( Other.compare( bi2, pi2, 0.5 ) )
+		if ( Tools.compare( bi2, pi2, 0.5 ) )
 			++counter;
-		if ( Other.compare( bi3, pi3, 0.5 ) )
+		if ( Tools.compare( bi3, pi3, 0.5 ) )
 			++counter;
-		if ( Other.compare( bi4, pi4, 0.5 ) )
+		if ( Tools.compare( bi4, pi4, 0.5 ) )
 			++counter;
-		if ( Other.compare( bi5, pi5, 0.5 ) )
+		if ( Tools.compare( bi5, pi5, 0.5 ) )
 			++counter;
-		if ( Other.compare( bi6, pi6, 0.5 ) )
+		if ( Tools.compare( bi6, pi6, 0.5 ) )
 			++counter;
-		if ( Other.compare( bi7, pi7, 0.5 ) )
+		if ( Tools.compare( bi7, pi7, 0.5 ) )
 			++counter;
-		if ( Other.compare( bi8, pi8, 0.5 ) )
+		if ( Tools.compare( bi8, pi8, 0.5 ) )
 			++counter;
-		if ( Other.compare( bi9, pi9, 0.5 ) )
+		if ( Tools.compare( bi9, pi9, 0.5 ) )
 			++counter;
 		
 		return 9 - counter; 
@@ -1212,7 +1212,7 @@ public class ParserCreatorWinnerPoker1Table
 			else
 				ret.add( s );
 		
-		return Other.toArrayS( ret );
+		return Tools.toArrayS( ret );
 	}
 	
 }

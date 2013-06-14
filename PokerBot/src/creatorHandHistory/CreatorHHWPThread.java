@@ -12,7 +12,7 @@ import java.io.PipedOutputStream;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import other.Other;
+import other.Tools;
 
 /**
  * This class implements the program which creates the hand history (HH) of winner poker (WP) and safes it in a file
@@ -74,9 +74,9 @@ public class CreatorHHWPThread extends Thread implements Runnable
 				lock.lock();
 				BufferedImage bfNext = r.createScreenCapture( rectBI );
 				
-				if ( ! Other.compare(bfStart, bfNext, 0.975) )
+				if ( ! Tools.compare(bfStart, bfNext, 0.975) )
 				{
-					Point p  = Other.createPointIn( rectTC );
+					Point p  = Tools.createPointIn( rectTC );
 					r.mouseMove( p.x,  p.y );								// start getting the whole text in the clipboard
 					r.mousePress( InputEvent.BUTTON1_DOWN_MASK );
 					r.mouseRelease( InputEvent.BUTTON1_DOWN_MASK );
@@ -89,7 +89,7 @@ public class CreatorHHWPThread extends Thread implements Runnable
 					
 					synchronized( r ) { r.wait( 30 ); }			// It takes some time until the system has had time to update the clipboard.
 					
-					String line = Other.getClipboardByNotepadS( rectNP );
+					String line = Tools.getClipboardByNotepadS( rectNP );
 					
 					for ( int i = 0; i < 10; i++ )							// sometimes is the creator to fast and the new line is not already there
 					{
@@ -98,7 +98,7 @@ public class CreatorHHWPThread extends Thread implements Runnable
 						{
 							synchronized( r ) { r.wait( 30 ); }
 							
-							Point p2  = Other.createPointIn( rectTC );
+							Point p2  = Tools.createPointIn( rectTC );
 							r.mouseMove( p2.x,  p2.y );								// start getting the whole text in the clipboard
 							r.mousePress( InputEvent.BUTTON1_DOWN_MASK );
 							r.mouseRelease( InputEvent.BUTTON1_DOWN_MASK );
@@ -111,7 +111,7 @@ public class CreatorHHWPThread extends Thread implements Runnable
 							
 							synchronized( r ) { r.wait( 30 ); }						// It takes some time until the system has had time to update the clipboard.
 							
-							line = Other.getClipboardByNotepadS( rectNP );
+							line = Tools.getClipboardByNotepadS( rectNP );
 							
 							System.out.println( "e: " + e + "_" + h );
 							if ( h == 1 )
@@ -126,14 +126,14 @@ public class CreatorHHWPThread extends Thread implements Runnable
 						System.out.println( "d: " + d );
 						d++;
 						synchronized( r ) { r.wait( 30 ); }
-						line = Other.getClipboardByNotepadS( rectNP );
+						line = Tools.getClipboardByNotepadS( rectNP );
 					}
 					if ( isHTML( line ) )									// sometimes is the line again html-code
 					{
 						System.out.println( "d2: " + d2 );
 						d2++;
 						synchronized( r ) { r.wait( 30 ); }
-						line = Other.getClipboardByNotepadS( rectNP );
+						line = Tools.getClipboardByNotepadS( rectNP );
 					}
 					
 					String[] lSplit = line.split( "\n" );
@@ -153,7 +153,7 @@ public class CreatorHHWPThread extends Thread implements Runnable
 					}
 					
 					lastS = lSplit;
-					Other.clearClipboard();
+					Tools.clearClipboard();
 				}
 				
 				bfStart = bfNext;

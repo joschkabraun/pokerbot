@@ -63,4 +63,15 @@ public class Action
 		return false;
 	}
 	
+	public Character toChar() {
+		if ( this.actionName.equals("raise") )
+			return 'r';
+		else if ( this.actionName.equals("call") )
+			return 'c';
+		else if ( this.actionName.equals("fold") )
+			return 'f';
+		else
+			throw new IllegalStateException( "The action does not has any know actionName! Action: " + this.toString() );
+	}
+	
 }

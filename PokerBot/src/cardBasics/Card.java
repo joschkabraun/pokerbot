@@ -98,173 +98,114 @@ public class Card
 	 */
 	public int valueClassification()
 	{
-		int valueClassification = 0;
-		
 		switch( this.value )
 		{
 		case "two":
-			valueClassification = 2;
-			break;
+			return 2;
 		case "three":
-			valueClassification = 3;
-			break;
+			return 3;
 		case "four":
-			valueClassification = 4;
-			break;
+			return 4;
 		case "five":
-			valueClassification = 5;
-			break;
+			return 5;
 		case "six":
-			valueClassification = 6;
-			break;
+			return 6;
 		case "seven":
-			valueClassification = 7;
-			break;
+			return 7;
 		case "eight":
-			valueClassification = 8;
-			break;
+			return 8;
 		case "nine":
-			valueClassification = 9;
-			break;
+			return 9;
 		case "ten":
-			valueClassification = 10;
-			break;
+			return 10;
 		case "jack":
-			valueClassification = 11;
-			break;
+			return 11;
 		case "queen":
-			valueClassification = 12;
-			break;
+			return 12;
 		case "king":
-			valueClassification = 13;
-			break;
+			return 13;
 		case "ace":
-			valueClassification = 14;
-			break;
+			return 14;
 		case "undefined":
-			valueClassification = 999;
-			break;
-		}
-		
-		if ( valueClassification == 0 )
+			return 999;
+		default:
 			throw new IllegalStateException( "It was not possible to classify valueInt by value for the Card: " + this.toString() );
-		
-		return valueClassification;
+		}
 	}
 	
 	public String valueIntClassification()
 	{
-		String valueIntClassification = "null";
-		
 		switch( this.valueInt )
 		{
 		case 2:
-			valueIntClassification = "two";
-			break;
+			return "two";
 		case 3:
-			valueIntClassification = "three";
-			break;
+			return "three";
 		case 4:
-			valueIntClassification = "four";
-			break;
+			return "four";
 		case 5:
-			valueIntClassification = "five";
-			break;
+			return "five";
 		case 6:
-			valueIntClassification = "six";
-			break;
+			return "six";
 		case 7:
-			valueIntClassification = "seven";
-			break;
+			return "seven";
 		case 8:
-			valueIntClassification = "eight";
-			break;
+			return "eight";
 		case 9:
-			valueIntClassification = "nine";
-			break;
+			return "nine";
 		case 10:
-			valueIntClassification = "ten";
-			break;
+			return "ten";
 		case 11:
-			valueIntClassification = "jack";
-			break;
+			return "jack";
 		case 12:
-			valueIntClassification = "queen";
-			break;
+			return "queen";
 		case 13:
-			valueIntClassification = "king";
-			break;
+			return "king";
 		case 14:
-			valueIntClassification = "ace";
-			break;
+			return "ace";
 		case 999:
-			valueIntClassification = "undefined";
-			break;
-		}
-		
-		if ( valueIntClassification == "null" )
+			return "undefined";
+		default:
 			throw new IllegalStateException( "It was not possible to classify value by valueInt for the Card: " + this.toString() );
-			
-		return valueIntClassification;
-		
+		}
 	}
 	
 	public int colourClassification()
 	{
-		int colourClassification = 0;
-		
 		switch ( this.colour )
 		{
 		case "spades":							// "spades" is in German "Schippe"	
-			colourClassification = 1;
-			break;
+			return 1;
 		case "hearts":							// "hearts" is in German "Herz"
-			colourClassification = 2;
-			break;
+			return 2;
 		case "diamonds":						// "diamonds" is in German "Karo"
-			colourClassification = 3;
-			break;
+			return 3;
 		case "clubs":							// "clubs" is in German "Kreuz"
-			colourClassification = 4;
-			break;
+			return 4;
 		case "undefined":
-			colourClassification = 999;
-			break;
-		}
-		
-		if ( colourClassification == 0 )
+			return 999;
+		default:
 			throw new IllegalStateException( "It was not possible to classify colourToInt by colour for the Card: " + this.toString() );
-		
-		return colourClassification;
+		}
 	}
 	
 	public String colourToIntClassification()
 	{
-		String colour = "null";
-		
 		switch( this.colourToInt )
 		{
 		case 1:
-			colour = "spades";
-			break;
+			return "spades";
 		case 2:
-			colour = "hearts";
-			break;
+			return "hearts";
 		case 3:
-			colour = "diamonds";
-			break;
+			return "diamonds";
 		case 4:
-			colour = "clubs";
-			break;
+			return "clubs";
 		case 999:
-			colour = "undefined";
-			break;
-		}
-		
-		if ( colour == "null" )
+			return "undefined";
+		default:
 			throw new IllegalStateException( "It was not possible to classify colour by colourToInt for the Card: " + this.toString() );
-		
-		return colour;
+		}
 	}
 	
 	@Override

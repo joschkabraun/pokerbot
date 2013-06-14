@@ -4,7 +4,8 @@ import gameBasics.*;
 import gameBasics.Action;
 import handHistory.*;
 import parser.*;
-import strategyForTexasHoldEmFixedLimit.*;
+import strategy.*;
+import strategy.strategyPokerStrategy.StrategyOne;
 import other.*;
 import java.io.File;
 import java.io.IOException;
@@ -122,7 +123,7 @@ public class Bot_v1_0_0 extends Thread
 				BufferedImage f3 = r.createScreenCapture( SPACE_BUTTON_BET_RAISE );
 				
 				lock.lock();
-				if ( Other.compare(f1, PICTURE_BUTTON_FOLD, 0.8) || Other.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.8) || Other.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.8) )
+				if ( Tools.compare(f1, PICTURE_BUTTON_FOLD, 0.8) || Tools.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.8) || Tools.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.8) )
 				{
 					HandHistory hh = new HandHistory();															// hand history
 					log.info( "Beginning parsing the hand-history-text-file to a object HandHistory." );
@@ -242,7 +243,7 @@ public class Bot_v1_0_0 extends Thread
 	{
 		try {
 			Rectangle re = actionToButton( action );													// mouse clicking
-			Point p = Other.createPointIn( re );
+			Point p = Tools.createPointIn( re );
 			Robot r = new Robot();
 //			synchronized ( r ) { r.wait( (long) Math.random() * 100 ); }				// thereby the bot does not react at once and the bot is not so much conspicuous
 			sleep( (long) Math.random() * 10000  );
@@ -258,11 +259,11 @@ public class Bot_v1_0_0 extends Thread
 			PICTURE_BUTTON_CKECK_CALL = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_0_0//pictureButtonCheckCall.PNG") );
 			PICTURE_BUTTON_BET_RAISE = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_0_0//pictureButtonBetRaise.PNG") );
 			
-			if ( Other.compare(f1, PICTURE_BUTTON_FOLD, 0.8) || Other.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.8) || Other.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.8) )
+			if ( Tools.compare(f1, PICTURE_BUTTON_FOLD, 0.8) || Tools.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.8) || Tools.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.8) )
 			{
 				gameBasics.Action act = new Action( "check" );
 				re = actionToButton( act );
-				p = Other.createPointIn( re );
+				p = Tools.createPointIn( re );
 				r.mouseMove(p.x, p.y);
 				r.mousePress( InputEvent.BUTTON1_DOWN_MASK );
 				r.mouseRelease( InputEvent.BUTTON1_DOWN_MASK );

@@ -1,6 +1,7 @@
 package handHistory;
 
 import java.util.*;
+import gameBasics.GameState;
 import gameBasics.Player;
 import gameBasics.Pot;
 import gameBasics.PlayerYou;
@@ -123,10 +124,10 @@ public class HandHistory
 	public Summary summary;
 	
 	/**
-	 * The phase/stage in which the game current is.
+	 * The game state in which the game current is.
 	 * The possible stages are pre-flop, flop, turn, river, showDown, summary (the game is over).
 	 */
-	public String stage;
+	public GameState state;
 	
 	/**
 	 * The number of players they are in game.
@@ -160,7 +161,7 @@ public class HandHistory
 		this.bigBlindP = new ArrayList<Player>( bigBlind );
 		this.pot = new Pot( SB + BB + preFlop.pot.money );
 		this.preFlop = new PreFlop( preFlop );
-		this.stage = "pre-flop";
+		this.state = GameState.PRE_FLOP;
 		this.howManyPlayerInGame = this.preFlop.howManyPlayersInGame;
 	}
 	
@@ -181,7 +182,7 @@ public class HandHistory
 		this.pot = new Pot( SB + BB + preFlop.pot.money );
 		this.preFlop = new PreFlop( preFlop );
 		this.summary = new Summary( summary );
-		this.stage = "summary";
+		this.state = GameState.SUMMARY;
 		this.howManyPlayerInGame = this.preFlop.howManyPlayersInGame;
 	}
 	
@@ -202,7 +203,7 @@ public class HandHistory
 		this.pot = new Pot( SB + BB + preFlop.pot.money + flop.pot.money );
 		this.preFlop = new PreFlop( preFlop );
 		this.flop = new Flop( flop );
-		this.stage = "flop";
+		this.state = GameState.FLOP;
 		this.howManyPlayerInGame = this.flop.howManyPlayersInGame;
 	}
 	
@@ -224,7 +225,7 @@ public class HandHistory
 		this.preFlop = new PreFlop( preFlop );
 		this.flop = new Flop( flop );
 		this.summary = new Summary( summary );
-		this.stage = "summary";
+		this.state = GameState.SUMMARY;
 		this.howManyPlayerInGame = this.flop.howManyPlayersInGame;
 	}
 	
@@ -246,7 +247,7 @@ public class HandHistory
 		this.preFlop = new PreFlop( preFlop );
 		this.flop = new Flop( flop );
 		this.turn = new Turn( turn );
-		this.stage = "turn";
+		this.state = GameState.TURN;
 		this.howManyPlayerInGame = this.turn.howManyPlayersInGame;
 	}
 	
@@ -269,7 +270,7 @@ public class HandHistory
 		this.flop = new Flop( flop );
 		this.turn = new Turn( turn );
 		this.summary = new Summary( summary );
-		this.stage = "summary";
+		this.state = GameState.SUMMARY;
 		this.howManyPlayerInGame = this.turn.howManyPlayersInGame;
 	}
 	
@@ -292,7 +293,7 @@ public class HandHistory
 		this.flop = new Flop( flop );
 		this.turn = new Turn( turn );
 		this.river = new River( river );
-		this.stage = "river";
+		this.state = GameState.RIVER;
 		this.howManyPlayerInGame = this.river.howManyPlayersInGame;
 	}
 	
@@ -316,7 +317,7 @@ public class HandHistory
 		this.turn = new Turn( turn );
 		this.river = new River( river );
 		this.summary = new Summary( summary );
-		this.stage = "summary";
+		this.state = GameState.SUMMARY;
 		this.howManyPlayerInGame = this.river.howManyPlayersInGame;
 	}
 	
@@ -341,7 +342,7 @@ public class HandHistory
 		this.river = new River( river );
 		this.showDown = new ShowDown( showDown );
 		this.summary = new Summary( summary );
-		this.stage = "summary";
+		this.state = GameState.SUMMARY;
 		this.howManyPlayerInGame = this.river.howManyPlayersInGame;
 	}
 	
