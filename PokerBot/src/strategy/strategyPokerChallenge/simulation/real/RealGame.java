@@ -27,7 +27,7 @@ public class RealGame {
 	private int round;
 	private int start_round;
 	private int ownSeat;
-	private int maxInPot;
+	private double maxInPot;
 	private CardGenerator cardGenerator;
 	private Card[] board;
 	private ClientRingDynamics crd;
@@ -60,9 +60,7 @@ public class RealGame {
 		this.simulationGuides = new SimulationGuide(crd);
 		for (int i = 0; i < CONSTANT.PLAYER_COUNT; i++) {
 			// if (i != ownSeat)
-			this.playerStates[i] = new RealPlayerState(crd.active[i],
-					crd.canRaiseNextTurn[i], crd.inPot[i], i, crd
-							.seatToPlayer(i));
+			this.playerStates[i] = new RealPlayerState(crd.active[i], crd.canRaiseNextTurn[i], crd.inPot[i], i, crd.seatToPlayer(i));
 		}
 
 		this.actualSeat = crd.seatTaken;
@@ -204,9 +202,9 @@ public class RealGame {
 
 		if (History.getHistory().isActive()) {
 			double foldRatio = grd.getPlayerRatio(playerStates[actualSeat]
-					.getPlayerSeat(), GameState.PREFLOP, Action.FOLD);
+					.getPlayerSeat(), GameState.PRE_FLOP, Action.FOLD);
 			double raiseRatio = grd.getPlayerRatio(playerStates[actualSeat]
-					.getPlayerSeat(), GameState.PREFLOP, Action.CALL);
+					.getPlayerSeat(), GameState.PRE_FLOP, Action.CALL);
 			if (crd.inPot[actualSeat] >= 4)
 				foldRatio += raiseRatio;
 			else {
@@ -222,9 +220,6 @@ public class RealGame {
 				} else
 					maxBucket = 4;
 			}
-			// if(CONSTANT.DEBUG_IMMI)
-			// System.out.println("Ratio("
-			// +playerStates[actualSeat].getPlayerSeat()+"): " + ratio );
 			if (foldRatio <= 0.70) {
 				bucket = 0;
 			} else if (foldRatio <= 0.77) {
@@ -239,15 +234,9 @@ public class RealGame {
 		// {0.65,0.79,0.9,0.97,1.0};
 		Card[] hole = new Card[2];
 		if (crd.roundIndex == 0 && !calledAlready(actualSeat)) {
-			// if(CONSTANT.DEBUG_IMMI)
-			// System.out.println("No raise yet: Random hands");
 			hole = cardGenerator.getHole();
 		} else {
-			if (crd.roundIndex == 0
-					|| (crd.roundIndex == 1 && !calledAlready(actualSeat))) {
-				// if(CONSTANT.DEBUG_IMMI)
-				// System.out.println("Its round " + round + "! Raised in
-				// PreFlop, no raise in Flop");
+			if (crd.roundIndex == 0 || (crd.roundIndex == 1 && !calledAlready(actualSeat))) {
 				hole = cardGenerator.getHole(bucket, maxBucket);
 			}
 

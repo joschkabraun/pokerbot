@@ -1,6 +1,5 @@
 package strategy.strategyPokerChallenge.data;
 
-import strategy.strategyPokerChallenge.history.History;
 import strategy.strategyPokerChallenge.ringclient.ClientRingDynamics;
 
 public class SimulationGuide {
@@ -75,7 +74,7 @@ public class SimulationGuide {
 		};
 	
 	static public synchronized void setEstimates() {
-		SimulationGuide.estimates = History.getHistory().getCurrent().getPlayerEstimate();
+		SimulationGuide.estimates = strategy.strategyPokerChallenge.history.History.getHistory().getCurrent().getPlayerEstimate();
 	}
 
 	public SimulationGuide(ClientRingDynamics crd) {

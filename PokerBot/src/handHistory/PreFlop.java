@@ -6,7 +6,7 @@ import gameBasics.Pot;
 import cardBasics.CardList;
 import java.util.ArrayList;
 
-public class PreFlop
+public class PreFlop extends BettingRound
 
 {
 	
@@ -14,16 +14,6 @@ public class PreFlop
 	 * The cards the dealer dealt to you. These are your start hand.
 	 */
 	public CardList startHand;
-	
-	/**
-	 * The list of the actions of each player. The list is sorted by the actions the players did, when the player's turn.
-	 */
-	public PlayerActionList playerActionList;
-	
-	/**
-	 * The pot in the pre-flop-phase.
-	 */
-	public Pot pot;
 	
 	/**
 	 * The number of players they are in game.
@@ -180,6 +170,15 @@ public class PreFlop
 		}
 		
 		return howOften;
+	}
+	
+	/**
+	 * Returns the GameState of "this" at which strategy.strategyPokerChallenge.data.GameState is used.
+	 * 
+	 * @return the GameState of "this"; GameState in meaning of PokerChallenge(AKI-RealBot/TU Darmstadt)
+	 */
+	public strategy.strategyPokerChallenge.data.GameState getPokerChallengeGameState() {
+		return strategy.strategyPokerChallenge.data.GameState.PRE_FLOP;
 	}
 	
 	/**

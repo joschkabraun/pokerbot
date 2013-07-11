@@ -13,12 +13,15 @@ public class Player
 	 * The seat number on the table the game.
 	 * This number is taken from the hand history (HH).
 	 */
-	public int seatNumberAbsolute;
-	public double money;
+	public int seatNumberAbsolute = 0;
+	public double money = 0.0;
 	
 	
 	public Player()
 	{
+		this.name = "";
+		this.seatNumberAbsolute = 0;
+		this.money = 0.0;
 		this.seatBehindBU = new SeatPosition();
 	}
 	

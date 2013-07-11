@@ -17,12 +17,12 @@ public class PlayerHandCombination
 {
 	
 	/**
-	 * The player of the hand cards
+	 * The player of the hand cards.
 	 */
 	public Player player;
 	
 	/**
-	 * The hand cards of the play
+	 * The hand cards of the player.
 	 */
 	public CardList handCards;
 	

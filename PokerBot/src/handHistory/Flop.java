@@ -1,9 +1,10 @@
 package handHistory;
 
+import gameBasics.Action;
 import gameBasics.Pot;
 import cardBasics.CardList;
 
-public class Flop
+public class Flop extends BettingRound implements IPostFlop
 
 {
 	
@@ -18,16 +19,6 @@ public class Flop
 	public CardList board;
 	
 	/**
-	 * The list of the actions of each player. The list is sorted by the actions the players did, when the player's turn.
-	 */
-	public PlayerActionList playerActionList;
-	
-	/**
-	 * The pot in the flop-phase.
-	 */
-	public Pot pot;
-	
-	/**
 	 * The number of players they are in game.
 	 */
 	public int howManyPlayersInGame;
@@ -36,6 +27,7 @@ public class Flop
 		this.flop = new CardList();
 		this.board = new CardList();
 		this.pot = new Pot();
+		this.playerActionList = new PlayerActionList();
 	}
 	
 	public Flop( CardList flop, CardList board, PlayerActionList playActList, Pot pot, int playersInGameBefore )
@@ -61,7 +53,7 @@ public class Flop
 		this.flop = new CardList( flop.flop );
 		this.board = new CardList( flop.board );
 		this.playerActionList = new PlayerActionList( flop.playerActionList );
-		this.pot = new Pot( pot );
+		this.pot = new Pot( flop.pot );
 		this.howManyPlayersInGame = flop.howManyPlayersInGame;
 	}
 	
@@ -80,6 +72,21 @@ public class Flop
 	public int howManyPlayersInGame( int playersInGameBefore )
 	{
 		return this.playerActionList.howManyPlayerInGame( playersInGameBefore );
+	}
+	
+	@Override
+	/**
+	 * Returns the GameState of "this" at which strategy.strategyPokerChallenge.data.GameState is used.
+	 * 
+	 * @return the GameState of "this"; GameState in meaning of PokerChallenge(AKI-RealBot/TU Darmstadt)
+	 */
+	public strategy.strategyPokerChallenge.data.GameState getPokerChallengeGameState() {
+		return strategy.strategyPokerChallenge.data.GameState.FLOP;
+	}
+	
+	@Override
+	public Action actionMin() {
+		return this.playerActionList.actionMin();
 	}
 	
 }

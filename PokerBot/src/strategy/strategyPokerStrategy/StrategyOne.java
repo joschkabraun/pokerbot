@@ -34,7 +34,7 @@ public class StrategyOne
 		}
 	}
 	
-	public static Action preFlopAction( HandHistory handHistory, PlayerYou you )	// The algorithm is documented in a article of www.pokerStrategy.com and
+	private static Action preFlopAction( HandHistory handHistory, PlayerYou you )	// The algorithm is documented in a article of www.pokerStrategy.com and
 	{																				// the implementation in an handwritten paper to the PokerBot (on page (PB)25 ).
 		Action retAct = new Action( "fold" );
 		CardList cards = new CardList( you.startCards );
@@ -197,7 +197,7 @@ public class StrategyOne
 		return retAct;
 	}
 	
-	public static Action flopAction( HandHistory handHistory, PlayerYou you )
+	private static Action flopAction( HandHistory handHistory, PlayerYou you )
 	{
 		Action retAct = new Action("fold");
 		CardList yourCards = new CardList( you.startCards );
@@ -270,7 +270,7 @@ public class StrategyOne
 		return retAct;
 	}
 	
-	public static Action turnAction( HandHistory handHistory, PlayerYou you )
+	private static Action turnAction( HandHistory handHistory, PlayerYou you )
 	{
 		Action retAct = new Action( "fold" );
 		CardList yourCards = new CardList( you.startCards );
@@ -394,7 +394,7 @@ public class StrategyOne
 		return retAct;
 	}
 	
-	public static Action riverAction( HandHistory handHistory, PlayerYou you )
+	private static Action riverAction( HandHistory handHistory, PlayerYou you )
 	{
 		Action retAct = new Action( "fold" );
 		CardList yourCards = new CardList( you.startCards );

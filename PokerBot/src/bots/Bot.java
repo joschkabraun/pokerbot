@@ -41,11 +41,12 @@ public class Bot
 		}
 		
 		ThreadGroup main = new ThreadGroup( "main" );
+		String namePlayerYou = "walk10er";
 		
-		Bot_v1_1_0 BLU = new Bot_v1_1_0( main, "BotLeftDown-v1.1.0", outBLU2I, Bot_v1_1_0Tables.LEFT_UP );
-		Bot_v1_1_0 BLD = new Bot_v1_1_0( main, "BotLeftDown-v1.1.0", outBLD2I, Bot_v1_1_0Tables.LEFT_DOWN );
-		Bot_v1_1_0 BRU = new Bot_v1_1_0( main, "BotLeftDown-v1.1.0", outBRU2I, Bot_v1_1_0Tables.RIGHT_UP );
-		Bot_v1_1_0 BRD = new Bot_v1_1_0( main, "BotLeftDown-v1.1.0", outBRD2I, Bot_v1_1_0Tables.RIGHT_DOWN );
+		Bot_v1_2_0 BLU = new Bot_v1_2_0( main, "BotLeftDown-v1.1.0", outBLU2I, Bot_v1_1_0Tables.LEFT_UP, namePlayerYou );
+		Bot_v1_2_0 BLD = new Bot_v1_2_0( main, "BotLeftDown-v1.1.0", outBLD2I, Bot_v1_1_0Tables.LEFT_DOWN, namePlayerYou );
+		Bot_v1_2_0 BRU = new Bot_v1_2_0( main, "BotLeftDown-v1.1.0", outBRU2I, Bot_v1_1_0Tables.RIGHT_UP, namePlayerYou );
+		Bot_v1_2_0 BRD = new Bot_v1_2_0( main, "BotLeftDown-v1.1.0", outBRD2I, Bot_v1_1_0Tables.RIGHT_DOWN, namePlayerYou );
 		Interrupter interrupter = new Interrupter( main, "Interrupter", inBLU2I, inBLD2I, inBRU2I, inBRD2I, BLU, BLD, BRU, BRD );
 		
 		BLU.start();

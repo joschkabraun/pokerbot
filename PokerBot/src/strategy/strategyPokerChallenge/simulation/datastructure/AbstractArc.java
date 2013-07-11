@@ -53,7 +53,7 @@ public abstract class AbstractArc implements IArc {
 	public void increaseSimulationCount() {
 		simulationCount++;
 	}
-
+	
 	/**
 	 * @return the win
 	 */

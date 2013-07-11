@@ -1,10 +1,11 @@
 package handHistory;
 
+import gameBasics.Action;
 import gameBasics.Pot;
 import cardBasics.Card;
 import cardBasics.CardList;
 
-public class River
+public class River extends BettingRound implements IPostFlop
 
 {
 	
@@ -24,16 +25,6 @@ public class River
 	public CardList board;
 	
 	/**
-	 * The list of the actions of each player. The list is sorted by the actions the players did, when the player's turn.
-	 */
-	public PlayerActionList playerActionList;
-	
-	/**
-	 * The pot in the pre-flop-phase.
-	 */
-	public Pot pot;
-	
-	/**
 	 * The number of players they are in game.
 	 */
 	public int howManyPlayersInGame;
@@ -43,6 +34,7 @@ public class River
 		this.restOpenCards = new CardList();
 		this.board = new CardList();
 		this.pot = new Pot();
+		this.playerActionList = new PlayerActionList();
 	}
 	
 	public River( Card river, CardList restOpenCards, CardList board, PlayerActionList playActList, Pot pot, int playersBeforeInGame )
@@ -91,6 +83,21 @@ public class River
 	public int howManyPlayersBeforeInGame( int playersBeforeInGame )
 	{
 		return this.playerActionList.howManyPlayerInGame( playersBeforeInGame );
+	}
+	
+	@Override
+	/**
+	 * Returns the GameState of "this" at which strategy.strategyPokerChallenge.data.GameState is used.
+	 * 
+	 * @return the GameState of "this"; GameState in meaning of PokerChallenge(AKI-RealBot/TU Darmstadt)
+	 */
+	public strategy.strategyPokerChallenge.data.GameState getPokerChallengeGameState() {
+		return strategy.strategyPokerChallenge.data.GameState.RIVER;
+	}
+	
+	@Override
+	public Action actionMin() {
+		return this.playerActionList.actionMin();
 	}
 	
 }

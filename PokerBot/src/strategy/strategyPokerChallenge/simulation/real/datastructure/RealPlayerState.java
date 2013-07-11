@@ -13,13 +13,13 @@ public class RealPlayerState {
 	private Card[] hole;
 	private boolean active;
 	private boolean canAct;
-	private int amountIn;
-	private int amountBet;
+	private double amountIn;
+	private double amountBet;
 	private int seat;
 	private int playerSeat;
 	private int bucket;
 	
-	public RealPlayerState(boolean active, boolean canRaiseNextRound, int inPot, int seat, int playerSeat) {
+	public RealPlayerState(boolean active, boolean canRaiseNextRound, double inPot, int seat, int playerSeat) {
 		this.hole = null;
 		this.active = active;
 		this.bucket = -1;
@@ -70,14 +70,14 @@ public class RealPlayerState {
 	/**
 	 * @return the amountIn
 	 */
-	public int getAmountIn() {
+	public double getAmountIn() {
 		return amountIn;
 	}
 
 	/**
 	 * @param amountIn the amountIn to set
 	 */
-	public void setAmountIn(int amountIn) {
+	public void setAmountIn(double amountIn) {
 		this.amountIn = amountIn;
 	}
 
@@ -85,7 +85,7 @@ public class RealPlayerState {
 	/**
 	 * @return the amountBet
 	 */
-	public int getAmountBet() {
+	public double getAmountBet() {
 		return amountBet;
 	}
 
@@ -110,7 +110,7 @@ public class RealPlayerState {
 		this.canAct = canRaiseNextRound;
 	}
 
-	public boolean canAct(int maxAmount) {
+	public boolean canAct(double maxAmount) {
 		return isActive() && (canAct || amountIn<maxAmount);
 	}
 

@@ -28,15 +28,19 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import creatorHandHistory.CreatorHHWPClass;
-
 import other.Tools;
 import parser.ParserCreatorWinnerPoker4Tables;
-import strategy.strategyPokerStrategy.StrategyOne;
+import strategy.strategyPokerChallenge.interfacesToPokerChallenge.StrategyTwo;
+import strategy.strategyPokerChallenge.ringclient.ClientRingDynamics;
 
-public class Bot_v1_1_0 extends Thread
+import creatorHandHistory.CreatorHHWPClass;
 
-{
+public class Bot_v1_2_0  extends Thread {
+	
+	/**
+	 * The name of the player you are/represent.
+	 */
+	private String namePlayerYou;
 	
 	/**
 	 * out is for the communication with the Thread Interrupter
@@ -65,7 +69,7 @@ public class Bot_v1_1_0 extends Thread
 	/**
 	 * The file in which the parser writes for parsing the hand history.
 	 */
-	private File parserFile;
+	private File parserFileHH;
 	
 	/**
 	 * The creator of the class, which creates the hand history.
@@ -122,24 +126,31 @@ public class Bot_v1_1_0 extends Thread
 	 */
 	private BufferedImage[] PICTURE_SEATS;
 	
-	public Bot_v1_1_0( ThreadGroup main, String string, PipedOutputStream out, Bot_v1_1_0Tables table )
+	/**
+	 * The spaces of all seats. The array is arranged by Bot_v1_1_0Tables.LEFT_DOWN, Bot_v1_1_0Tables.LEFT_UP, Bot_v1_1_0Tables.RIGHT_UP, Bot_v1_1_0Tables.RIGHT_DOWN.
+	 */
+	private Rectangle[][] spaceSeats;
+	
+	/**
+	 * The pictures of all seats. The array is arranged by Bot_v1_1_0Tables.LEFT_DOWN, Bot_v1_1_0Tables.LEFT_UP, Bot_v1_1_0Tables.RIGHT_UP, Bot_v1_1_0Tables.RIGHT_DOWN.
+	 */
+	private BufferedImage[][] pictureSeats;
+	
+	public Bot_v1_2_0( ThreadGroup main, String string, PipedOutputStream out, Bot_v1_1_0Tables table, String namePlayerYou )
 	{
 		super( main, string );
 		this.out = out;
 		this.table = table;
 		allocateTableToRest( table );
 		creator = new CreatorHHWPClass( hhFile, SPACE_NOTEPAD, SPACE_TABLECHAT );
+		this.namePlayerYou = namePlayerYou;
 	}
 	
-	
 	@Override
-	public void run()
-	{
+	public void run() {
 		try {
 			Handler handler = new FileHandler( logFile.getAbsolutePath() );
 			log.addHandler( handler );
-			
-			String namePlayerYou = "walk10er";																	// name player you
 			
 			Robot r = new Robot();																				// robot
 			
@@ -163,9 +174,7 @@ public class Bot_v1_1_0 extends Thread
 			frame.add( panel );
 			frame.setVisible( true );
 			
-			
-			while ( true )
-			{
+			while (true) {
 				synchronized( r ) { r.wait( 500 ); }
 				
 				BufferedImage f1 = r.createScreenCapture( SPACE_BUTTON_FOLD );
@@ -173,8 +182,7 @@ public class Bot_v1_1_0 extends Thread
 				BufferedImage f3 = r.createScreenCapture( SPACE_BUTTON_BET_RAISE );
 				
 				lock.lock();
-				if ( Tools.compare(f1, PICTURE_BUTTON_FOLD, 0.65) || Tools.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.65) || Tools.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.65) )
-				{
+				if ( Tools.compare(f1,PICTURE_BUTTON_FOLD,0.65) || Tools.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.65) || Tools.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.65) ) {
 					log.info( "Beginning creating the hand-history. Table: " + table.toString() );
 					try {
 						creator.createHH();																			// the creator creates the necessary hand history
@@ -188,7 +196,7 @@ public class Bot_v1_1_0 extends Thread
 					HandHistory hh = new HandHistory();															// hand history
 					log.info( "Beginning parsing the hand-history-text-file to a object HandHistory. Table: " + table.toString() );
 					try {
-						hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFile, "Hold'Em", "Fixed Limit", 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+						hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, "Hold'Em", "Fixed Limit", 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
 						log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 					} catch ( Exception e1 ) {
 						log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
@@ -196,7 +204,7 @@ public class Bot_v1_1_0 extends Thread
 						sleep(100);
 						creator.createHH();
 						try {
-							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFile, "Hold'Em", "Fixed Limit", 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, "Hold'Em", "Fixed Limit", 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
 							log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 						} catch ( Exception e2 ) {
 							log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
@@ -204,7 +212,7 @@ public class Bot_v1_1_0 extends Thread
 							sleep(100);
 							creator.createHH();
 						} try {
-							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFile, "Hold'Em", "Fixed Limit", 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, "Hold'Em", "Fixed Limit", 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
 							log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 						} catch ( Exception e3 ) {
 							log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
@@ -212,7 +220,7 @@ public class Bot_v1_1_0 extends Thread
 							sleep(100);
 							creator.createHH();
 						} try {
-							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFile, "Hold'Em", "Fixed Limit", 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, "Hold'Em", "Fixed Limit", 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
 							log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 						} catch ( Exception e4 ) {
 							log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
@@ -232,14 +240,35 @@ public class Bot_v1_1_0 extends Thread
 						log.log( Level.SEVERE, "Getting the PlayerYou was not successful. Table: " + table.toString(), e );
 						exit(); }
 					
+					ClientRingDynamics crd = new ClientRingDynamics();
+					log.info("Beginning creating the TU-Darmstadt's AKI-RealBot datastructure. Table: " + table.toString());						// AKI-RealBot datastructure
+					try {
+						File[] source = {new File("c://pokerBot//bot_v1_2_0//hhTableLeftDown.txt"), new File("c://pokerBot//bot_v1_2_0//hhTableLeftUp.txt"),
+								new File("c://pokerBot//bot_v1_2_0//hhTableRightUp.txt"), new File("c://pokerBot//bot_v1_2_0//hhTableRightDown.txt")};
+						File[] parsers = {new File( "c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableLeftDown.txt"),new File( "c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableLeftUp.txt"),
+								new File("c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableRightUp.txt"), new File("c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableRightDown.txt")};
+						bots.Bot_v1_1_0Tables[] tables = {bots.Bot_v1_1_0Tables.LEFT_DOWN, bots.Bot_v1_1_0Tables.LEFT_UP, bots.Bot_v1_1_0Tables.RIGHT_UP, bots.Bot_v1_1_0Tables.RIGHT_DOWN};
+						String[] gameType = {"Hold_Em", "Hold_Em", "Hold_Em", "Hold_Em"};
+						String[] limit = {"Fixed Limit", "Fixed Limit", "Fixed Limit", "Fixed Limit"};
+						int[] maxSeatOnTable = {9, 9, 9, 9};
+						
+						strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, tables, gameType, limit, maxSeatOnTable, namePlayerYou, pictureSeats, spaceSeats);
+						strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createCONSTANT(hh);
+						crd = strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createRingDynamics(hh, hh.getPlayerYou("walk10er"));
+						strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createHistory(hh, you);
+					} catch (Exception e) {
+						log.log(Level.SEVERE, "Creating the TU-Darmstadt's AKI-RealBOt datastructure was not successful! Table: " + table.toString());
+						exit();
+					}
 					
 					gameBasics.Action action = new gameBasics.Action();											// action
 					log.info( "Start getting right Action for the actual situation. Table: " + table.toString() );
 					try {
-						action.set( StrategyOne.actionFor(hh, you) );
+						action.set(StrategyTwo.actionFor(hh, you, PICTURE_SEATS, SPACE_SEATS, crd));
 					} catch ( Exception e ) {
 						log.log( Level.SEVERE, "Getting the Action for the actual situation was not possible. Table: " + table.toString(), e );
-						exit(); }
+						exit();
+					}
 					
 					if ( action.isEmpty() )
 						log.log( Level.SEVERE, "There was not any Action for the actual situation. Table: " + table.toString() );
@@ -265,6 +294,7 @@ public class Bot_v1_1_0 extends Thread
 		}
 	}
 	
+	
 	/**
 	 * This method determines the pictures and locations of the action-buttons, the table chat, the nine seats and the file
 	 * by given table.
@@ -273,11 +303,91 @@ public class Bot_v1_1_0 extends Thread
 	{
 		SPACE_NOTEPAD = new Rectangle( 2010, 210, 480, 380 );
 		
+		try {
+			spaceSeats[0][0] = new Rectangle( 113, 729, 50, 50 );			// left down
+			spaceSeats[0][1] = new Rectangle( 241, 684, 52, 52 );
+			spaceSeats[0][2] = new Rectangle( 442, 688, 50, 50 );
+			spaceSeats[0][3] = new Rectangle( 575, 727, 50, 50 );
+			spaceSeats[0][4] = new Rectangle( 630, 825, 51, 50 );
+			spaceSeats[0][5] = new Rectangle( 575, 950, 55, 50 );
+			spaceSeats[0][6] = new Rectangle( 432, 973, 50, 50 );
+			spaceSeats[0][7] = new Rectangle( 254, 974, 50, 50 );
+			spaceSeats[0][8] = new Rectangle( 110, 950, 50, 50 );
+			pictureSeats[0][0] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat1.PNG") );
+			pictureSeats[0][1] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat2.PNG") );
+			pictureSeats[0][2] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat3.PNG") );
+			pictureSeats[0][3] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat4.PNG") );
+			pictureSeats[0][4] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat5.PNG") );
+			pictureSeats[0][5] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat6.PNG") );
+			pictureSeats[0][6] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat7.PNG") );
+			pictureSeats[0][7] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat8.PNG") );
+			pictureSeats[0][8] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat9.PNG") );
+			
+			spaceSeats[1][0] = new Rectangle( 128, 111, 51, 55);			// left up
+			spaceSeats[1][1] = new Rectangle( 267, 66, 65, 51 );
+			spaceSeats[1][2] = new Rectangle( 490, 68, 50, 52 );
+			spaceSeats[1][3] = new Rectangle( 637, 113, 33, 55 );
+			spaceSeats[1][4] = new Rectangle( 700, 223, 50, 50 );
+			spaceSeats[1][5] = new Rectangle( 639, 359, 52, 54 );
+			spaceSeats[1][6] = new Rectangle( 480, 389, 51, 49 );
+			spaceSeats[1][7] = new Rectangle( 283, 386, 50, 55 );
+			spaceSeats[1][8] = new Rectangle( 128, 357, 52, 53 );
+			pictureSeats[1][0] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat1.PNG") );
+			pictureSeats[1][1] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat2.PNG") );
+			pictureSeats[1][2] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat3.PNG") );
+			pictureSeats[1][3] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat4.PNG") );
+			pictureSeats[1][4] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat5.PNG") );
+			pictureSeats[1][5] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat6.PNG") );
+			pictureSeats[1][6] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat7.PNG") );
+			pictureSeats[1][7] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat8.PNG") );
+			pictureSeats[1][8] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat9.PNG") );
+			
+			spaceSeats[2][0] = new Rectangle( 942, 120, 58, 57 );			// right up
+			spaceSeats[2][1] = new Rectangle( 1083, 76, 54, 52 );
+			spaceSeats[2][2] = new Rectangle( 1305, 75, 50, 54 );
+			spaceSeats[2][3] = new Rectangle( 1453, 124, 54, 54 );
+			spaceSeats[2][4] = new Rectangle( 1515, 232, 53, 53 );
+			spaceSeats[2][5] = new Rectangle( 1456, 368, 51, 53 );
+			spaceSeats[2][6] = new Rectangle( 1295, 394, 50, 56 );
+			spaceSeats[2][7] = new Rectangle( 1097, 395, 51, 57 );
+			spaceSeats[2][8] = new Rectangle( 943, 367, 57, 53 );
+			pictureSeats[2][0] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat1.PNG") );
+			pictureSeats[2][1] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat2.PNG") );
+			pictureSeats[2][2] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat3.PNG") );
+			pictureSeats[2][3] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat4.PNG") );
+			pictureSeats[2][4] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat5.PNG") );
+			pictureSeats[2][5] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat6.PNG") );
+			pictureSeats[2][6] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat7.PNG") );
+			pictureSeats[2][7] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat8.PNG") );
+			pictureSeats[2][8] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat9.PNG") );
+			
+			spaceSeats[3][0] = new Rectangle( 933, 727, 47, 50 );			// right down
+			spaceSeats[3][1] = new Rectangle( 1055, 690, 55, 45 );
+			spaceSeats[3][2] = new Rectangle( 1253, 690, 46, 48 );
+			spaceSeats[3][3] = new Rectangle( 1385, 735, 55, 42 );
+			spaceSeats[3][4] = new Rectangle( 1441, 826, 46, 49 );
+			spaceSeats[3][5] = new Rectangle( 1385, 952, 48, 44 );
+			spaceSeats[3][6] = new Rectangle( 1241, 974, 50, 47 );
+			spaceSeats[3][7] = new Rectangle( 1068, 973, 50, 50 );
+			spaceSeats[3][8] = new Rectangle( 929, 950, 51, 50 );
+			pictureSeats[3][0] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat1.PNG") );
+			pictureSeats[3][1] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat2.PNG") );
+			pictureSeats[3][2] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat3.PNG") );
+			pictureSeats[3][3] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat4.PNG") );
+			pictureSeats[3][4] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat5.PNG") );
+			pictureSeats[3][5] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat6.PNG") );
+			pictureSeats[3][6] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat7.PNG") );
+			pictureSeats[3][7] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat8.PNG") );
+			pictureSeats[3][8] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat9.PNG") );						
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+		
 		if ( table == Bot_v1_1_0Tables.LEFT_UP )
 		{
-			logFile = new File( "c://pokerBot//bot_v1_1_0//loggingBotTableLeftUp.txt" );
-			hhFile = new File( "c://pokerBot//bot_v1_1_0//hhTableLeftUp.txt" );
-			parserFile = new File( "c://pokerBot//bot_v1_1_0//parserTableLeftUp.txt" );
+			logFile = new File( "c://pokerBot//bot_v1_2_0//loggingBotTableLeftUp.txt" );
+			hhFile = new File( "c://pokerBot//bot_v1_2_0//hhTableLeftUp.txt" );
+			parserFileHH = new File( "c://pokerBot//bot_v1_1_0//parserTableLeftUp.txt" );
 			
 			SPACE_BUTTON_FOLD = new Rectangle( 436, 537, 104, 35 );
 			SPACE_BUTTON_CHECK_CALL = new Rectangle( 553, 537, 105, 38 );
@@ -317,9 +427,9 @@ public class Bot_v1_1_0 extends Thread
 		}
 		else if ( table == Bot_v1_1_0Tables.LEFT_DOWN )
 		{
-			logFile = new File( "c://pokerBot//bot_v1_1_0//loggingBotTableLeftDown.txt" );
-			hhFile = new File( "c://pokerBot//bot_v1_1_0//hhTableLeftDown.txt" );
-			parserFile = new File( "c://pokerBot//bot_v1_1_0//parserTableLeftDown.txt" );
+			logFile = new File( "c://pokerBot//bot_v1_2_0//loggingBotTableLeftDown.txt" );
+			hhFile = new File( "c://pokerBot//bot_v1_2_0//hhTableLeftDown.txt" );
+			parserFileHH = new File( "c://pokerBot//bot_v1_2_0//parserTableLeftDown.txt" );
 			
 			SPACE_BUTTON_FOLD = new Rectangle( 400, 1105, 95, 30 );				// the action-buttons and the table chat
 			SPACE_BUTTON_CHECK_CALL = new Rectangle( 500, 1105, 100, 30 );
@@ -358,9 +468,9 @@ public class Bot_v1_1_0 extends Thread
 		}
 		else if ( table == Bot_v1_1_0Tables.RIGHT_DOWN )
 		{
-			logFile = new File( "c://pokerBot//bot_v1_1_0//loggingBotTableRightDown.txt" );
-			hhFile = new File( "c://pokerBot//bot_v1_1_0//hhTableRightDown.txt" );
-			parserFile = new File( "c://pokerBot//bot_v1_1_0//parserTableRightDown.txt" );
+			logFile = new File( "c://pokerBot//bot_v1_2_0//loggingBotTableRightDown.txt" );
+			hhFile = new File( "c://pokerBot//bot_v1_2_0//hhTableRightDown.txt" );
+			parserFileHH = new File( "c://pokerBot//bot_v1_2_0//parserTableRightDown.txt" );
 			
 			SPACE_BUTTON_FOLD = new Rectangle( 1200, 1100, 100, 35 );
 			SPACE_BUTTON_CHECK_CALL = new Rectangle( 1310, 1100, 100, 35 );
@@ -399,9 +509,9 @@ public class Bot_v1_1_0 extends Thread
 		}
 		else if ( table == Bot_v1_1_0Tables.RIGHT_UP )
 		{
-			logFile = new File( "c://pokerBot//bot_v1_1_0//loggingBotTableRightUp.txt" );
-			hhFile = new File( "c://pokerBot//bot_v1_1_0//hhTableRightUp.txt" );
-			parserFile = new File( "c://pokerBot//bot_v1_1_0//parserTableRightUp.txt" );
+			logFile = new File( "c://pokerBot//bot_v1_2_0//loggingBotTableRightUp.txt" );
+			hhFile = new File( "c://pokerBot//bot_v1_2_0//hhTableRightUp.txt" );
+			parserFileHH = new File( "c://pokerBot//bot_v1_2_0//parserTableRightUp.txt" );
 			
 			SPACE_BUTTON_FOLD = new Rectangle( 1255, 540, 100, 35 );
 			SPACE_BUTTON_CHECK_CALL = new Rectangle( 1375, 540, 100, 32 );
@@ -440,18 +550,6 @@ public class Bot_v1_1_0 extends Thread
 		}
 		else
 			throw new IllegalArgumentException( "The commited table does not mean anything to the bot. The table: " + table.toString() );
-	}
-	
-	/**
-	 * This method is used when the bot has got an exception and therefore the whole bot has to be termined.
-	 * @throws IOException an IOException about the PipedOutputStream
-	 */
-	private void exit() throws IOException
-	{
-		out.write(1);
-		out.flush();
-		out.close();
-		lock.unlock();
 	}
 	
 	/**
@@ -510,6 +608,17 @@ public class Bot_v1_1_0 extends Thread
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * This method is used when the bot has got an exception and therefore the whole bot has to be termined.
+	 * @throws IOException an IOException about the PipedOutputStream
+	 */
+	private void exit() throws IOException
+	{
+		out.write(1);
+		out.flush();
+		out.close();
+		lock.unlock();
+	}
 	
 }

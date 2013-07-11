@@ -6,9 +6,6 @@ public class Summary
 
 {
 	
-	
-	// pot and sidepot
-	
 	/**
 	 * It is the money the poker room deduct.
 	 */
@@ -23,11 +20,10 @@ public class Summary
 		this.board = new CardList();
 	}
 	
-//	public Summary( args ... )
-	
 	public Summary( Summary summary )
 	{
-		
+		this.board = summary.board;
+		this.rake = summary.rake;
 	}
 	
 	public boolean isEmpty() {

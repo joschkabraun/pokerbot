@@ -3,6 +3,7 @@ package parser;
 import cardBasics.*;
 import gameBasics.*;
 import handHistory.*;
+
 import java.awt.AWTException;
 import java.awt.Rectangle;
 import java.awt.Robot;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import javax.imageio.ImageIO;
 
@@ -536,6 +538,7 @@ public class ParserCreatorWinnerPoker1Table
 		
 		handHistory.preFlop.howManyPlayersInGame = handHistory.preFlop.howManyPlayersInGame(bB.size());	// handHistory.preFlop.howManyPlayersInGame
 		handHistory.howManyPlayerInGame = handHistory.preFlop.howManyPlayersInGame;					// handHistory.howManyPlayersInGame
+		handHistory.bettingRounds.add( handHistory.preFlop );										// handHistory.bettingRounds
 		
 		
 		
@@ -600,6 +603,7 @@ public class ParserCreatorWinnerPoker1Table
 			
 			handHistory.flop.howManyPlayersInGame = handHistory.flop.howManyPlayersInGame( handHistory.preFlop.howManyPlayersInGame );	// handHistory.flop.howManyPlayersInGame
 			handHistory.howManyPlayerInGame = handHistory.flop.howManyPlayersInGame;			// handHistory.howManyPlayersInGame
+			handHistory.bettingRounds.add( handHistory.flop );									// handHistory.bettingRounds
 		}
 		
 		
@@ -666,6 +670,7 @@ public class ParserCreatorWinnerPoker1Table
 			
 			handHistory.turn.howManyPlayersInGame = handHistory.turn.howManyPlayersInGame( handHistory.flop.howManyPlayersInGame );	// handHistory.turn.howManyPlayersInGame
 			handHistory.howManyPlayerInGame = handHistory.turn.howManyPlayersInGame;		// handHistory.howManyPlayersInGame
+			handHistory.bettingRounds.add( handHistory.turn );								// handHistory.bettingRounds
 		}
 		
 		
@@ -732,6 +737,7 @@ public class ParserCreatorWinnerPoker1Table
 			
 			handHistory.river.howManyPlayersInGame = handHistory.river.howManyPlayersBeforeInGame( handHistory.turn.howManyPlayersInGame );	// handHistory.river.howManyPlayersInGame
 			handHistory.howManyPlayerInGame = handHistory.river.howManyPlayersInGame;	// handHistory.howManyPlayersInGame
+			handHistory.bettingRounds.add( handHistory.river );						// handHistory.bettingRounds
 		}
 		
 		
@@ -739,9 +745,61 @@ public class ParserCreatorWinnerPoker1Table
 		
 		// show-down-phase
 		
+		if ( lineShowDown > 0 ) {
+			for ( int i = lineShowDown; i < allLines.length; i++ )
+				if ( allLines[i].matches("Geber: Spiel Nr.\\d+: Gewinner ist .+ [$][0-9.,]+") ) {
+					String playerName = allLines[i].split("Geber: Spiel Nr.\\d+ Gewinner ist ")[0].split(" [$][0-9.,]+")[0];
+					Player p = handHistory.allPlayers.get( indexOf(handHistory.allPlayers, playerName) );
+					double m = Tools.parseDouble( allLines[i].split("Geber: Spiel Nr.\\d+: Gewinner ist .+ [$]")[0] );
+					handHistory.showDown.playerMoneyList.add( new PlayerMoney(p, m) );
+					break;
+				} else if ( allLines[i].matches("Geber: Spiel Nr.\\d+: .+ gewinnt den Haupt-Pot [(][$][0-9.,]+[)] mit .+ - .+") ) {
+					String playerName = allLines[i].split("Geber: Spiel Nr.\\d+: ")[0].split(" gewinnt den Haupt-Pot")[0];
+					Player p = handHistory.allPlayers.get( indexOf(handHistory.allPlayers, playerName) );
+					double m = Tools.parseDouble( allLines[i].split("Geber: Spiel Nr.\\d+: .+ gewinnt den Haupt-Pot [(][$]")[0].split("[)] mit .+")[0] );
+					handHistory.showDown.playerMoneyList.add( new PlayerMoney(p, m) );
+					
+					String sc = allLines[i].split("Geber: Spiel Nr.\\d+: .+ gewinnt den Haupt-Pot [(][$][0-9.,]+[)] mit .+ - ")[0];
+					CardList handCC = new CardList();
+					for ( String s : sc.split("\\s") )
+						handCC.add( Card.stringToCard(s) );
+					CardList hand = CardList.theNewCards(handCC, handHistory.getCommonCards());
+					String ccWPTC = allLines[i].split("Geber: Spiel Nr.\\d+: .+ gewinnt den Haupt-Pot [(][$][0-9.,]+[)] mit ")[0].split(" .+ - .+")[0];
+					String cc = ParserCreatorWinnerPoker4Tables.toOwnConvention(ccWPTC);
+					handHistory.showDown.playerHandList.add( new PlayerHandCombination(p, hand, new CardCombination(handCC, cc)) );
+				} else if ( allLines[i].matches("Geber: Spiel Nr.\\d+: .+ gewinnt den Neben-Pot [(][$][0-9.,]+[)] mit .+ - .+") ) {
+					String playerName = allLines[i].split("Geber: Spiel Nr.\\d+: ")[0].split(" gewinnt den Neben-Pot")[0];
+					Player p = handHistory.allPlayers.get( indexOf(handHistory.allPlayers, playerName) );
+					double m = Tools.parseDouble( allLines[i].split("Geber: Spiel Nr.\\d+: .+ gewinnt den Neben-Pot [(][$]")[0].split("[)] mit .+")[0] );
+					handHistory.showDown.playerMoneyList.add( new PlayerMoney(p, m) );
+					
+					String sc = allLines[i].split("Geber: Spiel Nr.\\d+: .+ gewinnt den Neben-Pot [(][$][0-9.,]+[)] mit .+ - ")[0];
+					CardList handCC = new CardList();
+					for ( String s : sc.split("\\s") )
+						handCC.add( Card.stringToCard(s) );
+					CardList hand = CardList.theNewCards(handCC, handHistory.getCommonCards());
+					String ccWPTC = allLines[i].split("Geber: Spiel Nr.\\d+: .+ gewinnt den Neben-Pot [(][$][0-9.,]+[)] mit ")[0].split(" .+ - .+")[0];
+					String cc = ParserCreatorWinnerPoker4Tables.toOwnConvention(ccWPTC);
+					handHistory.showDown.playerHandList.add( new PlayerHandCombination(p, hand, new CardCombination(handCC, cc)) );
+				}
+		}
 		
 		
-		// summary-phase
+		
+		
+		// some more attributes of the HandHistory are determined
+		
+		handHistory.playerStatesOut = (ArrayList<PlayerPokerChallengeGameState>) Arrays.asList( new PlayerPokerChallengeGameState[allPlayers.size()] );
+		for ( int i = 0; i < allPlayers.size(); i++ )
+			loop:
+				for ( BettingRound br : handHistory.bettingRounds )
+					for ( PlayerAction pa : br.playerActionList )
+						if ( ParserCreatorWinnerPoker4Tables.indexOfPPCGS(handHistory.playerStatesOut, allPlayers.get(i).name) == -1 )
+							continue loop;
+						else if ( ! pa.player.name.equals(allPlayers.get(i)) )
+							continue;
+						else if ( pa.action.actionName.equals("fold") )
+							handHistory.playerStatesOut.set( i, new PlayerPokerChallengeGameState(allPlayers.get(i), br.getPokerChallengeGameState()) );
 		
 		
 		
@@ -874,6 +932,8 @@ public class ParserCreatorWinnerPoker1Table
 		int BBs = 0;
 		
 		for ( int i = 0; i < lines.length; i++ ) {
+			if ( lines[i].equals("") || lines[i] == null )
+				continue;
 			String s = lines[ i ].split( "Geber: " )[ 1 ];
 			
 			if ( s.matches( ".+ schiebt" ) ) {
@@ -942,6 +1002,9 @@ public class ParserCreatorWinnerPoker1Table
 		int BBs = 0;
 		
 		for ( int i = 0; i < lines.length; i++ ) {
+			if ( lines[i].equals("") || lines[i] == null )
+				continue;
+			
 			String s = lines[ i ].split( "Geber: " )[ 1 ];
 			
 			if ( s.matches( ".+ schiebt" ) ) {
@@ -1011,6 +1074,8 @@ public class ParserCreatorWinnerPoker1Table
 		int BBs = 0;
 		
 		for ( int i = 0; i < lines.length; i++ ) {
+			if  ( lines[i].equals("") || lines[i] == null )
+				continue;
 			String s = lines[ i ].split( "Geber: " )[ 1 ];
 			
 			if ( s.matches( ".+ schiebt" ) ) {
@@ -1184,9 +1249,11 @@ public class ParserCreatorWinnerPoker1Table
 		for ( int i = 0; i < ret.length; i++ ) {
 			ret[ i ] = "";
 			String string = lines[ i ];
-			String[] sA = string.split( "\\s+" );
+			String[] sA = string.split( "(\\s+)|[(]|[)]" );
 			for ( int j = 0; j < sA.length; j++ )
-				if ( sA[ j ].matches( "[$][0123456789,.]+" ) )
+				if ( sA[j].equals(" ") || sA[j].equals("") )
+					continue;
+				else if ( sA[ j ].matches( "[$][0123456789,.]+" ) )
 					ret[ i ] += sA[ j ].substring( 1 ) + " ";
 				else
 					ret[ i ] += sA[ j ] + " ";

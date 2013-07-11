@@ -23,17 +23,6 @@ public class RealSimulator implements ISimulator {
 	private ClientRingDynamics crd;
 	private Vector<RealSimulationWorker> workerThreads = new Vector<RealSimulationWorker>();
 	private boolean started;
-	private long stop;
-	private long start;
-	
-	private boolean calledAlready(int player) {
-		if(crd.roundBets == 0 && crd.inPot[player] < 2) return false;
-		else if(crd.inPot[player] < 2) return false;
-		else if(crd.inPot[player] < 4 && player == 2) return false;
-		else {
-			return true;
-		}
-	}
 
 	public synchronized Action getDecision() {
 		if (started) {
@@ -50,32 +39,15 @@ public class RealSimulator implements ISimulator {
 			double aggro = getAggressivePreFlop();
 			double aggro_raise = getAggressiveRaise();
 			// getBestChild
-			this.stop = System.currentTimeMillis();
 			Vector<IArc> childArcs = root.getChildArcs();		// all monte-carlo-searches make that the paths are children of the start-root
 			root = null;
-			int simCount = 0;
 			Action actualDecision = Action.FOLD;
-			if (CONSTANT.DEBUG_IMMI) {
-				System.out.println("Decisions: (Game:" + crd.handNumber + ")");
-				System.out.println("We sit in: " + crd.seatTaken + " NumPlayers to follow: " + crd.getNumPlayersLeftToAct() + " Num Active Players: " + crd.getNumActivePlayers());
-				System.out.println("MaxAmount in Pot: " + crd.getMaxInPot() + " AggroPreflop: " + aggro + " AggroRaise: " + aggro_raise); 
-				
-				for(int i = 0; i < CONSTANT.PLAYER_COUNT;i++) {
-					System.out.print("P" + i + " (" + crd.active[i] + "|"+calledAlready(i) +"): " + crd.inPot[i] + "|"  + CONSTANT.AGGRESSIVE_PREFLOP[crd.seatToPlayer(i)] + "|" + CONSTANT.AGGRESSIVE_RAISE[crd.seatToPlayer(i)] + ";");
-				}
-				System.out.println();
-			}
+			
 			double actualValue = Double.NEGATIVE_INFINITY;
 			ConcurrentHashMap<Action, Double> values = new ConcurrentHashMap<Action, Double>();
 			for (IArc child : childArcs) {
-
 				Action decision = child.getDecision();
-
-				simCount += child.getSimulationCount();
 				double tempValue = child.getValue();
-				if (CONSTANT.DEBUG_IMMI)
-					System.out.println("Dec: " + decision + " Value: "
-							+ tempValue + " WinRatio: " + child.getWinRatio() + " SimCount: " + child.getSimulationCount());
 				
 				values.put(decision, new Double(tempValue));
 				if (tempValue > actualValue) {
@@ -84,11 +56,6 @@ public class RealSimulator implements ISimulator {
 				}
 			}
 			started = false;
-			if (CONSTANT.DEBUG_IMMI) {
-				System.out.println("SimCount: " + simCount + " Time (in ms): "
-						+ (stop - start));
-				
-			}
 			/**
 			 *  Knowledge Base:
 			 *  
@@ -149,7 +116,7 @@ public class RealSimulator implements ISimulator {
 			}
 		}
 		GlobalRoundData grd = History.getHistory().getGlobal();
-		double preFlop_fold = grd.getPlayerRatio(crd.seatToPlayer(seat), GameState.PREFLOP, Action.FOLD);
+		double preFlop_fold = grd.getPlayerRatio(crd.seatToPlayer(seat), GameState.PRE_FLOP, Action.FOLD);
 		double flop_fold = grd.getPlayerRatio(crd.seatToPlayer(seat), GameState.FLOP, Action.FOLD);
 		if(preFlop_fold >= 0.85 || flop_fold >= 0.4) return true;
 		return false;
@@ -204,7 +171,6 @@ public class RealSimulator implements ISimulator {
 	 * This method starts the monte-carlo simulation. It starts the threads of the tree.
 	 */
 	public synchronized void startSimulation(ClientRingDynamics crd) {
-		this.start = System.currentTimeMillis();
 		synchronized (workerThreads) {
 			while (workerThreads.size() > 0) {
 				RealSimulationWorker simW = workerThreads.remove(0);

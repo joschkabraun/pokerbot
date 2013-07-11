@@ -338,9 +338,6 @@ public class Tools
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		if ( howManyLines == 0 )
-			System.err.println( "There are not any lines! Maybe the file " + file.toString() + " is wrong. (class ParserPokerStars, method howManyLines)" );
 		return howManyLines;
 	}
 	
@@ -353,11 +350,7 @@ public class Tools
 	public static String[] allLines( File file )
 	{
 		if ( howManyLines( file ) == 0 )
-		{
-			String[] line = new String[1];
-			System.err.println( "The passed file is empty. (class ParserPokerStars, method allLines, file " + file.toString() );
-			return line;
-		}
+			return new String[0];
 		
 		int numberLines = howManyLines( file );
 		String[] allLines = new String[ numberLines ];

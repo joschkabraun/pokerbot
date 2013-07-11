@@ -22,7 +22,7 @@ public class PlayerMoney
 	/**
 	 * The money the player collected.
 	 */
-	public double money;
+	public double money = 0;
 	
 	public PlayerMoney() {
 		this.player = new Player();

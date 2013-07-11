@@ -12,14 +12,14 @@ public enum GameState {
 	 */
 	STARTING {
         public GameState nextState() {
-            return PREFLOP;
+            return PRE_FLOP;
         }		
 	},
 	
 	/**
 	 * game state before the flop is revealed by the server
 	 */
-	PREFLOP {
+	PRE_FLOP {
         public GameState nextState() {
             return FLOP;
         }
@@ -48,16 +48,16 @@ public enum GameState {
 	 */
 	RIVER {
         public GameState nextState() {
-            return SHOWDOWN;
+            return SHOW_DOWN;
         }		
 	},
 	
 	/**
 	 * game state after one game round
 	 */
-	SHOWDOWN {
+	SHOW_DOWN {
         public GameState nextState() {
-            return SHOWDOWN;
+            return SHOW_DOWN;
         }
 	};
 	

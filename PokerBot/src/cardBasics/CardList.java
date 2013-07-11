@@ -358,6 +358,21 @@ public class CardList extends ArrayList<Card>
 		return returnValue;
 	}
 	
+	/**
+	 * Returns the result if you subtract the second CardList from the first CardList.
+	 * 
+	 * @param first the CardList from which the second subtract
+	 * @param second the CardList which should be subtracted from the first
+	 * @return the cards which are in "first" but not in "second"
+	 */
+	public static CardList theNewCards( CardList first, CardList second ) {
+		CardList ret = new CardList();
+		for ( Card c : first )
+			if ( ! second.includes(c) )
+				ret.add(c);
+		return ret;
+	}
+	
 	// Functions returning the cards are a combination XXX (for example pair or flush) of this
 	public CardCombinationList whichPairsAreInThis()
 	{

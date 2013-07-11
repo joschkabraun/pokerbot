@@ -7,6 +7,7 @@ public class Pot
 	public double money = 0;
 	
 	public Pot() {
+		this.money = 0;
 	}
 	
 	public Pot( double money ) {

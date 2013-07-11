@@ -4,11 +4,8 @@ public class CONSTANT {
 	
 	public static int PLAYER_COUNT = 6;
 	public static final boolean DEBUG = true;
-	public static final boolean DEBUG_ALEX = false && DEBUG;
+	public static final boolean DEBUG_ALEX = false;
 	public static final boolean DEBUG_IMMI = true && DEBUG;
-	public static final boolean DEBUG_KAMI = false && DEBUG;
-	public static final long HANDTIME = 7000;
-	public static final long HANDCOUNT = 6000;
 	
 	// Give the mathematical probabilities for the five buckets in the preflop
 	//public static final double BUCKET_PREFLOP_PROB[] = {0.65,0.14,0.11,0.07,0.03};

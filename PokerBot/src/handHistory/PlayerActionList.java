@@ -234,6 +234,8 @@ public class PlayerActionList extends ArrayList<PlayerAction>
 	 */
 	public Action actionMin()
 	{
+		if ( this.size() == 0 )
+			return new Action("check");
 		Action act;
 		act = (this.howOftenBettedRaised() > 0) ? new Action("call") : new Action("check");
 		return act;

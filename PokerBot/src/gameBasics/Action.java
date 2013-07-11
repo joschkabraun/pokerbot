@@ -8,7 +8,7 @@ public class Action
 	 * The type of the action. For example call, bet, fold, collect(ed) ...
 	 */
 	public String actionName;
-	public double money = -100;
+	public double money = 0;
 	
 	public Action()
 	{

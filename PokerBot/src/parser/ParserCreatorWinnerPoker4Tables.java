@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import cardBasics.Card;
+import cardBasics.CardCombination;
 import cardBasics.CardList;
 import other.Tools;
 import gameBasics.Action;
@@ -18,9 +19,13 @@ import gameBasics.GameState;
 import gameBasics.Player;
 import gameBasics.Pot;
 import gameBasics.SeatPosition;
+import handHistory.BettingRound;
 import handHistory.HandHistory;
 import handHistory.PlayerAction;
 import handHistory.PlayerActionList;
+import handHistory.PlayerHandCombination;
+import handHistory.PlayerMoney;
+import handHistory.PlayerPokerChallengeGameState;
 import handHistory.SeatNumberPlayer;
 
 public class ParserCreatorWinnerPoker4Tables
@@ -31,7 +36,8 @@ public class ParserCreatorWinnerPoker4Tables
 	 * Returns the HandHistory (as object HandHistory) of a .txt-file which is made by the CreatorWinnerPoker4Tables (CWP4T).
 	 * This method just works for maxSeatOnTable = 9 and if there are four tables.
 	 * 
-	 * @param f .txt-file with the hand history
+	 * @param hhFile .txt-file with the hand history
+	 * @param parserFile .txt-file in which the parser writes for paring the hand history
 	 * @param gameType the gameType of the hand history, e.g. "Hold'Em"
 	 * @param limit the limit of the game, e.g. "Fixed Limit", "No Limit" or "Pot Limit"
 	 * @param maxSeatOnTable the maximal number of seats on the table of the hand history
@@ -40,26 +46,13 @@ public class ParserCreatorWinnerPoker4Tables
 	 * @param spaceSeats the space of the seats
 	 * @return a .txt-file parser into a hand history-object
 	 */
-	public static HandHistory parserMainCWP( File f, String gameType, String limit, int maxSeatOnTable, String playYouName, BufferedImage[] pictureSeats,
+	public static HandHistory parserMainCWP( File hhFile, File parserFile, String gameType, String limit, int maxSeatOnTable, String playYouName, BufferedImage[] pictureSeats,
 			Rectangle[] spaceSeats ) throws IOException, AWTException
 	{
 		if ( maxSeatOnTable != 9 )
 			throw new IllegalArgumentException( "The ParserCreatorWinnerPoker does not work for maxSeatOnTable != 9!" );
 		
-		File parserFile;
-		
-		if ( f.getAbsolutePath().equals( "c:\\pokerBot\\bot_v1_1_0\\hhTableLeftDown.txt" ) )
-			parserFile = new File( "c://pokerBot//bot_v1_1_0//parserTableLeftDown.txt" );
-		else if ( f.getAbsolutePath().equals( "c:\\pokerBot\\bot_v1_1_0\\hhTableLeftUp.txt" ) )
-			parserFile = new File( "c://pokerBot//bot_v1_1_0//parserTableLeftUp.txt" );
-		else if ( f.getAbsolutePath().equals( "c:\\pokerBot\\bot_v1_1_0\\hhTableRightUp.txt" ) )
-			parserFile = new File( "c://pokerBot//bot_v1_1_0//parserTableRightUp.txt" );
-		else if ( f.getAbsolutePath().equals( "c:\\pokerBot\\bot_v1_1_0\\hhTableRightDown.txt" ) )
-			parserFile = new File( "c://pokerBot//bot_v1_1_0//parserTableRightDown.txt" );
-		else
-			throw new IllegalArgumentException( "The commited file for the hand history is false!" );
-		
-		String[] allLinesWithoutTrim = Tools.allLines( f );
+		String[] allLinesWithoutTrim = Tools.allLines( hhFile );
 		int length = allLinesWithoutTrim.length;
 		String[] allLines = new String[ length ];
 		for ( int i = 0; i < length; i++ )
@@ -88,6 +81,7 @@ public class ParserCreatorWinnerPoker4Tables
 	 * parserMainCWP.
 	 * 
 	 * @param f .txt-file with the hand history
+	 * @param parserFile .txt-file in which the parser writes for paring the hand history
 	 * @param gameType the gameType of the hand history, e.g. "Hold'Em"
 	 * @param limit the limit of the game, e.g. "Fixed Limit", "No Limit" or "Pot Limit"
 	 * @param maxSeatOnTable the maximal number of seats on the table of the hand history
@@ -101,7 +95,7 @@ public class ParserCreatorWinnerPoker4Tables
 	{
 		HandHistory handHistory = new HandHistory();
 		
-		String[] allLines = ParserCreatorWinnerPoker1Table.clearLines( ParserCreatorWinnerPoker1Table.clearCurrency( Tools.allLines( f ) ) );
+		String[] allLines = ParserCreatorWinnerPoker1Table.arraysTrim(ParserCreatorWinnerPoker1Table.clearLines(ParserCreatorWinnerPoker1Table.clearCurrency(Tools.allLines(f))));
 		
 		if ( allLines[ 0 ].equals("null") )
 			throw new IllegalArgumentException( "The passed file f (" + f.getAbsolutePath() + ") is empty" );
@@ -141,25 +135,19 @@ public class ParserCreatorWinnerPoker4Tables
 				}
 			
 			if ( lineTurn > 0 )
-			{
 				for ( int i = lineTurn; i < allLines.length; i++ )
 					if ( allLines[i].matches( "Geber: Riverkarte wird gegeben .+" ) )
 					{
 						lineRiver = i;
 						break;
 					}
-				
-				if ( lineRiver > 0 )
-					for ( int i = lineRiver; i < allLines.length; i++ )
-						if ( allLines[i].matches( "Geber: .+ zeigt .+" ) )
-						{
-							lineShowDown = i;
-							break;
-						}
-			}
 		}
 		
-		
+		for ( int i = Math.max(linePreFlop, Math.max(lineFlop, Math.max(lineTurn, lineRiver))); i < allLines.length; i++ )
+			if ( allLines[i].matches( "Geber: .+ zeigt .+" ) || allLines[i].matches("Geber: Spiel Nr.\\d+: Gewinner ist .+ [0-9.,]+") ) {
+				lineShowDown = i;
+				break;
+			}
 		
 		
 		// in which stage the game is / handHistory.stage
@@ -183,8 +171,6 @@ public class ParserCreatorWinnerPoker4Tables
 		
 		handHistory.pokerRoom = "WinnerPoker";																	// handHistory.pokerRoom
 		
-		handHistory.handNumber = 0L;																			// handHistory.handNumber
-		
 		handHistory.gameType = gameType;																		// handHistory.gameType
 		
 		handHistory.limit = limit;																				// handHistory.limit
@@ -194,6 +180,12 @@ public class ParserCreatorWinnerPoker4Tables
 		handHistory.maxSeatAtTable = maxSeatOnTable;															// handHistory.maxSeatOnTable
 		
 		handHistory.tableName = "";																				// handHistory.tableName
+		
+		if ( allLines[1].startsWith("Geber: Beginn einer neuen Hand ") )
+			handHistory.handNumber = Long.parseLong( allLines[1].split("Geber: Beginn einer neuen Hand ")[1]
+					.substring(0, allLines[1].split("Geber: Beginn einer neuen Hand ")[1].length()-1) );						// handHistory.handNumber
+		else
+			handHistory.handNumber = 0L;																		// handHistory.handNumber
 		
 		
 		
@@ -483,6 +475,7 @@ public class ParserCreatorWinnerPoker4Tables
 		
 		if ( indexOf( allPlayers, playYouName ) == -1 ) {			// if PlayerYou is not in the HandHistory contained
 			int seatNumber = handHistory.allPlayers.size() + 1;
+			handHistory.numberPlayersAtTable++;
 			double playerMoney = 0.0;
 			SeatPosition seatBU = new SeatPosition( seatNumber, handHistory.numberPlayersAtTable );
 			Player player = new Player( playYouName, seatBU, seatNumber, playerMoney );
@@ -558,6 +551,7 @@ public class ParserCreatorWinnerPoker4Tables
 		
 		handHistory.preFlop.howManyPlayersInGame = handHistory.preFlop.howManyPlayersInGame(bB.size());	// handHistory.preFlop.howManyPlayersInGame
 		handHistory.howManyPlayerInGame = handHistory.preFlop.howManyPlayersInGame;					// handHistory.howManyPlayersInGame
+		handHistory.bettingRounds.add( handHistory.preFlop );										// handHistory.bettingRounds
 		
 		
 		
@@ -622,6 +616,7 @@ public class ParserCreatorWinnerPoker4Tables
 			
 			handHistory.flop.howManyPlayersInGame = handHistory.flop.howManyPlayersInGame( handHistory.preFlop.howManyPlayersInGame );	// handHistory.flop.howManyPlayersInGame
 			handHistory.howManyPlayerInGame = handHistory.flop.howManyPlayersInGame;			// handHistory.howManyPlayersInGame
+			handHistory.bettingRounds.add( handHistory.flop );									// handHistory.bettingRounds
 		}
 		
 		
@@ -645,7 +640,7 @@ public class ParserCreatorWinnerPoker4Tables
 			PlayerActionList playActListTurn = new PlayerActionList();
 			Pot potTurn = new Pot( 0 );
 			
-			for ( int i = lineFlop + 1; i < ((lineTurn > 0) ? lineTurn : allLines.length); i++ ) {
+			for ( int i = lineTurn + 1; i < ((lineRiver > 0) ? lineRiver : allLines.length); i++ ) {
 				if ( allLines[ i ].isEmpty() )
 					continue;
 				
@@ -688,6 +683,7 @@ public class ParserCreatorWinnerPoker4Tables
 			
 			handHistory.turn.howManyPlayersInGame = handHistory.turn.howManyPlayersInGame( handHistory.flop.howManyPlayersInGame );	// handHistory.turn.howManyPlayersInGame
 			handHistory.howManyPlayerInGame = handHistory.turn.howManyPlayersInGame;		// handHistory.howManyPlayersInGame
+			handHistory.bettingRounds.add( handHistory.turn );								// handHistory.bettingRounds
 		}
 		
 		
@@ -711,7 +707,7 @@ public class ParserCreatorWinnerPoker4Tables
 			PlayerActionList playActListRiver = new PlayerActionList();
 			Pot potRiver = new Pot( 0 );
 			
-			for ( int i = lineFlop + 1; i < ((lineTurn > 0) ? lineTurn : allLines.length); i++ ) {
+			for ( int i = lineRiver + 1; i < ((lineShowDown > 0) ? lineShowDown : allLines.length); i++ ) {
 				if ( allLines[ i ].isEmpty() )
 					continue;
 				
@@ -754,6 +750,7 @@ public class ParserCreatorWinnerPoker4Tables
 			
 			handHistory.river.howManyPlayersInGame = handHistory.river.howManyPlayersBeforeInGame( handHistory.turn.howManyPlayersInGame );	// handHistory.river.howManyPlayersInGame
 			handHistory.howManyPlayerInGame = handHistory.river.howManyPlayersInGame;	// handHistory.howManyPlayersInGame
+			handHistory.bettingRounds.add( handHistory.river );						// handHistory.bettingRounds
 		}
 		
 		
@@ -761,10 +758,66 @@ public class ParserCreatorWinnerPoker4Tables
 		
 		// show-down-phase
 		
+		if ( lineShowDown > 0 ) {
+			for ( int i = lineShowDown; i < allLines.length; i++ )
+				if ( allLines[i].matches("Geber: Spiel Nr.\\d+: Gewinner ist .+ [0-9.,]+") ) {
+					String playerName = allLines[i].split("Geber: Spiel Nr.\\d+: Gewinner ist ")[1].split(" [0-9.,]+")[0];
+					Player p = handHistory.allPlayers.get( indexOf(handHistory.allPlayers, playerName) );
+					double m = Tools.parseDouble( allLines[i].split("Geber: Spiel Nr.\\d+: Gewinner ist .+ ")[1] );
+					handHistory.showDown.playerMoneyList.add( new PlayerMoney(p, m) );
+					break;
+				} else if ( allLines[i].matches("Geber: Spiel Nr.\\d+: .+ gewinnt den Haupt-Pot [0-9.,]+ mit .+ - .+") ) {
+					String playerName = allLines[i].split("Geber: Spiel Nr.\\d+: ")[1].split(" gewinnt den Haupt-Pot")[0];
+					Player p = handHistory.allPlayers.get( indexOf(handHistory.allPlayers, playerName) );
+					double m = Tools.parseDouble( allLines[i].split("Geber: Spiel Nr.\\d+: .+ gewinnt den Haupt-Pot ")[1].split(" mit .+")[0] );
+					handHistory.showDown.playerMoneyList.add( new PlayerMoney(p, m) );
+					
+					String sc = allLines[i].split("Geber: Spiel Nr.\\d+: .+ gewinnt den Haupt-Pot [0-9.,]+ mit .+ - ")[1];
+					CardList handCC = new CardList();
+					for ( String s : sc.split("\\s") )
+						handCC.add( Card.stringToCard(s) );
+					CardList hand = CardList.theNewCards(handCC, handHistory.getCommonCards());
+					String ccWPTC = allLines[i].split("Geber: Spiel Nr.\\d+: .+ gewinnt den Haupt-Pot [0-9.,]+ mit ")[1].split(" - .+")[0];
+					String cc = toOwnConvention(ccWPTC);
+					handHistory.showDown.playerHandList.add( new PlayerHandCombination(p, hand, new CardCombination(handCC, cc)) );
+				} else if ( allLines[i].matches("Geber: Spiel Nr.\\d+: .+ gewinnt den Neben-Pot [0-9.,]+ mit .+ - .+") ) {
+					String playerName = allLines[i].split("Geber: Spiel Nr.\\d+: ")[1].split(" gewinnt den Neben-Pot")[0];
+					Player p = handHistory.allPlayers.get( indexOf(handHistory.allPlayers, playerName) );
+					double m = Tools.parseDouble( allLines[i].split("Geber: Spiel Nr.\\d+: .+ gewinnt den Neben-Pot ")[1].split(" mit .+")[0] );
+					handHistory.showDown.playerMoneyList.add( new PlayerMoney(p, m) );
+					
+					String sc = allLines[i].split("Geber: Spiel Nr.\\d+: .+ gewinnt den Neben-Pot [0-9.,]+ mit .+ - ")[1];
+					CardList handCC = new CardList();
+					for ( String s : sc.split("\\s") )
+						handCC.add( Card.stringToCard(s) );
+					CardList hand = CardList.theNewCards(handCC, handHistory.getCommonCards());
+					String ccWPTC = allLines[i].split("Geber: Spiel Nr.\\d+: .+ gewinnt den Neben-Pot [0-9.,]+ mit ")[1].split(" - .+")[0];
+					String cc = toOwnConvention(ccWPTC);
+					handHistory.showDown.playerHandList.add( new PlayerHandCombination(p, hand, new CardCombination(handCC, cc)) );
+				}
+		}
 		
 		
-		// summary-phase
 		
+		
+		// some more attributes of the HandHistory are determined
+		
+		handHistory.playerStatesOut = new ArrayList<PlayerPokerChallengeGameState>();
+		PlayerPokerChallengeGameState[] ppcgsa = new PlayerPokerChallengeGameState[allPlayers.size()];
+		for ( int i = 0; i < ppcgsa.length; i++ )
+			ppcgsa[i] = new PlayerPokerChallengeGameState(new Player(allPlayers.get(i)), strategy.strategyPokerChallenge.data.GameState.SHOW_DOWN);
+		loop:
+			for ( int i = 0; i < allPlayers.size(); i++ )
+				for ( BettingRound br : handHistory.bettingRounds )
+					for ( PlayerAction pa : br.playerActionList )
+						if ( indexOfPPCGS(ppcgsa, allPlayers.get(i).name) > -1 )
+							continue loop;
+						else if ( ! pa.player.name.equals(allPlayerNames.get(i)) )
+							continue;
+						else if ( pa.action.actionName.equals("fold") )
+							ppcgsa[i] = new PlayerPokerChallengeGameState(new Player(allPlayers.get(i)), br.getPokerChallengeGameState());
+		for ( PlayerPokerChallengeGameState ppcgs : ppcgsa )
+			handHistory.playerStatesOut.add(ppcgs);
 		
 		
 		
@@ -814,7 +867,7 @@ public class ParserCreatorWinnerPoker4Tables
 		
 		return 9 - counter;
 	}
-
+	
 	public static int indexOf( ArrayList<Player> players, Player p ) {
 		return ParserCreatorWinnerPoker1Table.indexOf( players, p );
 	}
@@ -837,6 +890,65 @@ public class ParserCreatorWinnerPoker4Tables
 	
 	public static int howManyPlayersContained( String[] lines ) {
 		return ParserCreatorWinnerPoker1Table.howManyPlayersContained( lines );
+	}
+	
+	/**
+	 * This method translates the words for one pair and other card combinations of WinnerPoker-TableChat into the convention for the card combinations of this program.
+	 * 
+	 * @param s the convention for the card combinations of WinnerPoker-TableChat
+	 * @return the words for card combinations in the conventions of this program
+	 */
+	protected static String toOwnConvention( String s ) {
+		switch ( s ) {
+		case "Hohe Karte":
+			return "highCard";
+		case "Ein Paar":
+			return "onePair";
+		case "Zwei Paare":
+			return "twoPair"; 
+		case "Drilling":
+			return "threeOfAKind";
+		case "Straight":
+			return "straight";
+		case "Flush":
+			return "flush";
+		case "Full House":
+			return "fullHouse";
+		case "Vierling":
+			return "fourOfAKind";
+		case "Straight Flush":
+			return "straightFlush";
+		case "Royal Flush":
+			return "royalFlush";
+		default:
+			throw new IllegalArgumentException( "The passed string could not be assigned to any card combination!" );
+		}
+	}
+	
+	/**
+	 * Returns the first index of an entry in "ppcgsl" which player.name="playerName". If there is not any entry with this property -1 will returned.
+	 * @param ppcgsl an ArrayList of PlayerPokerChallengeGameState's
+	 * @param playerName an String which should be name of a player
+	 * @return the first index of an entry in "ppcgsl" which player.name="playerName"; if there is not any such entry, -1 will returned
+	 */
+	public static int indexOfPPCGS( ArrayList<PlayerPokerChallengeGameState> ppcgsl, String playerName ) {
+		for ( int i = 0; i < ppcgsl.size(); i++ )
+			if ( ppcgsl.get(i).player.name.equals(playerName) )
+				return i;
+		return -1;
+	}
+	
+	/**
+	 * Returns the first index of an entry in "ppcgsl" which player.name="playerName". If there is not any entry with this property -1 will returned.
+	 * @param ppcgsl an ArrayList of PlayerPokerChallengeGameState's
+	 * @param playerName an String which should be name of a player
+	 * @return the first index of an entry in "ppcgsl" which player.name="playerName"; if there is not any such entry, -1 will returned
+	 */
+	public static int indexOfPPCGS( PlayerPokerChallengeGameState[] ppcgsa, String playerName ) {
+		for ( int i = 0; i < ppcgsa.length; i++ )
+			if ( ppcgsa[i].player.name.equals(playerName) )
+				return i;
+		return -1;
 	}
 	
 }

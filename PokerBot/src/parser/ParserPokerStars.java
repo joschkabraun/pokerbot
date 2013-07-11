@@ -20,11 +20,16 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+/**
+ * @deprecated Because handHistory.HandHistory.playerStatesOut will not determined!
+ */
 public class ParserPokerStars
 
 {
 	
 	/**
+	 * @deprecated Because handHistory.HandHistory.playerStatesOut will not determined!
+	 * 
 	 * Returns the hand history of a .txt-file which is the hand history written from PokerStars.
 	 * The differential to the method parserPS(file) is that here you can passing the .txt-file in which PokerStars
 	 * the whole time writes in and the parser will just parse the last hand history of the .txt-file in the object hand history.
@@ -67,6 +72,8 @@ public class ParserPokerStars
 	}
 	
 	/**
+	 * @deprecated Because handHistory.HandHistory.playerStatesOut will not determined!
+	 * 
 	 * Returns the hand history of a .txt-file which is the from PokerStars written hand history.
 	 * The method just works correctly when you passing only the necessary part of the hand history,
 	 * so the actual hand history.
@@ -441,6 +448,7 @@ public class ParserPokerStars
 		
 		handHistory.preFlop.howManyPlayersInGame = handHistory.preFlop.howManyPlayersInGame(bB.size());	// handHistory.preFlop.howManyPlayersInGame
 		handHistory.howManyPlayerInGame = handHistory.preFlop.howManyPlayersInGame;						// handHistory.howManyPlayersInGame
+		handHistory.bettingRounds.add( handHistory.preFlop );											// handHistory.bettingRounds
 		
 		
 		
@@ -546,6 +554,7 @@ public class ParserPokerStars
 			
 			handHistory.flop.howManyPlayersInGame = handHistory.flop.howManyPlayersInGame( handHistory.preFlop.howManyPlayersInGame );		// handHistory.flop.howManyPlayersInGame
 			handHistory.howManyPlayerInGame = handHistory.flop.howManyPlayersInGame;		// handHistory.howManyPlayersInGame
+			handHistory.bettingRounds.add( handHistory.flop );									// handHistory.bettingRounds
 		}
 		
 		
@@ -648,6 +657,7 @@ public class ParserPokerStars
 			
 			handHistory.turn.howManyPlayersInGame = handHistory.turn.howManyPlayersInGame( handHistory.flop.howManyPlayersInGame );		// handHistory.turn.howManyPlayersInGame
 			handHistory.howManyPlayerInGame = handHistory.turn.howManyPlayersInGame;	// handHistory.howManyPlayersInGame
+			handHistory.bettingRounds.add( handHistory.turn );						// handHistory.bettingRounds
 		}
 		
 		
@@ -750,6 +760,7 @@ public class ParserPokerStars
 			
 			handHistory.river.howManyPlayersInGame = handHistory.river.howManyPlayersBeforeInGame( handHistory.turn.howManyPlayersInGame );		// handHistory.river.howManyPlayersInGame
 			handHistory.howManyPlayerInGame = handHistory.river.howManyPlayersInGame;		// handHistory.howManyPlayersInGame
+			handHistory.bettingRounds.add( handHistory.river );					// handHistory.bettingRounds
 		}
 		
 		
