@@ -196,8 +196,7 @@ public class ParserCreatorWinnerPoker4Tables
 		ArrayList<Player> allPlayers = new ArrayList<Player>();
 		ArrayList<String> allPlayerNames = new ArrayList<String>();
 		
-		if ( lineFlop > 0 )
-		{
+		if ( lineFlop > 0 ) {
 			String[] linesUntilFlop = new String[ lineFlop ];
 			for (int j = 0; j < lineFlop; j++)
 				linesUntilFlop[ j ] = allLines[j];
@@ -211,8 +210,7 @@ public class ParserCreatorWinnerPoker4Tables
 			int howOftenSB = 0;
 			int howOftenBB = 0;
 						
-			for ( int i = 0; i < untilItIsNecessaryForGettingAllPlayerIncl + 1; i++ )
-			{
+			for ( int i = 0; i < untilItIsNecessaryForGettingAllPlayerIncl + 1; i++ ) {
 				String s = allLines[ i ].split( "Geber: " )[ 1 ];
 				
 				double playerMoney = 0.0;
@@ -240,25 +238,23 @@ public class ParserCreatorWinnerPoker4Tables
 				else if ( s.matches( ".+ passt" ) )
 					playerName = s.split( " passt" )[ 0 ].trim();
 				
-				if ( ! playerName.equals( "" ) && indexOf(allPlayers, playerName) == -1 )
-				{
+				if ( ! playerName.equals( "" ) && indexOf(allPlayers, playerName) == -1 ) {
 					SeatPosition seatBU = new SeatPosition( seatNumber, howManyPlayersContained(linesUntilFlop) );
 					Player player = new Player( playerName, seatBU, seatNumber, playerMoney );
 					listSeatNumberToPlayer.add( new SeatNumberPlayer( seatNumber, player ) );
 					allPlayers.add( player );
 					allPlayerNames.add( playerName );
-		}	} handHistory.numberPlayersAtTable = getPlayerNames(necessaryLines).size(); }						// handHistory.numberPlayersAtTable
-
-		else
-		{
+				}
+			}
+			
+			handHistory.numberPlayersAtTable = getPlayerNames(necessaryLines).size();						// handHistory.numberPlayersAtTable
+		} else {
 			int howOftenSB = 0;
 			int howOftenBB = 0;
 			
-			if ( playerTwiceContained( allLines ) )		// you know every player because all had their turn
-			{
+			if ( playerTwiceContained( allLines ) ) {		// you know every player because all had their turn
 				int numberPlayersAtTable = howManyPlayersContained( allLines );
-				for ( int i = 0; i < untilItIsNecessaryForAllPlayers(allLines) + 1; i++ )
-				{
+				for ( int i = 0; i < untilItIsNecessaryForAllPlayers(allLines) + 1; i++ ) {
 					String s = allLines[ i ].split( "Geber: " )[ 1 ];
 					
 					double playerMoney = 0.0;
@@ -287,14 +283,17 @@ public class ParserCreatorWinnerPoker4Tables
 						playerName = s.split( " passt" )[ 0 ].trim();
 					
 					
-					if ( ! playerName.equals( "" ) )
-					{
+					if ( ! playerName.equals( "" ) ) {
 						SeatPosition seatBU = new SeatPosition( seatNumber, numberPlayersAtTable );
 						Player player = new Player( playerName, seatBU, seatNumber, playerMoney );
 						listSeatNumberToPlayer.add( new SeatNumberPlayer( seatNumber, player ) );
 						allPlayers.add( player );
 						allPlayerNames.add( playerName );
-					}	} handHistory.numberPlayersAtTable = getPlayerNames(allLines).size(); }			// handHistory.numberPlayersAtTable
+					}
+				}
+				
+				handHistory.numberPlayersAtTable = getPlayerNames(allLines).size();			// handHistory.numberPlayersAtTable
+			}
 			
 			else					// there is at least one player who did not do his/her action in this game
 			{

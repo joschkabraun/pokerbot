@@ -1,11 +1,5 @@
 package bots;
 
-import gameBasics.Action;
-import gameBasics.PlayerYou;
-import handHistory.HandHistory;
-
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
@@ -22,12 +16,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
 
+import gameBasics.Action;
+import gameBasics.PlayerYou;
+import handHistory.HandHistory;
 import other.Tools;
 import parser.ParserCreatorWinnerPoker4Tables;
 import strategy.strategyPokerChallenge.interfacesToPokerChallenge.StrategyTwo;
@@ -45,7 +37,7 @@ public class Bot_v1_2_0  extends Thread {
 	/**
 	 * out is for the communication with the Thread Interrupter
 	 */
-	public PipedOutputStream out;
+	private PipedOutputStream out;
 	
 	/**
 	 * That is the table on which this bot-thread is ran.
@@ -64,7 +56,7 @@ public class Bot_v1_2_0  extends Thread {
 	/**
 	 * The file in which the hand history is.
 	 */
-	private File hhFile;
+	protected File hhFile;
 	
 	/**
 	 * The file in which the parser writes for parsing the hand history.
@@ -84,22 +76,22 @@ public class Bot_v1_2_0  extends Thread {
 	/**
 	 * That is the space where the fold-button is. The localization depends on which table is played.
 	 */
-	public Rectangle SPACE_BUTTON_FOLD;
+	private Rectangle SPACE_BUTTON_FOLD;
 	
 	/**
 	 * That is the space where the check-/call-button is. The localization depends on which table is played.
 	 */
-	public Rectangle SPACE_BUTTON_CHECK_CALL;
+	private Rectangle SPACE_BUTTON_CHECK_CALL;
 	
 	/**
 	 * That is the space where the bet-/raise-button is. The locailzation depends on which table is played.
 	 */
-	public Rectangle SPACE_BUTTON_BET_RAISE;
+	private Rectangle SPACE_BUTTON_BET_RAISE;
 	
 	/**
 	 * It is the picture of the fold-button.
 	 */
-	public BufferedImage PICTURE_BUTTON_FOLD;
+	private BufferedImage PICTURE_BUTTON_FOLD;
 	
 	/**
 	 * It is the picture of the check-/call-button.
@@ -155,28 +147,7 @@ public class Bot_v1_2_0  extends Thread {
 			Robot r = new Robot();																				// robot
 			
 			
-			JFrame frame = new JFrame( this.table + " - Bot v1.1.0" );											// GUI
-			frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-			frame.setBounds( 2000, 100, 500, 500 );
-			
-			JPanel panel = new JPanel();
-			panel.setLayout( new BoxLayout(panel, BoxLayout.Y_AXIS) );
-			JLabel label = new JLabel( "<html>This is the graphical representation of the PokerBot with the version number 1.0.0. The bot plays poker on WinnerPoker. " +
-					"Please do not shut down the computer and do not do anything else on the computer. If there is a problem, please tell this " +
-					"the developer or the owner of the computer. And also do not kill this window or the bot that could cause a financial damage!.</html>" );
-			label.setPreferredSize( new Dimension(500, 100) );
-			label.setForeground( Color.RED );
-			panel.add( label );
-			JTextArea text = new JTextArea();
-			text.setPreferredSize( new Dimension(500, 400) );
-			panel.add( text );
-			
-			frame.add( panel );
-			frame.setVisible( true );
-			
-			while (true) {
-				synchronized( r ) { r.wait( 500 ); }
-				
+			while (true) {				
 				BufferedImage f1 = r.createScreenCapture( SPACE_BUTTON_FOLD );
 				BufferedImage f2 = r.createScreenCapture( SPACE_BUTTON_CHECK_CALL );
 				BufferedImage f3 = r.createScreenCapture( SPACE_BUTTON_BET_RAISE );
@@ -256,8 +227,10 @@ public class Bot_v1_2_0  extends Thread {
 						strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createCONSTANT(hh);
 						crd = strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createRingDynamics(hh, hh.getPlayerYou("walk10er"));
 						strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createHistory(hh, you);
+						
+						log.info("Creating the TU-Darmstadt's AKI-RealBot datastructure was succesful. Table: " + table.toString());
 					} catch (Exception e) {
-						log.log(Level.SEVERE, "Creating the TU-Darmstadt's AKI-RealBOt datastructure was not successful! Table: " + table.toString());
+						log.log(Level.SEVERE, "Creating the TU-Darmstadt's AKI-RealBot datastructure was not successful! Table: " + table.toString(), e);
 						exit();
 					}
 					
@@ -302,6 +275,8 @@ public class Bot_v1_2_0  extends Thread {
 	private void allocateTableToRest( Bot_v1_1_0Tables table )
 	{
 		SPACE_NOTEPAD = new Rectangle( 2010, 210, 480, 380 );
+		spaceSeats = new Rectangle[4][9];
+		pictureSeats = new BufferedImage[4][9];
 		
 		try {
 			spaceSeats[0][0] = new Rectangle( 113, 729, 50, 50 );			// left down
@@ -579,7 +554,7 @@ public class Bot_v1_2_0  extends Thread {
 	 * 
 	 * @param action the action
 	 */
-	private void click( gameBasics.Action action )
+	public void click( gameBasics.Action action )
 	{
 		try {
 			Rectangle re = actionToButton( action );													// mouse clicking

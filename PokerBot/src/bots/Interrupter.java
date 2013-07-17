@@ -2,6 +2,7 @@ package bots;
 
 import java.io.IOException;
 import java.io.PipedInputStream;
+import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -18,34 +19,33 @@ public class Interrupter extends Thread
 {
 	
 	/**
-	 * These are the stream for the communication of the thread to the Interrupter.
+	 * These are the stream for the communication of the threads to the Interrupter.
 	 */
-	public PipedInputStream in1;
-	public PipedInputStream in2;
-	public PipedInputStream in3;
-	public PipedInputStream in4;
+	private ArrayList<PipedInputStream> ins;
 	
 	/**
 	 * These are the threads which will killed when the bot has an exception.
+	 */	
+	private ArrayList<Thread> threads;
+	
+	/**
+	 * The whole bot with the main-method.
 	 */
-	public Thread thread1;
-	public Thread thread2;
-	public Thread thread3;
-	public Thread thread4;
+	private Bot bot;
 	
 	public static final Lock lock = new ReentrantLock();
 	
-	public Interrupter( ThreadGroup main, String string, PipedInputStream in1, PipedInputStream in2, PipedInputStream in3, PipedInputStream in4,
-			Thread thread1, Thread thread2, Thread thread3, Thread thread4 ) {
+	public Interrupter( ThreadGroup main, String string, ArrayList<PipedInputStream> ins, ArrayList<Thread> threads, Bot bot ) {
 		super( main, string );
-		this.in1 = in1;
-		this.in2 = in2;
-		this.in3 = in3;
-		this.in4 = in4;
-		this.thread1 = thread1;
-		this.thread2 = thread2;
-		this.thread3 = thread3;
-		this.thread4 = thread4;
+		this.ins = new ArrayList<PipedInputStream>();
+		this.threads = new ArrayList<Thread>();
+		if ( ins.size() != threads.size() )
+			throw new IllegalArgumentException("There have to be the same number of PipedInputStreams as Threads!");
+		for ( PipedInputStream pis : ins )
+			this.ins.add(pis);
+		for  ( Thread t : threads )
+			this.threads.add(t);
+		this.bot = bot;
 	}
 	
 	@Override
@@ -66,22 +66,11 @@ public class Interrupter extends Thread
 		try {
 			while ( true ) {
 				lock.lock();
-				if ( this.in1.available() == 0 )
-					continue;
-				else if ( this.in1.read() == 1 )
-					exit_whole();
-				if ( this.in2.available() == 0 )
-					continue;
-				else if ( this.in2.read() == 1 )
-					exit_whole();
-				if ( this.in3.available() == 0 )
-					continue;
-				else if ( this.in3.read() == 1 )
-					exit_whole();
-				if ( this.in4.available() == 0 )
-					continue;
-				else if ( this.in4.read() == 1 )
-					exit_whole();
+				for ( int i = 0; i < ins.size(); i++ )
+					if ( this.ins.get(i).available() == 0 )
+						continue;
+					else if ( this.ins.get(i).read() == 0 )
+						exit_whole();
 				lock.unlock();
 			}
 		} catch ( Exception e ) {
@@ -95,15 +84,14 @@ public class Interrupter extends Thread
 	 */
 	public void exit_whole()
 	{
+		bot.exit();
 		try {
 			Runtime.getRuntime().exec( "taskkill /F /IM casino.exe" );
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.thread1.interrupt();
-		this.thread2.interrupt();
-		this.thread3.interrupt();
-		this.thread4.interrupt();
+		for ( Thread t : threads )
+			t.interrupt();
 		this.interrupt();
 		System.exit( 0 );
 	}
@@ -113,10 +101,9 @@ public class Interrupter extends Thread
 	 */
 	public void exit_bot()
 	{
-		this.thread1.interrupt();
-		this.thread2.interrupt();
-		this.thread3.interrupt();
-		this.thread4.interrupt();
+		bot.exit();
+		for ( Thread t : threads )
+			t.interrupt();
 		this.interrupt();
 		System.exit( 0 );
 	}

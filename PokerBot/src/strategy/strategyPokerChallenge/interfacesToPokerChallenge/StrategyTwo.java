@@ -50,10 +50,17 @@ public class StrategyTwo {
 				return strategy.strategyPokerStrategy.StrategyOne.actionFor(hh, py);
 		
 		long time;
-		if ( Math.random() >= 0.5 )
-			time = 5000L;
+		double random = Math.random();
+		if (random <= 0.25)
+			time = 3000L;
+		else if (random <= 0.5)
+			time = 3500L;
+		else if (random <= 0.75)
+			time = 4000L;
+		else if (random <= 1.0)
+			time = 4500L;
 		else
-			time = 7000L;
+			time = 6000L;
 		
 		RealSimulator rs = new RealSimulator();
 		TimeManager tm = new TimeManager(rs);

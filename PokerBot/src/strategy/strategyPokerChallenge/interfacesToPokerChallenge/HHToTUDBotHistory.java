@@ -405,7 +405,7 @@ public class HHToTUDBotHistory {
 	}
 	
 	public static void createCONSTANT(HandHistory hh) {
-		CONSTANT.PLAYER_COUNT = hh.numberPlayersAtTable;
+		CONSTANT.PLAYER_COUNT = hh.allPlayers.size();
 		CONSTANT.AGGRESSIVE_PREFLOP = new double[hh.numberPlayersAtTable];
 		CONSTANT.AGGRESSIVE_RAISE = new double[hh.numberPlayersAtTable];
 	}

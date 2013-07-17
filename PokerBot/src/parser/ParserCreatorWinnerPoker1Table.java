@@ -1192,7 +1192,8 @@ public class ParserCreatorWinnerPoker1Table
 				if ( pNam.indexOf( name ) > -1 )
 					return pNam;
 				pNam.add( name );
-		}	}
+				}
+			}
 		
 		return pNam;
 	}

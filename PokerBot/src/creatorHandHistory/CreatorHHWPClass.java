@@ -8,6 +8,8 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import other.Tools;
 
@@ -53,9 +55,8 @@ public class CreatorHHWPClass
 			this.f = f;
 			this.rectNP = rectNP;
 			this.rectTC = rectTC;
-			this.lastS = new String[ 4 ];
-			for ( int i = 0; i < 4; i++ )
-				this.lastS[ i ] = "test";
+			this.lastS = new String[1];
+			this.lastS[0] = "test";
 		} catch ( AWTException e ) {
 			e.printStackTrace();
 		}
@@ -83,7 +84,7 @@ public class CreatorHHWPClass
 			
 			String line = Tools.getClipboardByNotepadS(rectNP);
 			
-			for ( int i = 0; i < 10; i++ ) 									// sometimes is the creator to fast and the new line is not already there
+			for ( int i = 0; i < 10; i++ ) 									// sometimes is the creator to fast and the new line (in the table chat) is not already there
 				if ( line.equals( "" ) ) {
 					synchronized ( r ) { r.wait(30); }
 					
@@ -126,15 +127,36 @@ public class CreatorHHWPClass
 			
 			String[] lSplit = line.split( "\n" );
 			
-			String[] rest = CreatorHHPS.notIncludedStrings( lastS, lSplit );
-			
-			if ( line.startsWith( "Geber: " ) ) {
-				for (String s : rest) {
+			if ( lastS[0].length() == 0 || lastS[0].equals("test") ) {			// if the previous read text is empty the creator just should write the last hand history
+				ArrayList<String> strings = new ArrayList<String>();			// into the file of the hand histories
+				int index = 0;
+				for ( int i = lSplit.length-1; i > -1; i-- )
+					if ( Pattern.matches("Geber: .+ ist der Geber", lSplit[i].trim()) ) {
+						index = i;
+						break;
+					}
+				for ( int i = index; i < lSplit.length; i++ )
+					strings.add(lSplit[i]);
+				for ( String s : strings ) {
 					FileWriter writer = new FileWriter( f, true );
 					writer.write( String.format( s.substring(0) + "%n" ) );
 					writer.flush();
 					writer.close();
 				}
+				String[] stringsA = new String[strings.size()];
+				for ( int i = 0; i < stringsA.length; i++ )
+					stringsA[i] = strings.get(i);
+			} else {
+				String[] rest = CreatorHHPS.notIncludedStrings( lastS, lSplit );
+				if ( line.startsWith( "Geber: " ) ) {
+					for (String s : rest) {
+						FileWriter writer = new FileWriter( f, true );
+						writer.write( String.format( s.substring(0) + "%n" ) );
+						writer.flush();
+						writer.close();
+					}
+				}
+				lastS = lSplit;
 			}
 			
 			lastS = lSplit;
