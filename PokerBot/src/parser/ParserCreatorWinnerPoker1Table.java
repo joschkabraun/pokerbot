@@ -944,7 +944,10 @@ public class ParserCreatorWinnerPoker1Table
 			} else if ( s.matches( ".+ setzt Small Blind .+" ) ) {
 				String name = s.split( " setzt Small Blind .+" )[ 0 ].trim();
 				if ( pNam.indexOf( name ) > -1 )
-					return true;
+					if ( pNam.size() == 1 )					// if there are just two players than is the button also the small blind
+						continue;
+					else
+						return true;
 				if ( SBs == 1 )
 					continue;
 				pNam.add( name );
@@ -1025,7 +1028,10 @@ public class ParserCreatorWinnerPoker1Table
 			} else if ( s.matches( ".+ setzt Small Blind .+" ) ) {
 				String name = s.split( " setzt Small Blind .+" )[ 0 ].trim();
 				if ( pNam.indexOf( name ) > -1 )
-					return pNam.size();
+					if ( pNam.size() == 1 )					// if there are just two players than is the button also the small blind
+						continue;
+					else
+						return pNam.size();
 				if ( SBs == 1 )
 					continue;
 				pNam.add( name );
@@ -1086,7 +1092,10 @@ public class ParserCreatorWinnerPoker1Table
 			} else if ( s.matches( ".+ setzt Small Blind .+" ) ) {
 				String name = s.split( " setzt Small Blind .+" )[ 0 ].trim();
 				if ( pNam.indexOf( name ) > -1 )
-					return i - 1;
+					if ( pNam.size() == 1 )						// if there are just two players than is the button also the small blind
+						continue;
+					else
+						return i - 1;
 				if ( SBs == 1 )
 					continue;
 				pNam.add( name );
@@ -1154,7 +1163,10 @@ public class ParserCreatorWinnerPoker1Table
 			} else if ( s.matches( ".+ setzt Small Blind .+" ) ) {
 				String name = s.split( " setzt Small Blind .+" )[ 0 ].trim();
 				if ( pNam.indexOf( name ) > -1 )
-					return pNam;
+					if ( pNam.size() == 1 )					// if there are just two players than is the button also the small blind
+						continue;
+					else
+						return pNam;
 				if ( SBs == 1 )
 					continue;
 				pNam.add( name );

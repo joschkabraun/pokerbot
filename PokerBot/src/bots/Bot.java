@@ -113,7 +113,7 @@ public class Bot
 		
 		JPanel panel = new JPanel();
 		panel.setLayout( new BoxLayout(panel, BoxLayout.Y_AXIS) );
-		JLabel label = new JLabel( "<html>This is the graphical representation of the PokerBot with the version number 1.0.0. The bot plays poker on WinnerPoker. " +
+		JLabel label = new JLabel( "<html>This is the graphical representation of the PokerBot with the version number 1.2.1. The bot plays poker on WinnerPoker. " +
 				"Please do not shut down the computer and do not do anything else on the computer. If there is a problem, please tell this " +
 				"the developer or the owner of the computer. And also do not kill this window or the bot that could cause a financial damage!</html>" );
 		label.setPreferredSize( new Dimension(500, 100) );
@@ -136,7 +136,8 @@ public class Bot
 	
 	/**
 	 * This method deletes the last started hand history.
-	 * This method is part of a bug-fix.
+	 * This method is part of a bug-fix. The bug-fix was made
+	 * to version 1.2.1.
 	 */
 	protected void exit() {
 		try {

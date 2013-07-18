@@ -370,11 +370,13 @@ public class ParserCreatorWinnerPoker4Tables
 			button.seatNumberAbsolute = handHistory.numberPlayersAtTable;
 			button.seatBehindBU = new SeatPosition( button.seatNumberAbsolute, button.seatNumberAbsolute );
 			
-			allPlayers.add( 0, button );
-			allPlayerNames.add( 0, button.name );
-			listSeatNumberToPlayer.add( 0, new SeatNumberPlayer(button.seatNumberAbsolute, button) );
-			handHistory.allPlayers = allPlayers;													// handHistory.allPlayers
-			handHistory.listSeatNumberToPlayer = listSeatNumberToPlayer;							// handHistory.listSeatNumberToPlayer
+			if ( indexOf(allPlayers, button.name) == -1 ) {
+				allPlayers.add( 0, button );
+				allPlayerNames.add( 0, button.name );
+				listSeatNumberToPlayer.add( 0, new SeatNumberPlayer(button.seatNumberAbsolute, button) );
+				handHistory.allPlayers = allPlayers;													// handHistory.allPlayers
+				handHistory.listSeatNumberToPlayer = listSeatNumberToPlayer;							// handHistory.listSeatNumberToPlayer
+			}
 		}
 		
 		int howOftenSB = 0;
