@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
+import javax.imageio.ImageIO;
+
 import cardBasics.Card;
 import cardBasics.CardCombination;
 import cardBasics.CardList;
@@ -21,6 +23,8 @@ import gameBasics.Pot;
 import gameBasics.SeatPosition;
 import handHistory.BettingRound;
 import handHistory.HandHistory;
+import handHistory.HandHistory.GameType;
+import handHistory.HandHistory.Limit;
 import handHistory.PlayerAction;
 import handHistory.PlayerActionList;
 import handHistory.PlayerHandCombination;
@@ -46,7 +50,7 @@ public class ParserCreatorWinnerPoker4Tables
 	 * @param spaceSeats the space of the seats
 	 * @return a .txt-file parser into a hand history-object
 	 */
-	public static HandHistory parserMainCWP( File hhFile, File parserFile, String gameType, String limit, int maxSeatOnTable, String playYouName, BufferedImage[] pictureSeats,
+	public static HandHistory parserMainCWP( File hhFile, File parserFile, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName, BufferedImage[] pictureSeats,
 			Rectangle[] spaceSeats ) throws IOException, AWTException
 	{
 		if ( maxSeatOnTable != 9 )
@@ -89,9 +93,10 @@ public class ParserCreatorWinnerPoker4Tables
 	 * @param pictureSeats the pictures of the empty seats
 	 * @param spaceSeats the space of the seats
 	 * @return a .txt-file parser into a hand history-object
+	 * @throws IOException 
 	 */
-	public static HandHistory parserCWP( File f, String gameType, String limit, int maxSeatOnTable, String playYouName, BufferedImage[] pictureSeats,
-			Rectangle[] spaceSeats )  throws AWTException
+	public static HandHistory parserCWP( File f, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName, BufferedImage[] pictureSeats,
+			Rectangle[] spaceSeats )  throws AWTException, IOException
 	{
 		HandHistory handHistory = new HandHistory();
 		
@@ -102,7 +107,7 @@ public class ParserCreatorWinnerPoker4Tables
 		
 		
 		
-		
+		try {
 		// in which line the individual phases starts
 		
 		int linePreFlop = 0;										// In this line starts the pre-flop-phase
@@ -331,23 +336,25 @@ public class ParserCreatorWinnerPoker4Tables
 					else if ( s.matches( ".+ passt" ) )
 						playerName = s.split( " passt" )[ 0 ].trim();
 					
-					if ( ! playerName.equals( "" ) )
-					{
+					if ( ! playerName.equals( "" ) ) {
 						SeatPosition seatBU = new SeatPosition( seatNumber, numberPlayersAtTable );
 						Player player = new Player( playerName, seatBU, seatNumber, playerMoney );
 						listSeatNumberToPlayer.add( new SeatNumberPlayer( seatNumber, player ) );
 						allPlayers.add( player );
 						allPlayerNames.add( playerName );
-				}	}
+					}
+				}
 				
 				if ( (indexOf(allPlayers, playYouName) == -1) && (playYouName != "") ) {	// this if-statement is for the case if PlayerYou was not his/her
 					int seatNumber = allPlayers.size() + 1;									// turn. The HH should have a PlayerYou for the strategy
-					SeatPosition seatBU = new SeatPosition( seatNumber, howManyPlayersAtTable( pictureSeats, spaceSeats ) );
+					SeatPosition seatBU = new SeatPosition( seatNumber, numberPlayersAtTable );
 					Player player = new Player( playYouName, seatBU, seatNumber, 0.0 );
 					listSeatNumberToPlayer.add( new SeatNumberPlayer( seatNumber, player ) );
 					allPlayers.add( player );
 					allPlayerNames.add( playYouName );
-		}	}	}
+				}
+			}
+		}
 		
 		handHistory.allPlayers = allPlayers;														// handHistory.allPlayers
 		handHistory.listSeatNumberToPlayer = listSeatNumberToPlayer;								// handHistory.listSeatNumberToPlayer
@@ -400,7 +407,8 @@ public class ParserCreatorWinnerPoker4Tables
 				else if ( indexOf(allPlayers, playerName) > -1 )
 					seatNumber = allPlayers.get(indexOf(allPlayers, playerName)).seatNumberAbsolute;
 				else
-					seatNumber = allPlayers.size() + 1;				
+					seatNumber = allPlayers.size();
+//					seatNumber = allPlayers.size() + 1;
 				
 				SeatPosition seatBU = new SeatPosition( seatNumber, "smallBlind", "smallBlind" );
 				Player player = new Player( playerName, seatBU, seatNumber, playerMoney );
@@ -819,7 +827,15 @@ public class ParserCreatorWinnerPoker4Tables
 							ppcgsa[i] = new PlayerPokerChallengeGameState(new Player(allPlayers.get(i)), br.getPokerChallengeGameState());
 		for ( PlayerPokerChallengeGameState ppcgs : ppcgsa )
 			handHistory.playerStatesOut.add(ppcgs);
-		
+		} catch ( Throwable e ) {
+			Robot r = new Robot();
+			BufferedImage b = r.createScreenCapture(new Rectangle(0,0,3840,1200));
+			ImageIO.write(b, "PNG", new File("c://pokerBot//bot_v1_2_0//debug//exceptionsAndProblems//picture"+(int)(100000*Math.random())+".PNG"));
+			System.out.println("Here is the parser!!!!! 22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222");
+			System.out.println("The text which was attempted to parser the HandHistory was:"+String.format("%n"));
+			System.out.println(Tools.arraysToStringNewLine(allLines));
+			throw e;
+		}
 		
 		
 		return handHistory;
@@ -833,6 +849,12 @@ public class ParserCreatorWinnerPoker4Tables
 	 */
 	public static int howManyPlayersAtTable(BufferedImage[] pictureSeats, Rectangle[] spaceSeats) throws AWTException
 	{
+		if (other.Test.debug) {
+			System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+			System.out.println("Hello, you are testing with the parser and you have modified parser.howManyPlayersAtTable(...)!");
+			return 9;
+		}
+		
 		Robot r = new Robot();
 		
 		BufferedImage bi1 = r.createScreenCapture( spaceSeats[ 0 ] );
@@ -847,26 +869,72 @@ public class ParserCreatorWinnerPoker4Tables
 		
 		int counter = 0;
 		
-		if ( Tools.compare( bi1, pictureSeats[ 0 ],  0.75 ) )
-			++counter;
-		if ( Tools.compare( bi2, pictureSeats[ 1 ],  0.75 ) )
-			++counter;
-		if ( Tools.compare( bi3, pictureSeats[ 2 ],  0.75 ) )
-			++counter;
-		if ( Tools.compare( bi4, pictureSeats[ 3 ],  0.75 ) )
-			++counter;
-		if ( Tools.compare( bi5, pictureSeats[ 4 ],  0.75 ) )
-			++counter;
-		if ( Tools.compare( bi6, pictureSeats[ 5 ],  0.75 ) )
-			++counter;
-		if ( Tools.compare( bi7, pictureSeats[ 6 ],  0.75 ) )
-			++counter;
-		if ( Tools.compare( bi8, pictureSeats[ 7 ],  0.75 ) )
-			++counter;
-		if ( Tools.compare( bi9, pictureSeats[ 8 ],  0.75 ) )
-			++counter;
+		if ( bots.Bot.debug_normal )
+			System.out.println("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
 		
-		return 9 - counter;
+		
+		double X = 0.035;
+//		if ( Tools.compare( bi1, pictureSeats[ 0 ],  0.75 ) )
+		if ( Tools.compareSimilar(bi1, pictureSeats[0], X ) ) {
+			if ( bots.Bot.debug_normal )
+				System.out.println("seat 1: true");
+			++counter;
+		}
+//		if ( Tools.compare( bi2, pictureSeats[ 1 ],  0.75 ) )
+		if ( Tools.compareSimilar( bi2, pictureSeats[1],  X ) ) {
+			if ( bots.Bot.debug_normal )
+				System.out.println("seat 2: true");
+			++counter;
+		}
+//		if ( Tools.compare( bi3, pictureSeats[ 2 ],  0.75 ) )
+		if ( Tools.compareSimilar( bi3, pictureSeats[2],  X ) ) {
+			if ( bots.Bot.debug_normal )
+				System.out.println("seat 3: true");
+			++counter;
+		}
+//		if ( Tools.compare( bi4, pictureSeats[ 3 ],  0.75 ) )
+		if ( Tools.compareSimilar( bi4, pictureSeats[3],  X ) ) {
+			if ( bots.Bot.debug_normal )
+				System.out.println("seat 4: true");
+			++counter;
+		}
+//		if ( Tools.compare( bi5, pictureSeats[ 4 ],  0.75 ) )
+		if ( Tools.compareSimilar( bi5, pictureSeats[4],  X ) ) {
+			if ( bots.Bot.debug_normal )
+				System.out.println("seat 5: true");
+			++counter;
+		}
+//		if ( Tools.compare( bi6, pictureSeats[ 5 ],  0.75 ) )
+		if ( Tools.compareSimilar( bi6, pictureSeats[5],  X ) ) {
+			if ( bots.Bot.debug_normal )
+				System.out.println("seat 6: true");
+			++counter;
+		}
+//		if ( Tools.compare( bi7, pictureSeats[ 6 ],  0.75 ) )
+		if ( Tools.compareSimilar( bi7, pictureSeats[6],  X ) ) {
+			if ( bots.Bot.debug_normal )
+				System.out.println("seat 7: true");
+			++counter;
+		}
+//		if ( Tools.compare( bi8, pictureSeats[ 7 ],  0.75 ) )
+		if ( Tools.compareSimilar( bi8, pictureSeats[7],  X ) ) {
+			if ( bots.Bot.debug_normal )
+				System.out.println("seat 8: true");
+			++counter;
+		}
+//		if ( Tools.compare( bi9, pictureSeats[ 8 ],  0.75 ) )
+		if ( Tools.compareSimilar( bi9, pictureSeats[8],  X ) ) {
+			if ( bots.Bot.debug_normal )
+				System.out.println("seat 9: true");
+			++counter;
+		}
+		
+		int result = 9 - counter;
+		if (bots.Bot.debug_normal) {
+			System.out.println("parser.ParserCreatorWinnerPoker4Tables.howManyPlayersAtTable(...) returned: " + result);
+			System.out.println("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+		}
+		return result;
 	}
 	
 	public static int indexOf( ArrayList<Player> players, Player p ) {

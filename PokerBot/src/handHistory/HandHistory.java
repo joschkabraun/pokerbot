@@ -26,12 +26,12 @@ public class HandHistory
 	/**
 	 * The type of the played game.
 	 */
-	public String gameType;
+	public GameType gameType;
 	
 	/**
 	 * The limit of the bets in the game. For example no limit, fixed limit, pot limit ...
 	 */
-	public String limit;
+	public Limit limit;
 	
 	/**
 	 * SB is the small blind (for no limit) or rather the small bet (for limit).
@@ -147,6 +147,14 @@ public class HandHistory
 	 */
 	public ArrayList<PlayerPokerChallengeGameState> playerStatesOut;
 	
+	public enum GameType {
+		HOLD_EM;
+	}
+	
+	public enum Limit {
+		NO_LIMIT, POT_LIMIT, FIXED_LIMIT;
+	}
+	
 	public HandHistory() {
 		this.allPlayers = new ArrayList<Player>();
 		this.bettingRounds = new ArrayList<BettingRound>();
@@ -207,7 +215,7 @@ public class HandHistory
 				 ", time: " + this.time.YEAR + "/" + this.time.MONTH+1 + "/" + this.time.DAY_OF_YEAR+" "+this.time.HOUR_OF_DAY+":"+this.time.MINUTE + ":"+this.time.MILLISECOND +
 				"%nname table: " + this.tableName + ", maximal seats table: " + this.maxSeatAtTable + ", players at the table: " + this.numberPlayersAtTable +
 				"%nlimit: "+this.limit+", small blind: " + this.SB +", big blind: "+ this.BB +
-				"%nnall players: " + this.allPlayers +
+				"%nall players: " + this.allPlayers +
 				"%nlist seat number to player: " + this.listSeatNumberToPlayer + ", many players in game: " + this.howManyPlayerInGame +
 				"%nname player BU: " + this.button.name + ", name players SB: (" + sbNames + "), name players BB: (" + bbNames + "), pot: " + this.pot );
 		if ( ! this.preFlop.isEmpty() ) {

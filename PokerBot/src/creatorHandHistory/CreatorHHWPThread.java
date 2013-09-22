@@ -138,7 +138,8 @@ public class CreatorHHWPThread extends Thread implements Runnable
 					
 					String[] lSplit = line.split( "\n" );
 					
-					String[] rest = CreatorHHPS.notIncludedStrings(lastS, lSplit);
+					@SuppressWarnings("deprecation")							// the bot-version which use this method, will not have any problems with using this method
+					String[] rest = CreatorHHPS.notIncludedStrings(lastS, lSplit);		// there are just problems with using the method in further versions
 					
 					if (line.startsWith("Geber: ")) {
 						for (String s : rest) {

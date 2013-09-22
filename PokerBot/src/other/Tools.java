@@ -3,6 +3,7 @@ package other;
 import java.lang.ProcessBuilder;
 import java.lang.Process;
 import java.awt.AWTException;
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -64,24 +65,27 @@ public class Tools
 		}
 		
 		return "";
-		} catch ( Exception e1 ) { try {
-			System.out.println( 1111111111 );
-			Object o = new Object();
-			synchronized ( o ) { o.wait( 100 ); }
-			
-			Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-			Transferable transferData = systemClipboard.getContents( null );
-			
-			for ( DataFlavor dataFlavor : transferData.getTransferDataFlavors() ) {
-				Object content = transferData.getTransferData( dataFlavor );
-				if ( content instanceof String )
-					return (String) content;
-			}
-			
-				return "";
+		} catch ( Exception e1 ) {
+			try {
+				System.out.println( 1111111111 );
+				Object o = new Object();
+				synchronized ( o ) { o.wait( 100 ); }
+				
+				Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+				Transferable transferData = systemClipboard.getContents( null );
+				
+				for ( DataFlavor dataFlavor : transferData.getTransferDataFlavors() ) {
+					Object content = transferData.getTransferData( dataFlavor );
+					if ( content instanceof String )
+						return (String) content;
+				}
+					return "";
 			} catch ( Exception e2 ) {
 				e2.printStackTrace();
-	}	} return ""; }
+			}
+		}
+		return "";
+	}
 	
 	/**
 	 * Returns the string (if there is a string in the clipboard) in the clipboard.
@@ -237,8 +241,7 @@ public class Tools
 	{
 		long time = files[0].lastModified();
 		File retF = files[0];
-		for ( File f : files )
-		{
+		for ( File f : files ) {
 			retF = (time >= f.lastModified()) ? retF : f;
 			time = (time >= f.lastModified()) ? time : f.lastModified();
 		}
@@ -262,8 +265,10 @@ public class Tools
 		if ( 1 < X )
 			throw new IllegalArgumentException( "The domain of X is 0 < X <= 1." );
 		
-		if ( b1.getHeight() != b2.getHeight() || b1.getWidth() != b2.getWidth() )
+		if ( b1.getHeight() != b2.getHeight() || b1.getWidth() != b2.getWidth() ) {
+			System.err.println("other.Tools.compare: the format of the both BufferedImages are not the same!!");
 			return false;
+		}
 		else
 		{
 			int[][] array = new int[ b1.getHeight() ][ b1.getWidth() ];
@@ -272,6 +277,69 @@ public class Tools
 					array[ h ][ w ] = b1.getRGB( w,  h ) - b2.getRGB( w, h );
 			return isMoreThanXPercent0( array, X );
 		}
+	}
+	
+	/**
+	 * Returns whether two  buffered images are similar. The method compares the red, blue, green average per
+	 * pixel of the both buffered images individually. Every percentaged variance is tested to be lower or
+	 * equal than X. If every test is true, the both buffered images are similar and the return value of the
+	 * method is true.
+	 * 
+	 * @param b1 one buffered image
+	 * @param b2 another buffered image
+	 * @param X the allowed percentaged variance
+	 * @return whether two buffered images are similar
+	 */
+	public static boolean compareSimilar(BufferedImage b1, BufferedImage b2, double X) {
+		int sumRb1 = 0, sumGb1 = 0, sumBb1 = 0, sumPixb1 = 0;
+		int sumRb2 = 0, sumGb2 = 0, sumBb2 = 0, sumPixb2 = 0;
+		for ( int h = 0; h < b1.getHeight(); h++ )
+			for ( int w = 0; w < b1.getWidth(); w++ ) {
+				++sumPixb1;
+				Color color = new Color(b1.getRGB(w, h));
+				sumRb1 += color.getRed();
+				sumGb1 += color.getGreen();
+				sumBb1 += color.getBlue();
+			}
+		for ( int h = 0; h < b2.getHeight(); h++ )
+			for (int w = 0; w < b2.getWidth(); w++ ) {
+				++sumPixb2;
+				Color color = new Color(b2.getRGB(w, h));
+				sumRb2 += color.getRed();
+				sumGb2 += color.getGreen();
+				sumBb2 += color.getBlue();
+			}
+		double avgRb1 = (double) sumRb1 / sumPixb1, avgGb1 = (double) sumGb1 / sumPixb1, avgBb1 = (double) sumBb1 / sumPixb1;
+		double avgRb2 = (double) sumRb2 / sumPixb2, avgGb2 = (double) sumGb2 / sumPixb2, avgBb2 = (double) sumBb2 / sumPixb2;
+		
+		if ( avgRb1 == avgRb2 )
+			avgRb1 = avgRb2;
+		else if ( avgRb1 > avgRb2 ) {
+			if ( (double) avgRb1/avgRb2 > 1 + X )
+				return false;
+		} else
+			if ( (double) avgRb2/avgRb1 > 1 + X )
+				return false;
+		
+		if ( avgGb1 == avgGb2 )
+			avgGb1 = avgGb2;
+		else if ( avgGb1 > avgGb2 ) {
+			if ( (double) avgGb1/avgGb2 > 1 + X )
+				return false;
+		} else
+			if ( (double) avgGb2/avgGb1 > 1 + X )
+				return false;
+		
+		if ( avgBb1 == avgBb2 )
+			avgBb1 = avgBb2;
+		else if ( avgBb1 < avgBb2 ) {
+			if ( (double) avgBb1/avgBb2 > 1 + X )
+				return false;
+		} else
+			if ( (double) avgBb2/avgBb1 > 1 + X )
+				return false;
+		
+		return true;
 	}
 	
 	/**
@@ -384,7 +452,7 @@ public class Tools
 	/**
 	 * Returns the first index of k in I. If k is not in I, the method will return -1.
 	 * 
-	 * @param I an array of integer
+	 * @param I an array of integers
 	 * @param k an integer
 	 * @return first index of k in I
 	 */
@@ -393,6 +461,23 @@ public class Tools
 		for ( int i = 0; i < I.length; i++ )
 			if ( I[i] == k )
 				return i;
+		return -1;
+	}
+	
+	/**
+	 * Returns the n-te (= (param) nte) of k in I.
+	 * 
+	 * @param I an array of integers
+	 * @param k an integer
+	 * @param nte the n-te entry of k in I
+	 * @return the n-te index of k in I
+	 */
+	public static int indexOf( int[] I, int k, int nte ) {
+		int counter = 0;
+		for ( int i = 0; i < I.length; i++ )
+			if ( I[i] == k )
+				if ( ++counter == nte )
+					return i;
 		return -1;
 	}
 	
@@ -461,10 +546,7 @@ public class Tools
 		if ( ret.size() > 0 )
 			return toArrayI( ret );
 		else
-		{
-			int[] retI = { 0 };
-			return retI;
-		}
+			return new int[] { 0 };
 	}
 	
 	/**
@@ -561,6 +643,14 @@ public class Tools
 		if ( ret.length() < 3 )
 			return ret;
 		return ret.substring(0, ret.length()-2);
+	}
+	
+	public static String arraysToStringNewLine(String[] S) {
+		String ret = "";
+		String format = String.format("%n");
+		for ( String s : S )
+			ret += s + format;
+		return ret;
 	}
 	
 	/**

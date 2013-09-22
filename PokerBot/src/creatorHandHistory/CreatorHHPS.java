@@ -102,6 +102,7 @@ public class CreatorHHPS implements Runnable
 	}
 	
 	/**
+	 * @deprecated
 	 * Returns the strings which are in b but not in a. Because this method has an exception, this method is not general (respectively this method is in the class Other).
 	 * The exception is that if there is a string twice (or more) in a and one (or more but lower than in a) time(s) in b, the algorithm will pack the difference of the times
 	 * of entries in b and the times in a in the result.

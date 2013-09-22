@@ -29,6 +29,8 @@ import gameBasics.Player;
 import gameBasics.PlayerYou;
 import handHistory.BettingRound;
 import handHistory.HandHistory;
+import handHistory.HandHistory.GameType;
+import handHistory.HandHistory.Limit;
 import handHistory.PlayerAction;
 import handHistory.PlayerHandCombination;
 import handHistory.PlayerMoney;
@@ -57,7 +59,7 @@ public class HHToTUDBotHistory {
 	 * 
 	 * For parameters and exceptions please look look for parser.ParserCreatorWinnerPoker4Tables.parserCWP(...).
 	 */
-	public static void createPrivateHands( File source, File parserToTUDBotData, Bot_v1_1_0Tables table, String gameType, String limit, int maxSeatOnTable, String playYouName,
+	public static void createPrivateHands( File source, File parserToTUDBotData, Bot_v1_1_0Tables table, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName,
 			BufferedImage[] pictureSeats, Rectangle[] spaceSeats ) throws IOException, AWTException {
 		HHToTUDBotHistory.hands = null;
 		HHToTUDBotHistory.hands = getHands(source, parserToTUDBotData, table, gameType, limit, maxSeatOnTable, playYouName, pictureSeats, spaceSeats);
@@ -67,7 +69,7 @@ public class HHToTUDBotHistory {
 	 * This method creates the private static attribute of this class "hands" in which can be hand histories of several tables.
 	 * For more informations look at the other "createPrivateHands"-method.
 	 */
-	public static void createPrivateHands( File[] source, File[] parserToTUDBotData, Bot_v1_1_0Tables table[], String gameType[], String limit[], int maxSeatOnTable[], String playYouName,
+	public static void createPrivateHands( File[] source, File[] parserToTUDBotData, Bot_v1_1_0Tables table[], GameType gameType[], Limit limit[], int maxSeatOnTable[], String playYouName,
 			BufferedImage[][] pictureSeats, Rectangle[][] spaceSeats ) throws IOException, AWTException {
 		HHToTUDBotHistory.hands = null;
 		
@@ -111,7 +113,7 @@ public class HHToTUDBotHistory {
 	 * 
 	 * For parameters and exceptions please look look for parser.ParserCreatorWinnerPoker4Tables.parserCWP(...).
 	 */
-	public static HandHistory[] getHands( File source, File parserToTUDBotData, Bot_v1_1_0Tables table, String gameType, String limit, int maxSeatOnTable, String playYouName,
+	public static HandHistory[] getHands( File source, File parserToTUDBotData, Bot_v1_1_0Tables table, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName,
 			BufferedImage[] pictureSeats, Rectangle[] spaceSeats ) throws IOException, AWTException {
 		HandHistory[] hands;
 		

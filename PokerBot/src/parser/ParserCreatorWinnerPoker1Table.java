@@ -3,6 +3,8 @@ package parser;
 import cardBasics.*;
 import gameBasics.*;
 import handHistory.*;
+import handHistory.HandHistory.GameType;
+import handHistory.HandHistory.Limit;
 
 import java.awt.AWTException;
 import java.awt.Rectangle;
@@ -34,7 +36,7 @@ public class ParserCreatorWinnerPoker1Table
 	 * @param playYouName the name of the PlayerYou
 	 * @return a .txt-file parsed into the object hand history
 	 */
-	public static HandHistory parserMainCWP( File f, String gameType, String limit, int maxSeatOnTable, String playYouName ) throws IOException, AWTException
+	public static HandHistory parserMainCWP( File f, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName ) throws IOException, AWTException
 	{
 		if ( maxSeatOnTable != 9 )
 			throw new IllegalArgumentException( "The ParserCreatorWinnerPoker does not work for maxSeatOnTable != 9!" );
@@ -75,7 +77,7 @@ public class ParserCreatorWinnerPoker1Table
 	 * @param playYouName the name of the PlayerYou
 	 * @return a .txt-file parsed into the object hand history
 	 */
-	public static HandHistory parserCWP( File f, String gameType, String limit, int maxSeatOnTable, String playYouName ) throws AWTException, IOException
+	public static HandHistory parserCWP( File f, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName ) throws AWTException, IOException
 	{
 		HandHistory handHistory = new HandHistory();
 		

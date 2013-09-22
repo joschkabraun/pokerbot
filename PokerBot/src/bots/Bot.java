@@ -32,6 +32,11 @@ public class Bot
 {
 	
 	/**
+	 * The constant whether it is a test for the creator or not.
+	 */
+	public static final boolean debug_normal = true;
+	
+	/**
 	 * With these streams the Interrupter can read "messages" from the threads;
 	 */
 	private ArrayList<PipedInputStream> ins;
@@ -107,13 +112,13 @@ public class Bot
 	{
 		Bot bot = new Bot();
 		
-		JFrame frame = new JFrame( "Bot v1.2.0" );											// GUI
+		JFrame frame = new JFrame( "Bot v1.2.2" );											// GUI
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		frame.setBounds( 2000, 100, 500, 500 );
 		
 		JPanel panel = new JPanel();
 		panel.setLayout( new BoxLayout(panel, BoxLayout.Y_AXIS) );
-		JLabel label = new JLabel( "<html>This is the graphical representation of the PokerBot with the version number 1.2.1. The bot plays poker on WinnerPoker. " +
+		JLabel label = new JLabel( "<html>This is the graphical representation of the PokerBot with the version number 1.2.2. The bot plays poker on WinnerPoker. " +
 				"Please do not shut down the computer and do not do anything else on the computer. If there is a problem, please tell this " +
 				"the developer or the owner of the computer. And also do not kill this window or the bot that could cause a financial damage!</html>" );
 		label.setPreferredSize( new Dimension(500, 100) );
@@ -127,8 +132,8 @@ public class Bot
 		frame.setVisible( true );
 		
 //		bot.bots.get(0).start();			// BRD = bot right down
-		bot.bots.get(1).start();			// BRU = bot right up
-		bot.bots.get(2).start();			// BLD = bot left down
+//		bot.bots.get(1).start();			// BRU = bot right up
+//		bot.bots.get(2).start();			// BLD = bot left down
 		bot.bots.get(3).start();			// BLU = bot left up
 		bot.interrupter.start();
 		
@@ -160,7 +165,6 @@ public class Bot
 			e.printStackTrace();
 			System.exit(1);
 		}
-			
 	}
 	
 }

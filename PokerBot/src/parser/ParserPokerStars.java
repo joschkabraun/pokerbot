@@ -3,9 +3,11 @@ package parser;
 import cardBasics.Card;
 import cardBasics.CardList;
 import handHistory.HandHistory;
+import handHistory.HandHistory.Limit;
 import handHistory.SeatNumberPlayer;
 import handHistory.PlayerAction;
 import handHistory.PlayerActionList;
+import handHistory.HandHistory.GameType;
 import gameBasics.GameState;
 import gameBasics.Player;
 import gameBasics.SeatPosition;
@@ -182,7 +184,7 @@ public class ParserPokerStars
 		String[] firstLineSplitted = firstLine.split( "\\s+" );
 		
 		String handNumberString = "";
-		String gameType = "";
+		GameType gameType = null;
 		int stringBeforeLimit = 0;
 		String SBAndBB = "";
 		for ( int i = 0; i < firstLineSplitted.length; i++ )
@@ -192,12 +194,15 @@ public class ParserPokerStars
 				handNumberString = s;
 			else if ( s.equalsIgnoreCase( "Hold'em" ) )			// gameType Hold'em
 			{
-				gameType = s;
+				gameType = GameType.HOLD_EM;
 				stringBeforeLimit = i;
 			}
 			else if ( s.matches( "[(].*" ) )					// SB and BB
 				SBAndBB = s;
 		}
+		
+		if ( gameType == null )
+			throw new RuntimeException("The game type was not found!");
 		
 		long handNumber = Long.parseLong( handNumberString.substring(1, handNumberString.length()-1) );
 		handHistory.handNumber = handNumber;																// handHistory.handNumber
@@ -211,15 +216,17 @@ public class ParserPokerStars
 		handHistory.SB = sb;																				// handHistory.SB
 		handHistory.BB = bb;																				// handHistory.BB
 		
-		String limit = "";
+		Limit limit = null;
 		if ( firstLineSplitted[ stringBeforeLimit+1 ].equalsIgnoreCase( "No" ) )
 		{
 			if ( firstLineSplitted[ stringBeforeLimit+2 ].equalsIgnoreCase( "Limit" ) )
-				limit = "No Limit";
+				limit = Limit.NO_LIMIT;
 		}
 		else if ( firstLineSplitted[ stringBeforeLimit+1 ].equalsIgnoreCase( "Fixed" ) )					// I do not know how poker stars handles the case if this is a fixed limit game.
 			if ( firstLineSplitted[ stringBeforeLimit+2 ].equalsIgnoreCase( "Limit" ) )
-				limit = "Fixed Limit";
+				limit = Limit.FIXED_LIMIT;
+		if ( limit == null )
+			throw new RuntimeException("The limit was not found!");
 		handHistory.limit = limit;																			// handHisotry.limit
 		
 		String jT = firstLine.split( "-" )[ 1 ].substring( 1 );				// jT = just time

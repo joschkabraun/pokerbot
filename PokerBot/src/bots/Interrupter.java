@@ -69,7 +69,7 @@ public class Interrupter extends Thread
 				for ( int i = 0; i < ins.size(); i++ )
 					if ( this.ins.get(i).available() == 0 )
 						continue;
-					else if ( this.ins.get(i).read() == 0 )
+					else if ( this.ins.get(i).read() == 1 )
 						exit_whole();
 				lock.unlock();
 			}

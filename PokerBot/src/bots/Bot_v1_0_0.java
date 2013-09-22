@@ -3,6 +3,8 @@ package bots;
 import gameBasics.*;
 import gameBasics.Action;
 import handHistory.*;
+import handHistory.HandHistory.GameType;
+import handHistory.HandHistory.Limit;
 import parser.*;
 import strategy.strategyPokerStrategy.StrategyOne;
 import other.*;
@@ -127,7 +129,7 @@ public class Bot_v1_0_0 extends Thread
 					HandHistory hh = new HandHistory();															// hand history
 					log.info( "Beginning parsing the hand-history-text-file to a object HandHistory." );
 					try {
-						hh = ParserCreatorWinnerPoker1Table.parserMainCWP(f, "Hold'Em", "Fixed Limit", 9, namePlayerYou);
+						hh = ParserCreatorWinnerPoker1Table.parserMainCWP(f, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou);
 						log.info("Parsing of the hand-history-text-file was successful");
 					} catch (Exception e1) {
 						lock.unlock();
@@ -135,24 +137,21 @@ public class Bot_v1_0_0 extends Thread
 								+ new File( "c://pokerBot//bot_v1_0_0//heapParserCWP").toString(), e1);
 						sleep(100);
 						try {
-							hh = ParserCreatorWinnerPoker1Table.parserMainCWP(f, "Hold'Em", "Fixed Limit", 9, namePlayerYou);
-							lock.lock();
+							hh = ParserCreatorWinnerPoker1Table.parserMainCWP(f, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou);							lock.lock();
 							log.info("Second try parsing of the hand-history-text-file was successful");
 						} catch (Exception e2) {
 							log.log( Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
 									+ new File("c://pokerBot//bot_v1_0_0//heapParserCWP").toString(), e2 );
 							sleep(100);
 							try {
-								hh = ParserCreatorWinnerPoker1Table.parserMainCWP(f, "Hold'Em", "Fixed Limit", 9, namePlayerYou);
-								lock.lock();
+								hh = ParserCreatorWinnerPoker1Table.parserMainCWP(f, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou);								lock.lock();
 								log.info("Third try parsing of the hand-history-text-file was successful");
 							} catch (Exception e3) {
 								log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
 												+ new File("c://pokerBot//bot_v1_0_0//heapParserCWP").toString(), e3);
 								sleep(100);
 								try {
-									hh = ParserCreatorWinnerPoker1Table.parserMainCWP(f, "Hold'Em", "Fixed Limit", 9, namePlayerYou);
-									lock.lock();
+									hh = ParserCreatorWinnerPoker1Table.parserMainCWP(f, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou);									lock.lock();
 									log.info("Fourth try parsing of the hand-history-text-file was successful");
 								} catch (Exception e4) {
 									log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "

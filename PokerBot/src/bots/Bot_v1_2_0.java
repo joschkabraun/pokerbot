@@ -20,6 +20,8 @@ import javax.imageio.ImageIO;
 import gameBasics.Action;
 import gameBasics.PlayerYou;
 import handHistory.HandHistory;
+import handHistory.HandHistory.GameType;
+import handHistory.HandHistory.Limit;
 import other.Tools;
 import parser.ParserCreatorWinnerPoker4Tables;
 import strategy.strategyPokerChallenge.interfacesToPokerChallenge.StrategyTwo;
@@ -33,6 +35,11 @@ public class Bot_v1_2_0  extends Thread {
 	 * The name of the player you are/represent.
 	 */
 	private String namePlayerYou;
+	
+	/**
+	 * Whether the table was removed of the origin. If the table was removed of its origin, that could cause problems with methods as other.Tools.compare(...).
+	 */
+	private boolean tableWasRemoved;
 	
 	/**
 	 * out is for the communication with the Thread Interrupter
@@ -56,7 +63,7 @@ public class Bot_v1_2_0  extends Thread {
 	/**
 	 * The file in which the hand history is.
 	 */
-	protected File hhFile;
+	public File hhFile;
 	
 	/**
 	 * The file in which the parser writes for parsing the hand history.
@@ -76,32 +83,32 @@ public class Bot_v1_2_0  extends Thread {
 	/**
 	 * That is the space where the fold-button is. The localization depends on which table is played.
 	 */
-	private Rectangle SPACE_BUTTON_FOLD;
+	public Rectangle SPACE_BUTTON_FOLD;
 	
 	/**
 	 * That is the space where the check-/call-button is. The localization depends on which table is played.
 	 */
-	private Rectangle SPACE_BUTTON_CHECK_CALL;
+	public Rectangle SPACE_BUTTON_CHECK_CALL;
 	
 	/**
 	 * That is the space where the bet-/raise-button is. The locailzation depends on which table is played.
 	 */
-	private Rectangle SPACE_BUTTON_BET_RAISE;
+	public Rectangle SPACE_BUTTON_BET_RAISE;
 	
 	/**
 	 * It is the picture of the fold-button.
 	 */
-	private BufferedImage PICTURE_BUTTON_FOLD;
+	public BufferedImage PICTURE_BUTTON_FOLD;
 	
 	/**
 	 * It is the picture of the check-/call-button.
 	 */
-	private BufferedImage PICTURE_BUTTON_CKECK_CALL;
+	public BufferedImage PICTURE_BUTTON_CKECK_CALL;
 	
 	/**
 	 * It is the picture of the bet-/raise-button.
 	 */
-	private BufferedImage PICTURE_BUTTON_BET_RAISE;
+	public BufferedImage PICTURE_BUTTON_BET_RAISE;
 	
 	/**
 	 * That is the localization of the table chat on the screen. It depends on which table is played.
@@ -152,8 +159,11 @@ public class Bot_v1_2_0  extends Thread {
 				BufferedImage f2 = r.createScreenCapture( SPACE_BUTTON_CHECK_CALL );
 				BufferedImage f3 = r.createScreenCapture( SPACE_BUTTON_BET_RAISE );
 				
-				lock.lock();
-				if ( Tools.compare(f1,PICTURE_BUTTON_FOLD,0.65) || Tools.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.65) || Tools.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.65) ) {
+//				lock.lock();
+				
+//				if ( Tools.compare(f1,PICTURE_BUTTON_FOLD,0.65) || Tools.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.65) || Tools.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.65) ) {
+				if ( Tools.compareSimilar(f1,PICTURE_BUTTON_FOLD,0.05) || Tools.compareSimilar(f2, PICTURE_BUTTON_CKECK_CALL, 0.05) || Tools.compareSimilar(f3, PICTURE_BUTTON_BET_RAISE, 0.05) ) {
+					lock.lock();
 					log.info( "Beginning creating the hand-history. Table: " + table.toString() );
 					try {
 						creator.createHH();																			// the creator creates the necessary hand history
@@ -163,35 +173,37 @@ public class Bot_v1_2_0  extends Thread {
 						log.info( "Next attempt to create the hand-history." );
 						creator.createHH();
 					}
+					lock.unlock();
+					
 					
 					HandHistory hh = new HandHistory();															// hand history
 					log.info( "Beginning parsing the hand-history-text-file to a object HandHistory. Table: " + table.toString() );
 					try {
-						hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, "Hold'Em", "Fixed Limit", 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+						hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
 						log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 					} catch ( Exception e1 ) {
 						log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
 								+ hhFile.toString() + ". Table: " + table.toString(), e1 );
 						sleep(100);
-						creator.createHH();
+//						creator.createHH();
 						try {
-							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, "Hold'Em", "Fixed Limit", 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
 							log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 						} catch ( Exception e2 ) {
 							log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
 									+ hhFile.toString() + ". Table: " + table.toString(), e2 );
 							sleep(100);
-							creator.createHH();
+//							creator.createHH();
 						} try {
-							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, "Hold'Em", "Fixed Limit", 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
 							log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 						} catch ( Exception e3 ) {
 							log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
 									+ hhFile.toString() + ". Table: " + table.toString(), e3 );
 							sleep(100);
-							creator.createHH();
+//							creator.createHH();
 						} try {
-							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, "Hold'Em", "Fixed Limit", 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
 							log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 						} catch ( Exception e4 ) {
 							log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
@@ -209,7 +221,8 @@ public class Bot_v1_2_0  extends Thread {
 						you.set( hh.getPlayerYou( namePlayerYou ) );
 					} catch ( Exception e ) {
 						log.log( Level.SEVERE, "Getting the PlayerYou was not successful. Table: " + table.toString(), e );
-						exit(); }
+						exit();
+					}
 					
 					ClientRingDynamics crd = new ClientRingDynamics();
 					log.info("Beginning creating the TU-Darmstadt's AKI-RealBot datastructure. Table: " + table.toString());						// AKI-RealBot datastructure
@@ -219,19 +232,72 @@ public class Bot_v1_2_0  extends Thread {
 						File[] parsers = {new File( "c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableLeftDown.txt"),new File( "c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableLeftUp.txt"),
 								new File("c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableRightUp.txt"), new File("c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableRightDown.txt")};
 						bots.Bot_v1_1_0Tables[] tables = {bots.Bot_v1_1_0Tables.LEFT_DOWN, bots.Bot_v1_1_0Tables.LEFT_UP, bots.Bot_v1_1_0Tables.RIGHT_UP, bots.Bot_v1_1_0Tables.RIGHT_DOWN};
-						String[] gameType = {"Hold_Em", "Hold_Em", "Hold_Em", "Hold_Em"};
-						String[] limit = {"Fixed Limit", "Fixed Limit", "Fixed Limit", "Fixed Limit"};
+						GameType[] gameType = {GameType.HOLD_EM, GameType.HOLD_EM, GameType.HOLD_EM, GameType.HOLD_EM};
+						Limit[] limit = {Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT};
 						int[] maxSeatOnTable = {9, 9, 9, 9};
 						
+						long time = System.currentTimeMillis();
+						
 						strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, tables, gameType, limit, maxSeatOnTable, namePlayerYou, pictureSeats, spaceSeats);
+						long time1 = System.currentTimeMillis();
 						strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createCONSTANT(hh);
+						long time2 = System.currentTimeMillis();
 						crd = strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createRingDynamics(hh, hh.getPlayerYou("walk10er"));
+						long time3 = System.currentTimeMillis();
 						strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createHistory(hh, you);
+						long time4 = System.currentTimeMillis();
+						
+						if ( time4 - time > 9000L ) {
+							System.out.println("time-diff-1: " + (time1 - time) );
+							System.out.println("time-diff-2: " + (time2 - time1) );
+							System.out.println("time-diff-3: " + (time3 - time2) );
+							System.out.println("time-diff-4: " + (time4- time3) );
+						}
 						
 						log.info("Creating the TU-Darmstadt's AKI-RealBot datastructure was succesful. Table: " + table.toString());
 					} catch (Exception e) {
 						log.log(Level.SEVERE, "Creating the TU-Darmstadt's AKI-RealBot datastructure was not successful! Table: " + table.toString(), e);
-						exit();
+						log.info("The second attempt to creating the TU-Darmstadt's AKI-RealBot datastructure. Table: " + table.toString());
+						try {
+							File[] source = {new File("c://pokerBot//bot_v1_2_0//hhTableLeftDown.txt"), new File("c://pokerBot//bot_v1_2_0//hhTableLeftUp.txt"),
+									new File("c://pokerBot//bot_v1_2_0//hhTableRightUp.txt"), new File("c://pokerBot//bot_v1_2_0//hhTableRightDown.txt")};
+							File[] parsers = {new File( "c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableLeftDown.txt"),new File( "c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableLeftUp.txt"),
+									new File("c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableRightUp.txt"), new File("c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableRightDown.txt")};
+							bots.Bot_v1_1_0Tables[] tables = {bots.Bot_v1_1_0Tables.LEFT_DOWN, bots.Bot_v1_1_0Tables.LEFT_UP, bots.Bot_v1_1_0Tables.RIGHT_UP, bots.Bot_v1_1_0Tables.RIGHT_DOWN};
+							GameType[] gameType = {GameType.HOLD_EM, GameType.HOLD_EM, GameType.HOLD_EM, GameType.HOLD_EM};
+							Limit[] limit = {Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT};
+							int[] maxSeatOnTable = {9, 9, 9, 9};
+							
+							strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, tables, gameType, limit, maxSeatOnTable, namePlayerYou, pictureSeats, spaceSeats);
+							strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createCONSTANT(hh);
+							crd = strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createRingDynamics(hh, hh.getPlayerYou("walk10er"));
+							strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createHistory(hh, you);
+							
+							log.info("Creating the TU-Darmstadt's AKI-RealBot datastructure was succesful. Table: " + table.toString());
+						} catch (Exception e2) {
+							log.log(Level.SEVERE, "Creating the TU-Darmstadt's AKI-RealBot datastructure was not successful! Table: " + table.toString(), e2);
+							log.info("The third attempt to creating the TU-Darmstadt's AKI-RealBot datastructure. Table: " + table.toString());
+							try {
+								File[] source = {new File("c://pokerBot//bot_v1_2_0//hhTableLeftDown.txt"), new File("c://pokerBot//bot_v1_2_0//hhTableLeftUp.txt"),
+										new File("c://pokerBot//bot_v1_2_0//hhTableRightUp.txt"), new File("c://pokerBot//bot_v1_2_0//hhTableRightDown.txt")};
+								File[] parsers = {new File( "c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableLeftDown.txt"),new File( "c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableLeftUp.txt"),
+										new File("c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableRightUp.txt"), new File("c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableRightDown.txt")};
+								bots.Bot_v1_1_0Tables[] tables = {bots.Bot_v1_1_0Tables.LEFT_DOWN, bots.Bot_v1_1_0Tables.LEFT_UP, bots.Bot_v1_1_0Tables.RIGHT_UP, bots.Bot_v1_1_0Tables.RIGHT_DOWN};
+								GameType[] gameType = {GameType.HOLD_EM, GameType.HOLD_EM, GameType.HOLD_EM, GameType.HOLD_EM};
+								Limit[] limit = {Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT};
+								int[] maxSeatOnTable = {9, 9, 9, 9};
+								
+								strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, tables, gameType, limit, maxSeatOnTable, namePlayerYou, pictureSeats, spaceSeats);
+								strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createCONSTANT(hh);
+								crd = strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createRingDynamics(hh, hh.getPlayerYou("walk10er"));
+								strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createHistory(hh, you);
+								
+								log.info("Creating the TU-Darmstadt's AKI-RealBot datastructure was succesful. Table: " + table.toString());
+							} catch (Exception e33) {
+								log.log(Level.SEVERE, "Creating the TU-Darmstadt's AKI-RealBot datastructure was not successful! Table: " + table.toString(), e);
+								exit();
+							}
+						}
 					}
 					
 					gameBasics.Action action = new gameBasics.Action();											// action
@@ -240,18 +306,32 @@ public class Bot_v1_2_0  extends Thread {
 						action.set(StrategyTwo.actionFor(hh, you, PICTURE_SEATS, SPACE_SEATS, crd));
 					} catch ( Exception e ) {
 						log.log( Level.SEVERE, "Getting the Action for the actual situation was not possible. Table: " + table.toString(), e );
-						exit();
+						log.info("The second attempt to get the Action. Table: " + table.toString());
+						try {
+							action.set(StrategyTwo.actionFor(hh, you, PICTURE_SEATS, SPACE_SEATS, crd));
+						} catch ( Exception e2 ) {
+							log.log( Level.SEVERE, "Getting the Action for the actual situation was not possible. Table: " + table.toString(), e );
+							log.info("The third attempt to get the Action. Table: " + table.toString());
+							try {
+								action.set(StrategyTwo.actionFor(hh, you, PICTURE_SEATS, SPACE_SEATS, crd));
+							} catch ( Exception e3 ) {
+								log.log( Level.SEVERE, "Getting the Action for the actual situation was not possible. Table: " + table.toString(), e );
+								exit();
+							}
+						}
 					}
 					
-					if ( action.isEmpty() )
+					if ( action.isEmpty() || action == null )
 						log.log( Level.SEVERE, "There was not any Action for the actual situation. Table: " + table.toString() );
 					else
 						log.info( String.format("Getting Action for the actual situation was sucessful.%nThe action was: " + action.toString() + ". Table: " + table.toString()) );
 					log.info( "End getting Action for the actual game. Table: " + table.toString() );
 					
+					lock.lock();
 					click( action );
+					lock.unlock();
 				}
-				lock.unlock();
+//				lock.unlock();
 			}
 		} catch ( Exception e ) {
 			System.err.println( "There was a problem which was not in the logged part! The table was: " + this.table );
@@ -364,10 +444,14 @@ public class Bot_v1_2_0  extends Thread {
 			hhFile = new File( "c://pokerBot//bot_v1_2_0//hhTableLeftUp.txt" );
 			parserFileHH = new File( "c://pokerBot//bot_v1_1_0//parserTableLeftUp.txt" );
 			
-			SPACE_BUTTON_FOLD = new Rectangle( 436, 537, 104, 35 );
-			SPACE_BUTTON_CHECK_CALL = new Rectangle( 553, 537, 105, 38 );
-			SPACE_BUTTON_BET_RAISE = new Rectangle( 674, 536, 100, 38 );
+//			SPACE_BUTTON_FOLD = new Rectangle( 436, 537, 104, 35 );
+//			SPACE_BUTTON_CHECK_CALL = new Rectangle( 553, 537, 105, 38 );
+//			SPACE_BUTTON_BET_RAISE = new Rectangle( 674, 536, 100, 38 );
 			SPACE_TABLECHAT = new Rectangle(15, 548, 265, 49);
+			
+			SPACE_BUTTON_FOLD = new Rectangle( 456, 547, 54, 15 );				// they are smaller than the origins because if the tables shifts there could be problems
+			SPACE_BUTTON_CHECK_CALL = new Rectangle( 573, 547, 55, 18 );
+			SPACE_BUTTON_BET_RAISE = new Rectangle( 694, 546, 50, 18 );
 			
 			SPACE_SEATS = new Rectangle[ 9 ];
 			SPACE_SEATS[ 0 ] = new Rectangle( 128, 111, 51, 55);
@@ -406,10 +490,14 @@ public class Bot_v1_2_0  extends Thread {
 			hhFile = new File( "c://pokerBot//bot_v1_2_0//hhTableLeftDown.txt" );
 			parserFileHH = new File( "c://pokerBot//bot_v1_2_0//parserTableLeftDown.txt" );
 			
-			SPACE_BUTTON_FOLD = new Rectangle( 400, 1105, 95, 30 );				// the action-buttons and the table chat
-			SPACE_BUTTON_CHECK_CALL = new Rectangle( 500, 1105, 100, 30 );
-			SPACE_BUTTON_BET_RAISE = new Rectangle( 610, 1105, 100, 30 );
+//			SPACE_BUTTON_FOLD = new Rectangle( 400, 1105, 95, 30 );				// the action-buttons and the table chat
+//			SPACE_BUTTON_CHECK_CALL = new Rectangle( 500, 1105, 100, 30 );
+//			SPACE_BUTTON_BET_RAISE = new Rectangle( 610, 1105, 100, 30 );
 			SPACE_TABLECHAT = new Rectangle( 14, 1105, 328, 50 );
+			
+			SPACE_BUTTON_FOLD = new Rectangle( 420, 1115, 55, 10 );			// they are smaller than the origins because if the tables shifts there could be problems
+			SPACE_BUTTON_CHECK_CALL = new Rectangle( 520, 1115, 50, 10 );
+			SPACE_BUTTON_BET_RAISE = new Rectangle( 630, 1115, 50, 10 );
 			
 			SPACE_SEATS = new Rectangle[ 9 ];
 			SPACE_SEATS[ 0 ] = new Rectangle( 113, 729, 50, 50 );
@@ -447,10 +535,14 @@ public class Bot_v1_2_0  extends Thread {
 			hhFile = new File( "c://pokerBot//bot_v1_2_0//hhTableRightDown.txt" );
 			parserFileHH = new File( "c://pokerBot//bot_v1_2_0//parserTableRightDown.txt" );
 			
-			SPACE_BUTTON_FOLD = new Rectangle( 1200, 1100, 100, 35 );
-			SPACE_BUTTON_CHECK_CALL = new Rectangle( 1310, 1100, 100, 35 );
-			SPACE_BUTTON_BET_RAISE = new Rectangle( 1420, 1100, 100, 35 );
+//			SPACE_BUTTON_FOLD = new Rectangle( 1200, 1100, 100, 35 );
+//			SPACE_BUTTON_CHECK_CALL = new Rectangle( 1310, 1100, 100, 35 );
+//			SPACE_BUTTON_BET_RAISE = new Rectangle( 1420, 1100, 100, 35 );
 			SPACE_TABLECHAT = new Rectangle( 833, 1142, 322, 51 );
+			
+			SPACE_BUTTON_FOLD = new Rectangle( 1220, 1110, 50, 15 );		// they are smaller than the origins because if the tables shifts there could be problems
+			SPACE_BUTTON_CHECK_CALL = new Rectangle( 1330, 1110, 50, 15 );
+			SPACE_BUTTON_BET_RAISE = new Rectangle( 1440, 1110, 50, 15 );
 			
 			SPACE_SEATS = new Rectangle[ 9 ];
 			SPACE_SEATS[ 0 ] = new Rectangle( 933, 727, 47, 50 );
@@ -488,10 +580,14 @@ public class Bot_v1_2_0  extends Thread {
 			hhFile = new File( "c://pokerBot//bot_v1_2_0//hhTableRightUp.txt" );
 			parserFileHH = new File( "c://pokerBot//bot_v1_2_0//parserTableRightUp.txt" );
 			
-			SPACE_BUTTON_FOLD = new Rectangle( 1255, 540, 100, 35 );
-			SPACE_BUTTON_CHECK_CALL = new Rectangle( 1375, 540, 100, 32 );
-			SPACE_BUTTON_BET_RAISE = new Rectangle( 1490, 540, 100, 45 );
+//			SPACE_BUTTON_FOLD = new Rectangle( 1255, 540, 100, 35 );
+//			SPACE_BUTTON_CHECK_CALL = new Rectangle( 1375, 540, 100, 32 );
+//			SPACE_BUTTON_BET_RAISE = new Rectangle( 1490, 540, 100, 45 );
 			SPACE_TABLECHAT = new Rectangle( 834, 581, 361, 61 );
+			
+			SPACE_BUTTON_FOLD = new Rectangle( 1275, 550, 50, 15 );		// they are smaller than the origins because if the tables shifts there could be problems
+			SPACE_BUTTON_CHECK_CALL = new Rectangle( 1395, 550, 50, 15 );
+			SPACE_BUTTON_BET_RAISE = new Rectangle( 1510, 550, 50, 15 );
 			
 			SPACE_SEATS = new Rectangle[ 9 ];
 			SPACE_SEATS[ 0 ] = new Rectangle( 942, 120, 58, 57 );
@@ -569,8 +665,8 @@ public class Bot_v1_2_0  extends Thread {
 			BufferedImage f2 = r.createScreenCapture( SPACE_BUTTON_CHECK_CALL );
 			BufferedImage f3 = r.createScreenCapture( SPACE_BUTTON_BET_RAISE );
 			
-			if ( Tools.compare(f1, PICTURE_BUTTON_FOLD, 0.8) || Tools.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.8) || Tools.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.8) )
-			{
+//			if ( Tools.compare(f1, PICTURE_BUTTON_FOLD, 0.8) || Tools.compare(f2, PICTURE_BUTTON_CKECK_CALL, 0.8) || Tools.compare(f3, PICTURE_BUTTON_BET_RAISE, 0.8) ) {
+			if ( Tools.compareSimilar(f1,PICTURE_BUTTON_FOLD,0.05) || Tools.compareSimilar(f2, PICTURE_BUTTON_CKECK_CALL, 0.05) || Tools.compareSimilar(f3, PICTURE_BUTTON_BET_RAISE, 0.05) ) {
 				gameBasics.Action act = new Action( "check" );
 				re = actionToButton( act );
 				p = Tools.createPointIn( re );
@@ -593,7 +689,6 @@ public class Bot_v1_2_0  extends Thread {
 		out.write(1);
 		out.flush();
 		out.close();
-		lock.unlock();
 	}
 	
 }
