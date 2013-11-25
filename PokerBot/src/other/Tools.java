@@ -342,6 +342,45 @@ public class Tools
 		return true;
 	}
 	
+	
+	public static boolean compare2(BufferedImage src, BufferedImage comp, double X) {
+		int sW = src.getWidth();
+		int sH = src.getHeight();
+		int cW = comp.getWidth();
+		int cH = comp.getHeight();
+		
+		BufferedImage bi;
+		boolean b;
+		if ( (sW >= cW) && (sH >= cH) )
+			for ( int h = sH; h >= sH-cH; h-- )
+				for ( int w = 0; w < sW-cW+1; w++ ) {
+					bi = src.getSubimage(w, h, cW, cH);
+					b = compare(bi, comp, X);
+					if (b)
+						return true;
+				}
+		else if ((sW <= cW) && (sH <= cH)) {
+			bi = src;
+			src = comp;
+			comp = bi;
+
+			for (int h = sH; h >= sH - cH; h--)
+				for (int w = 0; w < sW - cW + 1; w++) {
+					bi = src.getSubimage(w, h, cW, cH);
+					b = compare(bi, comp, X);
+					if (b)
+						return true;
+				}
+			}
+		else if ( (sH >= cH) && (sW <= cW) ) {
+			return false;
+		}
+		
+		
+		
+		return false;
+	}
+	
 	/**
 	 * Returns whether is more equal than X percent of the entries in the array are null.
 	 * 

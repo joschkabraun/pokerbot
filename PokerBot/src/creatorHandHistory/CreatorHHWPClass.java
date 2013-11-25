@@ -7,6 +7,7 @@ import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +36,11 @@ public class CreatorHHWPClass
 	private File f;
 	
 	/**
+	 * The sessional file in which the history of the people who enter and leave the table should be written. The file is going to be empty after the session.
+	 */
+	private File s;
+	
+	/**
 	 * The rectangle in which the method Other.getClipboardByNotepadS(Rectangle) should be used.
 	 */
 	private Rectangle rectNP;
@@ -51,11 +57,15 @@ public class CreatorHHWPClass
 	
 	private File fLog;
 	
+	/**
+	 * @deprecated because the old version of the PokerBot are longer supported and there are new things!
+	 */
 	public CreatorHHWPClass( File f, Rectangle rectNP, Rectangle rectTC )
 	{
 		try {
 			this.r = new Robot();
 			this.f = f;
+			this.s = null;
 			this.rectNP = rectNP;
 			this.rectTC = rectTC;
 			this.lastS = new String[1];
@@ -77,6 +87,63 @@ public class CreatorHHWPClass
 				throw new IllegalArgumentException("Bla bla!");
 			}
 		} catch ( AWTException e ) {
+			e.printStackTrace();
+		}
+	}
+	
+	public CreatorHHWPClass( File f, File s, Rectangle rectNP, Rectangle rectTC )
+	{
+		try {
+			this.r = new Robot();
+			this.f = f;
+			this.s = s;
+			FileOutputStream fos = new FileOutputStream(s);		// clear the s-file
+			fos.write(new String().getBytes());
+			fos.flush();
+			fos.close();
+			FileWriter fw = new FileWriter(s, false);
+			this.rectNP = rectNP;
+			this.rectTC = rectTC;
+			this.lastS = new String[1];
+			this.lastS[0] = "test";
+			int numberPlayer;
+			switch ( f.getAbsolutePath() ) {
+			case "c:\\pokerBot\\bot_v1_2_0\\hhTableRightDown.txt":
+				this.fLog = new File("c://pokerBot//bot_v1_2_0//debug//creatorLogTableRightDown.txt");
+				System.out.println("Please enter the number of players for the table RIGHT-DOWN: ");
+				numberPlayer = new java.util.Scanner(System.in).nextInt();
+				fw.write(String.format(numberPlayer+"%n"));
+				fw.flush();
+				fw.close();
+				break;
+			case "c:\\pokerBot\\bot_v1_2_0\\hhTableRightUp.txt":
+				this.fLog = new File("c://pokerBot/bot_v1_2_0//debug//creatorLogTableRightUp.txt");
+				System.out.println("Please enter the number of players for the table RIGHT-UP: ");
+				numberPlayer = new java.util.Scanner(System.in).nextInt();
+				fw.write(String.format(numberPlayer+"%n"));
+				fw.flush();
+				fw.close();
+				break;
+			case "c:\\pokerBot\\bot_v1_2_0\\hhTableLeftDown.txt":
+				this.fLog = new File("c://pokerBot/bot_v1_2_0//debug//creatorLogTableLeftDown.txt");
+				System.out.println("Please enter the number of players for the table LEFT-DOWN: ");
+				numberPlayer = new java.util.Scanner(System.in).nextInt();
+				fw.write(String.format(numberPlayer+"%n"));
+				fw.flush();
+				fw.close();
+				break;
+			case "c:\\pokerBot\\bot_v1_2_0\\hhTableLeftUp.txt":
+				this.fLog = new File("c://pokerBot/bot_v1_2_0//debug//creatorLogTableLeftUp.txt");
+				System.out.println("Please enter the number of players for the table LEFT-UP: ");
+				numberPlayer = new java.util.Scanner(System.in).nextInt();
+				fw.write(String.format(numberPlayer+"%n"));
+				fw.flush();
+				fw.close();
+				break;
+			default:
+				throw new IllegalArgumentException("Bla bla!");
+			}
+		} catch ( AWTException | IOException e ) {
 			e.printStackTrace();
 		}
 	}
@@ -189,7 +256,7 @@ public class CreatorHHWPClass
 				}
 			
 			
-			if ( lastS[0].length() == 0 || lastS[0].equals("test") ) {	// if the previous read text is empty the creator just should write the last hand history
+			if ( lastS[0].length() == 0 || lastS[0].equals("test") ) {	// if the previous read text is empty, the creator just should write the last hand history
 				ArrayList<String> strings = new ArrayList<String>();	// into the file of the hand histories
 				int index = 0;
 				for ( int i = lSplit.length-1; i > -1; i-- )
@@ -218,6 +285,17 @@ public class CreatorHHWPClass
 					writer.write(s + String.format("%n"));
 				writer.flush();
 				writer.close();
+				FileWriter writer2 = new FileWriter(s, true);
+				for ( String s : lSplit )											// the whole hand history have to be scanned
+					if ( s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt \n") || s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt.*") ||
+							s.matches("Geber: .+ hat den Tisch verlassen \n") || s.matches("Geber: .+ hat den Tisch verlassen.*") ) {
+						System.out.println("CRRRRRRRRRRRRRRRRRRRRRRRRRAAAAAAAAAAAAZZZZZZZZZZYYYYYYYYY");
+						System.out.println(s);
+						System.out.println("CRRRRRRRRRRRRRRRRRRRRRRRRRAAAAAAAAAAAAZZZZZZZZZZYYYYYYYYY");
+						writer2.write(s + String.format("%n"));
+					}
+				writer2.flush();
+				writer2.close();				
 				
 				String[] stringsA = new String[strings.size()];
 				for ( int i = 0; i < stringsA.length; i++ )
@@ -253,6 +331,7 @@ public class CreatorHHWPClass
 				
 				if ( line.startsWith( "Geber: " ) ) {
 					FileWriter writer = new FileWriter( f, true );
+					FileWriter writerS = new FileWriter(s, true);
 					FileWriter fw = new FileWriter(this.fLog, true);					// for testing
 					if ( bots.Bot.debug_normal )
 						fw.write(String.format("%nrest: " + "%n"));
@@ -260,9 +339,14 @@ public class CreatorHHWPClass
 						if ( bots.Bot.debug_normal )
 							fw.write(String.format(s.substring(0) + "%n"));
 						writer.write( String.format( s.substring(0) + "%n" ) );
+						if ( s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt \n") || s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt.*") ||
+								s.matches("Geber: .+ hat den Tisch verlassen \n") || s.matches("Geber: .+ hat den Tisch verlassen.*") )
+							writerS.write(String.format(s.substring(0) + "%n"));
 					}
 					writer.flush();
 					writer.close();
+					writerS.flush();
+					writerS.close();
 					fw.flush();
 					fw.close();
 				}

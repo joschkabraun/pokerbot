@@ -22,15 +22,18 @@ public class Test
 	}
 	
 	public static void createAction() throws Throwable {
+		File sesFile = new File("c://pokerBot//bot_v1_2_0//sessionalHHTableLeftUp.txt");
 		HandHistory hh = parser.ParserCreatorWinnerPoker4Tables.parserMainCWP(new File("c://pokerBot//bot_v1_2_0//hhTableLeftUp.txt"),
-				new File("c://pokerBot//bot_v1_2_0//parserTableLeftUp.txt"), GameType.HOLD_EM, Limit.FIXED_LIMIT, 9,
-				"walk10er", new BufferedImage[1], new Rectangle[1]);
+				new File("c://pokerBot//bot_v1_2_0//parserTableLeftUp.txt"), sesFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9,
+				"walk10er", new BufferedImage[1], new Rectangle[1], true);
 		System.out.println(hh);
 		
 		File[] source = {new File("c://pokerBot//bot_v1_2_0//hhTableLeftDown.txt"), new File("c://pokerBot//bot_v1_2_0//hhTableLeftUp.txt"),
 				new File("c://pokerBot//bot_v1_2_0//hhTableRightUp.txt"), new File("c://pokerBot//bot_v1_2_0//hhTableRightDown.txt")};
 		File[] parsers = {new File( "c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableLeftDown.txt"),new File( "c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableLeftUp.txt"),
 				new File("c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableRightUp.txt"), new File("c://pokerBot//bot_v1_2_0//parserHHToTUDBotHistoryTableRightDown.txt")};
+		File[] sesFiles = {new File("c://pokerBot//bot_v1_2_0//sessionalHHTableLeftDown.txt"),new File("c://pokerBot//bot_v1_2_0//sessionalHHTableLeftUp.txt"),
+				new File("c://pokerBot//bot_v1_2_0//sessionalHHTableRightUp.txt"), new File("c://pokerBot//bot_v1_2_0//sessionalHHTableRightDown.txt")};
 		bots.Bot_v1_1_0Tables[] table = {bots.Bot_v1_1_0Tables.LEFT_DOWN, bots.Bot_v1_1_0Tables.LEFT_UP, bots.Bot_v1_1_0Tables.RIGHT_UP, bots.Bot_v1_1_0Tables.RIGHT_DOWN};
 		GameType[] gameType = {GameType.HOLD_EM, GameType.HOLD_EM, GameType.HOLD_EM, GameType.HOLD_EM};
 		Limit[] limit = {Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT};
@@ -39,13 +42,14 @@ public class Test
 		BufferedImage[][] picutreSeats = new BufferedImage[4][0];
 		Rectangle[][] spaceSeats = new Rectangle[4][0];
 		
-		strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, table, gameType,
-				limit, maxSeatOnTable, playYouName, picutreSeats, spaceSeats);
+		strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, sesFiles, table, gameType,
+				limit, maxSeatOnTable, playYouName, picutreSeats, spaceSeats, true);
 		
 		strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createCONSTANT(hh);
 		ClientRingDynamics crd = strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createRingDynamics(hh, hh.getPlayerYou("walk10er"));
 		strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createHistory(hh, hh.getPlayerYou("walk10er"));		
-		Action action = strategy.strategyPokerChallenge.interfacesToPokerChallenge.StrategyTwo.actionFor(hh, hh.getPlayerYou("walk10er"), new BufferedImage[1], new Rectangle[1], crd);
+		Action action = strategy.strategyPokerChallenge.interfacesToPokerChallenge.StrategyTwo.actionFor(hh, hh.getPlayerYou("walk10er"), sesFile, new BufferedImage[1],
+				new Rectangle[1], crd, true);
 		
 		System.out.println(action);
 	}

@@ -42,16 +42,18 @@ public class ParserCreatorWinnerPoker4Tables
 	 * 
 	 * @param hhFile .txt-file with the hand history
 	 * @param parserFile .txt-file in which the parser writes for paring the hand history
+	 * @param sesFile .txt-file in which is the history of the people who enter and leave the table
 	 * @param gameType the gameType of the hand history, e.g. "Hold'Em"
 	 * @param limit the limit of the game, e.g. "Fixed Limit", "No Limit" or "Pot Limit"
 	 * @param maxSeatOnTable the maximal number of seats on the table of the hand history
 	 * @param playYouName the name of the PlayerYou
 	 * @param pictureSeats the pictures of the empty seats
 	 * @param spaceSeats the space of the seats
+	 * @param tableWasRemoved whether the table was removed or not. This information is important for other.Tools.compare(...)-methods.
 	 * @return a .txt-file parser into a hand history-object
 	 */
-	public static HandHistory parserMainCWP( File hhFile, File parserFile, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName, BufferedImage[] pictureSeats,
-			Rectangle[] spaceSeats ) throws IOException, AWTException
+	public static HandHistory parserMainCWP( File hhFile, File parserFile, File sesFile, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName,
+			BufferedImage[] pictureSeats, Rectangle[] spaceSeats, boolean tableWasRemoved ) throws IOException, AWTException
 	{
 		if ( maxSeatOnTable != 9 )
 			throw new IllegalArgumentException( "The ParserCreatorWinnerPoker does not work for maxSeatOnTable != 9!" );
@@ -77,7 +79,7 @@ public class ParserCreatorWinnerPoker4Tables
 		heapW.flush();
 		heapW.close();
 		
-		return parserCWP( parserFile, gameType, limit, maxSeatOnTable, playYouName, pictureSeats, spaceSeats );
+		return parserCWP( parserFile, gameType, sesFile, limit, maxSeatOnTable, playYouName, pictureSeats, spaceSeats, tableWasRemoved );
 	}
 	
 	/**
@@ -86,17 +88,19 @@ public class ParserCreatorWinnerPoker4Tables
 	 * 
 	 * @param f .txt-file with the hand history
 	 * @param parserFile .txt-file in which the parser writes for paring the hand history
+	 * @param sesFile .txt-file in which is the history of the people who enter and leave the table
 	 * @param gameType the gameType of the hand history, e.g. "Hold'Em"
 	 * @param limit the limit of the game, e.g. "Fixed Limit", "No Limit" or "Pot Limit"
 	 * @param maxSeatOnTable the maximal number of seats on the table of the hand history
 	 * @param playYouName the name of the PlayerYou
 	 * @param pictureSeats the pictures of the empty seats
 	 * @param spaceSeats the space of the seats
+	 * @param tableWasRemoved whether the table was removed or not. This information is important for other.Tools.compare(...)-methods.
 	 * @return a .txt-file parser into a hand history-object
 	 * @throws IOException 
 	 */
-	public static HandHistory parserCWP( File f, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName, BufferedImage[] pictureSeats,
-			Rectangle[] spaceSeats )  throws AWTException, IOException
+	public static HandHistory parserCWP( File f, GameType gameType, File sesFile, Limit limit, int maxSeatOnTable, String playYouName, BufferedImage[] pictureSeats,
+			Rectangle[] spaceSeats, boolean tableWasRemoved )  throws AWTException, IOException
 	{
 		HandHistory handHistory = new HandHistory();
 		
@@ -302,7 +306,14 @@ public class ParserCreatorWinnerPoker4Tables
 			
 			else					// there is at least one player who did not do his/her action in this game
 			{
-				int numberPlayersAtTable = howManyPlayersAtTable( pictureSeats, spaceSeats );
+//				int numberPlayersAtTable = howManyPlayersAtTableByPicture( pictureSeats, spaceSeats, tableWasRemoved );
+				int numberPlayersAtTable = 0;
+				if (bots.Bot.debug_test_run) {
+					System.out.println("Please enter the number of players: ");
+					numberPlayersAtTable = new java.util.Scanner(System.in).nextInt();
+				} else	
+					numberPlayersAtTable = howManyPlayersAtTableByFile(sesFile);
+				
 				handHistory.numberPlayersAtTable = numberPlayersAtTable;								// handHistory.numberPlayersAtTable
 				
 				for ( int i = 0; i < allLines.length; i++ )
@@ -843,11 +854,36 @@ public class ParserCreatorWinnerPoker4Tables
 	
 	/**
 	 * Returns how many players sits at the table.
+	 * This method can used for any number of players.
+	 * The result is processed by processing the data of the file.
+	 * 
+	 * @param sesFile the file with a history of people who enter and leave the table 
+	 * @return the number of players at the table
+	 */
+	public static int howManyPlayersAtTableByFile(File sesFile) {
+		String[] lines = other.Tools.allLines(sesFile);
+		int num = Integer.parseInt(lines[0]);
+		
+		for ( String s : lines )
+			if (s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt \n") || s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt.*"))
+				++num;
+			else if (s.matches("Geber: .+ hat den Tisch verlassen \n") || s.matches("Geber: .+ hat den Tisch verlassen.*"))
+				--num;
+		
+		System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+		System.out.println(num);
+		System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+		return num;
+	}
+	
+	/**
+	 * Returns how many players sits at the table.
 	 * This method is just written for a table with 9 players!
+	 * The result is processed by comparing pictures.
 	 * 
 	 * @return the number of players at the table
 	 */
-	public static int howManyPlayersAtTable(BufferedImage[] pictureSeats, Rectangle[] spaceSeats) throws AWTException
+	public static int howManyPlayersAtTableByPicture(BufferedImage[] pictureSeats, Rectangle[] spaceSeats, boolean tableWasRemoved) throws AWTException
 	{
 		if (other.Test.debug) {
 			System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
@@ -872,58 +908,50 @@ public class ParserCreatorWinnerPoker4Tables
 		if ( bots.Bot.debug_normal )
 			System.out.println("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
 		
+		double X1 = 0.075;
+		double X2 = 0.035;
 		
-		double X = 0.035;
-//		if ( Tools.compare( bi1, pictureSeats[ 0 ],  0.75 ) )
-		if ( Tools.compareSimilar(bi1, pictureSeats[0], X ) ) {
+		if ( (!tableWasRemoved && Tools.compare(bi1, pictureSeats[0], X1)) || (tableWasRemoved && Tools.compareSimilar(bi1, pictureSeats[0], X2)) ) {
 			if ( bots.Bot.debug_normal )
 				System.out.println("seat 1: true");
 			++counter;
 		}
-//		if ( Tools.compare( bi2, pictureSeats[ 1 ],  0.75 ) )
-		if ( Tools.compareSimilar( bi2, pictureSeats[1],  X ) ) {
+		if ( (!tableWasRemoved && Tools.compare(bi2, pictureSeats[1],  X1)) || (tableWasRemoved && Tools.compareSimilar( bi2, pictureSeats[1],  X2)) ) {
 			if ( bots.Bot.debug_normal )
 				System.out.println("seat 2: true");
 			++counter;
 		}
-//		if ( Tools.compare( bi3, pictureSeats[ 2 ],  0.75 ) )
-		if ( Tools.compareSimilar( bi3, pictureSeats[2],  X ) ) {
+		if ( (!tableWasRemoved && Tools.compare(bi3, pictureSeats[2],  X1)) || (tableWasRemoved && Tools.compareSimilar( bi3, pictureSeats[2],  X2)) ) {
 			if ( bots.Bot.debug_normal )
 				System.out.println("seat 3: true");
 			++counter;
 		}
-//		if ( Tools.compare( bi4, pictureSeats[ 3 ],  0.75 ) )
-		if ( Tools.compareSimilar( bi4, pictureSeats[3],  X ) ) {
+		if ( (!tableWasRemoved && Tools.compare( bi4, pictureSeats[3],  X1)) || (tableWasRemoved && Tools.compareSimilar( bi4, pictureSeats[3],  X2)) ) {
 			if ( bots.Bot.debug_normal )
 				System.out.println("seat 4: true");
 			++counter;
 		}
-//		if ( Tools.compare( bi5, pictureSeats[ 4 ],  0.75 ) )
-		if ( Tools.compareSimilar( bi5, pictureSeats[4],  X ) ) {
+		if ( (!tableWasRemoved && Tools.compare( bi5, pictureSeats[4],  X1)) || (tableWasRemoved && Tools.compareSimilar( bi5, pictureSeats[4],  X2)) ) {
 			if ( bots.Bot.debug_normal )
 				System.out.println("seat 5: true");
 			++counter;
 		}
-//		if ( Tools.compare( bi6, pictureSeats[ 5 ],  0.75 ) )
-		if ( Tools.compareSimilar( bi6, pictureSeats[5],  X ) ) {
+		if ( (!tableWasRemoved && Tools.compare(bi6, pictureSeats[5], X1)) || (tableWasRemoved && Tools.compareSimilar( bi6, pictureSeats[5],  X2 ))) {
 			if ( bots.Bot.debug_normal )
 				System.out.println("seat 6: true");
 			++counter;
 		}
-//		if ( Tools.compare( bi7, pictureSeats[ 6 ],  0.75 ) )
-		if ( Tools.compareSimilar( bi7, pictureSeats[6],  X ) ) {
+		if ( (!tableWasRemoved && Tools.compare(bi7, pictureSeats[6], X1)) || (tableWasRemoved && Tools.compareSimilar( bi7, pictureSeats[6],  X2)) ) {
 			if ( bots.Bot.debug_normal )
 				System.out.println("seat 7: true");
 			++counter;
 		}
-//		if ( Tools.compare( bi8, pictureSeats[ 7 ],  0.75 ) )
-		if ( Tools.compareSimilar( bi8, pictureSeats[7],  X ) ) {
+		if ( (!tableWasRemoved && Tools.compare(bi8, pictureSeats[7], X1)) || (tableWasRemoved && Tools.compareSimilar( bi8, pictureSeats[7],  X2)) ) {
 			if ( bots.Bot.debug_normal )
 				System.out.println("seat 8: true");
 			++counter;
 		}
-//		if ( Tools.compare( bi9, pictureSeats[ 8 ],  0.75 ) )
-		if ( Tools.compareSimilar( bi9, pictureSeats[8],  X ) ) {
+		if ( (!tableWasRemoved && Tools.compare(bi9, pictureSeats[8], X1)) || (tableWasRemoved && Tools.compareSimilar( bi9, pictureSeats[8],  X2)) ) {
 			if ( bots.Bot.debug_normal )
 				System.out.println("seat 9: true");
 			++counter;

@@ -37,6 +37,11 @@ public class Bot
 	public static final boolean debug_normal = true;
 	
 	/**
+	 * The constant whether this run is just a test-run or a run in use.
+	 */
+	public static final boolean debug_test_run = false;
+	
+	/**
 	 * With these streams the Interrupter can read "messages" from the threads;
 	 */
 	private ArrayList<PipedInputStream> ins;
@@ -79,10 +84,10 @@ public class Bot
 		ThreadGroup main = new ThreadGroup( "main" );
 		String namePlayerYou = "walk10er";
 		
-		Bot_v1_2_0 BLU = new Bot_v1_2_0( main, "BotLeftUp-v1.2.0", outBLU2I, Bot_v1_1_0Tables.LEFT_UP, namePlayerYou );
-		Bot_v1_2_0 BLD = new Bot_v1_2_0( main, "BotLeftDown-v1.2.0", outBLD2I, Bot_v1_1_0Tables.LEFT_DOWN, namePlayerYou );
-		Bot_v1_2_0 BRU = new Bot_v1_2_0( main, "BotRightUp-v1.2.0", outBRU2I, Bot_v1_1_0Tables.RIGHT_UP, namePlayerYou );
-		Bot_v1_2_0 BRD = new Bot_v1_2_0( main, "BotRightDown-v1.2.0", outBRD2I, Bot_v1_1_0Tables.RIGHT_DOWN, namePlayerYou );
+		Bot_v1_2_0 BLU = new Bot_v1_2_0( main, "BotLeftUp-v1.2.0", outBLU2I, Bot_v1_1_0Tables.LEFT_UP, namePlayerYou, true );
+		Bot_v1_2_0 BLD = new Bot_v1_2_0( main, "BotLeftDown-v1.2.0", outBLD2I, Bot_v1_1_0Tables.LEFT_DOWN, namePlayerYou, true );
+		Bot_v1_2_0 BRU = new Bot_v1_2_0( main, "BotRightUp-v1.2.0", outBRU2I, Bot_v1_1_0Tables.RIGHT_UP, namePlayerYou, true );
+		Bot_v1_2_0 BRD = new Bot_v1_2_0( main, "BotRightDown-v1.2.0", outBRD2I, Bot_v1_1_0Tables.RIGHT_DOWN, namePlayerYou, true );
 		
 		ins = new ArrayList<PipedInputStream>();
 		ins.add(inBRD2I);

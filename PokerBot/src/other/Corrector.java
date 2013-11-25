@@ -23,7 +23,13 @@ public class Corrector {
 		PipedOutputStream outBRU2I = new PipedOutputStream();
 		ThreadGroup main = new ThreadGroup( "main" );
 		String namePlayerYou = "walk10er";
-		Bot_v1_2_0 bot = new Bot_v1_2_0( main, "BotRightUp-v1.2.0", outBRU2I, Bot_v1_1_0Tables.RIGHT_UP, namePlayerYou );
+		Bot_v1_2_0 bot = new Bot_v1_2_0( main, "BotRightUp-v1.2.0", outBRU2I, Bot_v1_1_0Tables.RIGHT_UP, namePlayerYou, false );
+		
+		Rectangle corLoc = bot.SPACE_BUTTON_FOLD;
+		BufferedImage correctBI = bot.PICTURE_BUTTON_FOLD;
+		Point pointOnLine = new Point(1577, 318);
+		int amplitude = 50;
+		correct(corLoc, correctBI, pointOnLine, amplitude);
 		
 		boolean b1 = other.Tools.compare(bot.PICTURE_BUTTON_FOLD, (new Robot()).createScreenCapture(bot.SPACE_BUTTON_FOLD), 0.65);
 		boolean b2 = other.Tools.compareSimilar(bot.PICTURE_BUTTON_FOLD, (new Robot()).createScreenCapture(bot.SPACE_BUTTON_FOLD), 0.055);
@@ -45,7 +51,17 @@ public class Corrector {
 			r.mousePress(InputEvent.BUTTON1_MASK);
 			r.mouseMove(pointOnLine.x+i, pointOnLine.y);
 			r.mouseRelease(InputEvent.BUTTON1_MASK);
+			System.out.println(MouseInfo.getPointerInfo().getLocation());
 			actCurser = MouseInfo.getPointerInfo().getLocation();
+			try {
+			r.wait(200);
+			} catch ( IllegalMonitorStateException e ) {
+				try {
+					r.wait(200);
+				} catch ( Exception e2 ) {
+					
+				}
+			}
 		}
 		
 		System.err.println("Maybe the method was not successful!");

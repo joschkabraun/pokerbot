@@ -124,6 +124,10 @@ public class Bot_v1_1_0 extends Thread
 	 */
 	private BufferedImage[] PICTURE_SEATS;
 	
+	
+	/**
+	 * @deprecated because it is to old and there is a much better strategy
+	 */
 	public Bot_v1_1_0( ThreadGroup main, String string, PipedOutputStream out, Bot_v1_1_0Tables table )
 	{
 		super( main, string );
@@ -190,7 +194,7 @@ public class Bot_v1_1_0 extends Thread
 					HandHistory hh = new HandHistory();															// hand history
 					log.info( "Beginning parsing the hand-history-text-file to a object HandHistory. Table: " + table.toString() );
 					try {
-						hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+						hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFile, null, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS, true);
 						log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 					} catch ( Exception e1 ) {
 						log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
@@ -198,7 +202,7 @@ public class Bot_v1_1_0 extends Thread
 						sleep(100);
 						creator.createHH();
 						try {
-							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFile, null, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS, true);
 							log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 						} catch ( Exception e2 ) {
 							log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
@@ -206,7 +210,7 @@ public class Bot_v1_1_0 extends Thread
 							sleep(100);
 							creator.createHH();
 						} try {
-							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFile, null, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS, true);
 							log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 						} catch ( Exception e3 ) {
 							log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
@@ -214,7 +218,7 @@ public class Bot_v1_1_0 extends Thread
 							sleep(100);
 							creator.createHH();
 						} try {
-							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFile, null, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS, true);
 							log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 						} catch ( Exception e4 ) {
 							log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "

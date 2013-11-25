@@ -3,6 +3,7 @@ package strategy.strategyPokerChallenge.interfacesToPokerChallenge;
 import java.awt.AWTException;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 import parser.ParserCreatorWinnerPoker4Tables;
 import strategy.strategyPokerChallenge.ringclient.ClientRingDynamics;
@@ -38,15 +39,19 @@ public class StrategyTwo {
 	 * 
 	 * @param hh the actual hand history
 	 * @param py the player you are
+	 * @param sesFile a file with the people who enter and leave the table
 	 * @param pictureSeats pictures of the seats if there are not any players
 	 * @param spaceSeats the rectangles where the seats are
 	 * @param crd the ClientRingDynamics
+	 * @param tableWasRemoved whether the table was removed or not. This information is important for other.Tools.compare(...)-methods.
 	 * @return The action determined by the strategy of the TU Darmstadt poker agent AKI-RealBot
 	 * @throws AWTException
 	 */
-	public static synchronized Action actionFor( HandHistory hh, PlayerYou py, BufferedImage[] pictureSeats, Rectangle[] spaceSeats, ClientRingDynamics crd ) throws AWTException {
+	public static synchronized Action actionFor( HandHistory hh, PlayerYou py, File sesFile, BufferedImage[] pictureSeats, Rectangle[] spaceSeats, ClientRingDynamics crd,
+			boolean tableWasRemoved) throws AWTException {
 		if ( hh.bettingRounds.get(hh.bettingRounds.size()-1).getPokerChallengeGameState().equals(strategy.strategyPokerChallenge.data.GameState.PRE_FLOP) )
-			if ( hh.allPlayers.size() != ParserCreatorWinnerPoker4Tables.howManyPlayersAtTable(pictureSeats, spaceSeats) )
+//			if ( hh.allPlayers.size() != ParserCreatorWinnerPoker4Tables.howManyPlayersAtTableByPicture(pictureSeats, spaceSeats, tableWasRemoved) )
+			if ( hh.allPlayers.size() != ParserCreatorWinnerPoker4Tables.howManyPlayersAtTableByFile(sesFile))
 				return strategy.strategyPokerStrategy.StrategyOne.actionFor(hh, py);
 		
 		long time;

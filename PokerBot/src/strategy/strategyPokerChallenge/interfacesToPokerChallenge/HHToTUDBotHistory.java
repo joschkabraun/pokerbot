@@ -59,18 +59,18 @@ public class HHToTUDBotHistory {
 	 * 
 	 * For parameters and exceptions please look look for parser.ParserCreatorWinnerPoker4Tables.parserCWP(...).
 	 */
-	public static void createPrivateHands( File source, File parserToTUDBotData, Bot_v1_1_0Tables table, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName,
-			BufferedImage[] pictureSeats, Rectangle[] spaceSeats ) throws IOException, AWTException {
+	public static void createPrivateHands( File source, File parserToTUDBotData, File sesFiles, Bot_v1_1_0Tables table, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName,
+			BufferedImage[] pictureSeats, Rectangle[] spaceSeats, boolean tabWasRemoved ) throws IOException, AWTException {
 		HHToTUDBotHistory.hands = null;
-		HHToTUDBotHistory.hands = getHands(source, parserToTUDBotData, table, gameType, limit, maxSeatOnTable, playYouName, pictureSeats, spaceSeats);
+		HHToTUDBotHistory.hands = getHands(source, parserToTUDBotData, sesFiles, table, gameType, limit, maxSeatOnTable, playYouName, pictureSeats, spaceSeats, tabWasRemoved);
 	}
 	
 	/**
 	 * This method creates the private static attribute of this class "hands" in which can be hand histories of several tables.
 	 * For more informations look at the other "createPrivateHands"-method.
 	 */
-	public static void createPrivateHands( File[] source, File[] parserToTUDBotData, Bot_v1_1_0Tables table[], GameType gameType[], Limit limit[], int maxSeatOnTable[], String playYouName,
-			BufferedImage[][] pictureSeats, Rectangle[][] spaceSeats ) throws IOException, AWTException {
+	public static void createPrivateHands( File[] source, File[] parserToTUDBotData, File[] sesFiles, Bot_v1_1_0Tables table[], GameType gameType[], Limit limit[], int maxSeatOnTable[], String playYouName,
+			BufferedImage[][] pictureSeats, Rectangle[][] spaceSeats, boolean tWasRem ) throws IOException, AWTException {
 		HHToTUDBotHistory.hands = null;
 		
 		if ( source.length != parserToTUDBotData.length || parserToTUDBotData.length != table.length || table.length != gameType.length || gameType.length != limit.length ||
@@ -86,7 +86,7 @@ public class HHToTUDBotHistory {
 		for ( int i = 0; i < source.length; i++ ) {
 			if ( other.Tools.allLines(source[i]).length == 0 )
 				continue;
-			test = getHands(source[i], parserToTUDBotData[i],table[i], gameType[i], limit[i], maxSeatOnTable[i], playYouName, pictureSeats[i], spaceSeats[i]);
+			test = getHands(source[i], parserToTUDBotData[i], sesFiles[i], table[i], gameType[i], limit[i], maxSeatOnTable[i], playYouName, pictureSeats[i], spaceSeats[i], tWasRem);
 			if ( test.length==0 )
 				continue;
 			handsA = test;
@@ -113,8 +113,8 @@ public class HHToTUDBotHistory {
 	 * 
 	 * For parameters and exceptions please look look for parser.ParserCreatorWinnerPoker4Tables.parserCWP(...).
 	 */
-	public static HandHistory[] getHands( File source, File parserToTUDBotData, Bot_v1_1_0Tables table, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName,
-			BufferedImage[] pictureSeats, Rectangle[] spaceSeats ) throws IOException, AWTException {
+	public static HandHistory[] getHands( File source, File parserToTUDBotData, File sesFile, Bot_v1_1_0Tables table, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName,
+			BufferedImage[] pictureSeats, Rectangle[] spaceSeats, boolean tWasRemo ) throws IOException, AWTException {
 		HandHistory[] hands;
 		
 		String[] allLinesWithoutTrim = Tools.allLines( source );
@@ -144,7 +144,7 @@ public class HHToTUDBotHistory {
 			heapW.flush();
 			heapW.close();
 			
-			hands[i] = ParserCreatorWinnerPoker4Tables.parserCWP(parserToTUDBotData, gameType, limit, maxSeatOnTable, playYouName, pictureSeats, spaceSeats);
+			hands[i] = ParserCreatorWinnerPoker4Tables.parserCWP(parserToTUDBotData, gameType, sesFile, limit, maxSeatOnTable, playYouName, pictureSeats, spaceSeats, tWasRemo);
 			
 			j = indizes.get(i+1);
 		}
