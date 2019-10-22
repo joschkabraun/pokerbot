@@ -439,9 +439,9 @@ public class Tools
 		int howManyLines = 0;
 		try {
 			BufferedReader reader = new BufferedReader( new FileReader( file ) );
-			while ( reader.readLine() != null ) {
+			while ( reader.readLine() != null )
 				++howManyLines;
-			}
+			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -466,6 +466,7 @@ public class Tools
 			BufferedReader reader = new BufferedReader( new FileReader( file ) );
 			for ( int i = 0; i < numberLines; i++ )
 				allLines[i] = reader.readLine();
+			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

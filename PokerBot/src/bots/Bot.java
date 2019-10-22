@@ -54,14 +54,36 @@ public class Bot
 	/**
 	 * These are the bots of the single tables.
 	 */	
-	public ArrayList<Bot_v1_2_0> bots;
+	public ArrayList<Bot_v1_3_x> bots;
 	
 	/**
 	 * This is the Interrupter which interrupts the whole bot if there are problem in the bot.
 	 */
 	private Interrupter interrupter;
 	
+	private JFrame gui;
+	
 	public Bot() {
+		JFrame frame = new JFrame( "Bot v1.2.2" );											// GUI
+		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+		frame.setBounds( 2000, 100, 500, 500 );
+		
+		JPanel panel = new JPanel();
+		panel.setLayout( new BoxLayout(panel, BoxLayout.Y_AXIS) );
+		JLabel label = new JLabel( "<html>This is the graphical representation of the PokerBot with the version number 1.3.0. The bot plays poker on WinnerPoker. " +
+				"Please do not shut down the computer and do not do anything else on the computer. If there is a problem, please tell this " +
+				"the developer or the owner of the computer. And also do not kill this window or the bot that could cause a financial damage!</html>" );
+		label.setPreferredSize( new Dimension(500, 100) );
+		label.setForeground( Color.RED );
+		panel.add( label );
+		JTextArea text = new JTextArea();
+		text.setPreferredSize( new Dimension(500, 400) );
+		panel.add( text );
+		frame.add( panel );
+		
+		this.gui = frame;
+		
+		
 		PipedInputStream inBLU2I = new PipedInputStream();
 		PipedOutputStream outBLU2I = new PipedOutputStream();
 		PipedInputStream inBLD2I = new PipedInputStream();
@@ -84,10 +106,10 @@ public class Bot
 		ThreadGroup main = new ThreadGroup( "main" );
 		String namePlayerYou = "walk10er";
 		
-		Bot_v1_2_0 BLU = new Bot_v1_2_0( main, "BotLeftUp-v1.2.0", outBLU2I, Bot_v1_1_0Tables.LEFT_UP, namePlayerYou, true );
-		Bot_v1_2_0 BLD = new Bot_v1_2_0( main, "BotLeftDown-v1.2.0", outBLD2I, Bot_v1_1_0Tables.LEFT_DOWN, namePlayerYou, true );
-		Bot_v1_2_0 BRU = new Bot_v1_2_0( main, "BotRightUp-v1.2.0", outBRU2I, Bot_v1_1_0Tables.RIGHT_UP, namePlayerYou, true );
-		Bot_v1_2_0 BRD = new Bot_v1_2_0( main, "BotRightDown-v1.2.0", outBRD2I, Bot_v1_1_0Tables.RIGHT_DOWN, namePlayerYou, true );
+		Bot_v1_3_x BLU = new Bot_v1_3_x( main, "BotLeftUp-v1.3.0", outBLU2I, Bot_v1_1_0Tables.LEFT_UP, namePlayerYou, true, frame );
+		Bot_v1_3_x BLD = new Bot_v1_3_x( main, "BotLeftDown-v1.3.0", outBLD2I, Bot_v1_1_0Tables.LEFT_DOWN, namePlayerYou, true, frame );
+		Bot_v1_3_x BRU = new Bot_v1_3_x( main, "BotRightUp-v1.3.0", outBRU2I, Bot_v1_1_0Tables.RIGHT_UP, namePlayerYou, true, frame );
+		Bot_v1_3_x BRD = new Bot_v1_3_x( main, "BotRightDown-v1.3.0", outBRD2I, Bot_v1_1_0Tables.RIGHT_DOWN, namePlayerYou, true, frame );
 		
 		ins = new ArrayList<PipedInputStream>();
 		ins.add(inBRD2I);
@@ -99,7 +121,7 @@ public class Bot
 		outs.add(outBRU2I);
 		outs.add(outBLD2I);
 		outs.add(outBLU2I);		
-		bots = new ArrayList<Bot_v1_2_0>();
+		bots = new ArrayList<Bot_v1_3_x>();
 		bots.add(BRD);
 		bots.add(BRU);
 		bots.add(BLD);
@@ -116,25 +138,7 @@ public class Bot
 	public static void main(String[] args)
 	{
 		Bot bot = new Bot();
-		
-		JFrame frame = new JFrame( "Bot v1.2.2" );											// GUI
-		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		frame.setBounds( 2000, 100, 500, 500 );
-		
-		JPanel panel = new JPanel();
-		panel.setLayout( new BoxLayout(panel, BoxLayout.Y_AXIS) );
-		JLabel label = new JLabel( "<html>This is the graphical representation of the PokerBot with the version number 1.2.2. The bot plays poker on WinnerPoker. " +
-				"Please do not shut down the computer and do not do anything else on the computer. If there is a problem, please tell this " +
-				"the developer or the owner of the computer. And also do not kill this window or the bot that could cause a financial damage!</html>" );
-		label.setPreferredSize( new Dimension(500, 100) );
-		label.setForeground( Color.RED );
-		panel.add( label );
-		JTextArea text = new JTextArea();
-		text.setPreferredSize( new Dimension(500, 400) );
-		panel.add( text );
-		
-		frame.add( panel );
-		frame.setVisible( true );
+		bot.gui.setVisible( true );
 		
 //		bot.bots.get(0).start();			// BRD = bot right down
 //		bot.bots.get(1).start();			// BRU = bot right up
@@ -152,7 +156,7 @@ public class Bot
 	protected void exit() {
 		try {
 			FileWriter fw;
-			for ( Bot_v1_2_0 b : this.bots ) {
+			for ( Bot_v1_3_x b : this.bots ) {
 				String[] allLines = Tools.allLines(b.hhFile);
 				int untilIndex = 0;
 				for ( int i = allLines.length-1; i > -1; i-- )

@@ -23,7 +23,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /**
- * @deprecated Because handHistory.HandHistory.playerStatesOut will not determined!
+ * @deprecated Because handHistory.HandHistory.playerStatesOut is not going to be determined!
  */
 public class ParserPokerStars
 

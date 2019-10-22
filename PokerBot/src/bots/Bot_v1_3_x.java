@@ -1,5 +1,11 @@
 package bots;
 
+import gameBasics.Action;
+import gameBasics.PlayerYou;
+import handHistory.HandHistory;
+import handHistory.HandHistory.GameType;
+import handHistory.HandHistory.Limit;
+
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
@@ -16,12 +22,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
 
-import gameBasics.Action;
-import gameBasics.PlayerYou;
-import handHistory.HandHistory;
-import handHistory.HandHistory.GameType;
-import handHistory.HandHistory.Limit;
 import other.Tools;
 import parser.ParserCreatorWinnerPoker4Tables;
 import strategy.strategyPokerChallenge.interfacesToPokerChallenge.StrategyTwo;
@@ -29,7 +31,7 @@ import strategy.strategyPokerChallenge.ringclient.ClientRingDynamics;
 
 import creatorHandHistory.CreatorHHWPClass;
 
-public class Bot_v1_2_0  extends Thread {
+public class Bot_v1_3_x extends Thread {
 	
 	/**
 	 * The name of the player you are/represent.
@@ -122,31 +124,17 @@ public class Bot_v1_2_0  extends Thread {
 	private Rectangle SPACE_TABLECHAT;
 	
 	/**
-	 * The 	arrangement of the seats on the table;
+	 * The gui of the bot.
 	 */
-	private Rectangle[] SPACE_SEATS;
+	private JFrame gui;
 	
-	/**
-	 * The pictures of the seats.
-	 */
-	private BufferedImage[] PICTURE_SEATS;
-	
-	/**
-	 * The spaces of all seats. The array is arranged by Bot_v1_1_0Tables.LEFT_DOWN, Bot_v1_1_0Tables.LEFT_UP, Bot_v1_1_0Tables.RIGHT_UP, Bot_v1_1_0Tables.RIGHT_DOWN.
-	 */
-	private Rectangle[][] spaceSeats;
-	
-	/**
-	 * The pictures of all seats. The array is arranged by Bot_v1_1_0Tables.LEFT_DOWN, Bot_v1_1_0Tables.LEFT_UP, Bot_v1_1_0Tables.RIGHT_UP, Bot_v1_1_0Tables.RIGHT_DOWN.
-	 */
-	private BufferedImage[][] pictureSeats;
-	
-	public Bot_v1_2_0( ThreadGroup main, String string, PipedOutputStream out, Bot_v1_1_0Tables table, String namePlayerYou, boolean tableWasRemoved )
+	public Bot_v1_3_x(ThreadGroup main, String string, PipedOutputStream out, Bot_v1_1_0Tables table, String namePlayerYou, boolean tableWasRemoved, JFrame frame)
 	{
 		super( main, string );
 		this.out = out;
 		this.table = table;
 		this.tableWasRemoved = tableWasRemoved;
+		this.gui = frame;
 		allocateTableToRest( table );
 		creator = new CreatorHHWPClass( hhFile, sesFile, SPACE_NOTEPAD, SPACE_TABLECHAT );
 		this.namePlayerYou = namePlayerYou;
@@ -163,10 +151,9 @@ public class Bot_v1_2_0  extends Thread {
 			Object o = new Object();
 			
 			while (true) {
-				
 				lock.lock();
 				synchronized (o) {
-					o.wait(1000);
+					o.wait(750);
 				}
 				lock.unlock();
 				
@@ -179,12 +166,12 @@ public class Bot_v1_2_0  extends Thread {
 					lock.lock();
 					log.info( "Beginning creating the hand-history. Table: " + table.toString() );
 					try {
-						creator.createHH();																			// the creator creates the necessary hand history
+						creator.createHH(new Rectangle(gui.getLocation().x+10, gui.getLocation().y+110, gui.getWidth()-20, gui.getHeight()-120));																			// the creator creates the necessary hand history
 						log.info( "Creating of the hand-history was successful. Table: " + table.toString() );
 					} catch ( Exception e ) {
 						log.log( Level.SEVERE, "Creating of the hand-history was not successful. Table: " + table.toString(), e );
 						log.info( "Next attempt to create the hand-history." );
-						creator.createHH();
+						creator.createHH(new Rectangle(gui.getLocation().x+10, gui.getLocation().y+110, gui.getWidth()-20, gui.getHeight()-120));
 					}
 					lock.unlock();
 					
@@ -192,28 +179,28 @@ public class Bot_v1_2_0  extends Thread {
 					HandHistory hh = new HandHistory();															// hand history
 					log.info( "Beginning parsing the hand-history-text-file to a object HandHistory. Table: " + table.toString() );
 					try {
-						hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, sesFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+						hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, sesFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou);
 						log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 					} catch ( Exception e1 ) {
 						log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
 								+ hhFile.toString() + ". Table: " + table.toString(), e1 );
 						sleep(100);
 						try {
-							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, sesFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, sesFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou);
 							log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 						} catch ( Exception e2 ) {
 							log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
 									+ hhFile.toString() + ". Table: " + table.toString(), e2 );
 							sleep(100);
 						} try {
-							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, sesFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, sesFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou);
 							log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 						} catch ( Exception e3 ) {
 							log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
 									+ hhFile.toString() + ". Table: " + table.toString(), e3 );
 							sleep(100);
 						} try {
-							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, sesFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou, PICTURE_SEATS, SPACE_SEATS);
+							hh = ParserCreatorWinnerPoker4Tables.parserMainCWP( hhFile, parserFileHH, sesFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, namePlayerYou);
 							log.info( "Parsing of the hand-history-text-file was successful. Table: " + table.toString() );
 						} catch ( Exception e4 ) {
 							log.log(Level.SEVERE, "Parsing of the hand-history-text-file was not successfull. The path of the text-file is: "
@@ -250,7 +237,7 @@ public class Bot_v1_2_0  extends Thread {
 						
 						long time = System.currentTimeMillis();
 						
-						strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, sesFiles, tables, gameType, limit, maxSeatOnTable, namePlayerYou, this.tableWasRemoved);
+						strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, sesFiles, tables, gameType, limit, maxSeatOnTable, namePlayerYou, false);
 						long time1 = System.currentTimeMillis();
 						strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createCONSTANT(hh);
 						long time2 = System.currentTimeMillis();
@@ -266,7 +253,7 @@ public class Bot_v1_2_0  extends Thread {
 							System.out.println("time-diff-4: " + (time4- time3) );
 						}
 						
-						log.info("Creating the TU-Darmstadt's AKI-RealBot datastructure was succesful. Table: " + table.toString());
+						log.info("End creating the TU-Darmstadt's AKI-RealBot datastructure. Table: " + table.toString());
 					} catch (Exception e) {
 						log.log(Level.SEVERE, "Creating the TU-Darmstadt's AKI-RealBot datastructure was not successful! Table: " + table.toString(), e);
 						log.info("The second attempt to creating the TU-Darmstadt's AKI-RealBot datastructure. Table: " + table.toString());
@@ -282,12 +269,12 @@ public class Bot_v1_2_0  extends Thread {
 							Limit[] limit = {Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT};
 							int[] maxSeatOnTable = {9, 9, 9, 9};
 							
-							strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, sesFiles, tables, gameType, limit, maxSeatOnTable, namePlayerYou, this.tableWasRemoved);
+							strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, sesFiles, tables, gameType, limit, maxSeatOnTable, namePlayerYou, false);
 							strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createCONSTANT(hh);
 							crd = strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createRingDynamics(hh, hh.getPlayerYou("walk10er"));
 							strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createHistory(hh, you);
 							
-							log.info("Creating the TU-Darmstadt's AKI-RealBot datastructure was succesful. Table: " + table.toString());
+							log.info("End creating the TU-Darmstadt's AKI-RealBot datastructure was succesful. Table: " + table.toString());
 						} catch (Exception e2) {
 							log.log(Level.SEVERE, "Creating the TU-Darmstadt's AKI-RealBot datastructure was not successful! Table: " + table.toString(), e2);
 							log.info("The third attempt to creating the TU-Darmstadt's AKI-RealBot datastructure. Table: " + table.toString());
@@ -303,12 +290,12 @@ public class Bot_v1_2_0  extends Thread {
 								Limit[] limit = {Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT};
 								int[] maxSeatOnTable = {9, 9, 9, 9};
 								
-								strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, sesFiles, tables, gameType, limit, maxSeatOnTable, namePlayerYou, this.tableWasRemoved);
+								strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, sesFiles, tables, gameType, limit, maxSeatOnTable, namePlayerYou, false);
 								strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createCONSTANT(hh);
 								crd = strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createRingDynamics(hh, hh.getPlayerYou("walk10er"));
 								strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createHistory(hh, you);
 								
-								log.info("Creating the TU-Darmstadt's AKI-RealBot datastructure was succesful. Table: " + table.toString());
+								log.info("End creating the TU-Darmstadt's AKI-RealBot datastructure was succesful. Table: " + table.toString());
 							} catch (Exception e33) {
 								log.log(Level.SEVERE, "Creating the TU-Darmstadt's AKI-RealBot datastructure was not successful! Table: " + table.toString(), e);
 								exit();
@@ -319,17 +306,17 @@ public class Bot_v1_2_0  extends Thread {
 					gameBasics.Action action = new gameBasics.Action();											// action
 					log.info( "Start getting right Action for the actual situation. Table: " + table.toString() );
 					try {
-						action.set(StrategyTwo.actionFor(hh, you, sesFile, PICTURE_SEATS, SPACE_SEATS, crd, this.tableWasRemoved));
+						action.set(StrategyTwo.actionFor(hh, you, sesFile, crd));
 					} catch ( Exception e ) {
 						log.log( Level.SEVERE, "Getting the Action for the actual situation was not possible. Table: " + table.toString(), e );
 						log.info("The second attempt to get the Action. Table: " + table.toString());
 						try {
-							action.set(StrategyTwo.actionFor(hh, you, sesFile, PICTURE_SEATS, SPACE_SEATS, crd, this.tableWasRemoved));
+							action.set(StrategyTwo.actionFor(hh, you, sesFile, crd));
 						} catch ( Exception e2 ) {
 							log.log( Level.SEVERE, "Getting the Action for the actual situation was not possible. Table: " + table.toString(), e );
 							log.info("The third attempt to get the Action. Table: " + table.toString());
 							try {
-								action.set(StrategyTwo.actionFor(hh, you, sesFile, PICTURE_SEATS, SPACE_SEATS, crd, this.tableWasRemoved));
+								action.set(StrategyTwo.actionFor(hh, you, sesFile, crd));
 							} catch ( Exception e3 ) {
 								log.log( Level.SEVERE, "Getting the Action for the actual situation was not possible. Table: " + table.toString(), e );
 								exit();
@@ -348,8 +335,9 @@ public class Bot_v1_2_0  extends Thread {
 					lock.unlock();
 					lock.lock();
 					synchronized (o) {
-						o.wait(1000);
+						o.wait(7500);
 					}
+
 				}
 			}
 		} catch ( Exception e ) {
@@ -366,103 +354,20 @@ public class Bot_v1_2_0  extends Thread {
 		}
 	}
 	
-	
 	/**
 	 * This method determines the pictures and locations of the action-buttons, the table chat, the nine seats and the file
 	 * by given table.
 	 */
 	private void allocateTableToRest( Bot_v1_1_0Tables table )
 	{
-		SPACE_NOTEPAD = new Rectangle( 2010, 210, 480, 380 );
-		spaceSeats = new Rectangle[4][9];
-		pictureSeats = new BufferedImage[4][9];
-		
-		try {
-			spaceSeats[0][0] = new Rectangle( 113, 729, 50, 50 );			// left down
-			spaceSeats[0][1] = new Rectangle( 241, 684, 52, 52 );
-			spaceSeats[0][2] = new Rectangle( 442, 688, 50, 50 );
-			spaceSeats[0][3] = new Rectangle( 575, 727, 50, 50 );
-			spaceSeats[0][4] = new Rectangle( 630, 825, 51, 50 );
-			spaceSeats[0][5] = new Rectangle( 575, 950, 55, 50 );
-			spaceSeats[0][6] = new Rectangle( 432, 973, 50, 50 );
-			spaceSeats[0][7] = new Rectangle( 254, 974, 50, 50 );
-			spaceSeats[0][8] = new Rectangle( 110, 950, 50, 50 );
-			pictureSeats[0][0] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat1.PNG") );
-			pictureSeats[0][1] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat2.PNG") );
-			pictureSeats[0][2] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat3.PNG") );
-			pictureSeats[0][3] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat4.PNG") );
-			pictureSeats[0][4] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat5.PNG") );
-			pictureSeats[0][5] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat6.PNG") );
-			pictureSeats[0][6] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat7.PNG") );
-			pictureSeats[0][7] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat8.PNG") );
-			pictureSeats[0][8] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat9.PNG") );
-			
-			spaceSeats[1][0] = new Rectangle( 128, 111, 51, 55);			// left up
-			spaceSeats[1][1] = new Rectangle( 267, 66, 65, 51 );
-			spaceSeats[1][2] = new Rectangle( 490, 68, 50, 52 );
-			spaceSeats[1][3] = new Rectangle( 637, 113, 33, 55 );
-			spaceSeats[1][4] = new Rectangle( 700, 223, 50, 50 );
-			spaceSeats[1][5] = new Rectangle( 639, 359, 52, 54 );
-			spaceSeats[1][6] = new Rectangle( 480, 389, 51, 49 );
-			spaceSeats[1][7] = new Rectangle( 283, 386, 50, 55 );
-			spaceSeats[1][8] = new Rectangle( 128, 357, 52, 53 );
-			pictureSeats[1][0] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat1.PNG") );
-			pictureSeats[1][1] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat2.PNG") );
-			pictureSeats[1][2] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat3.PNG") );
-			pictureSeats[1][3] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat4.PNG") );
-			pictureSeats[1][4] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat5.PNG") );
-			pictureSeats[1][5] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat6.PNG") );
-			pictureSeats[1][6] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat7.PNG") );
-			pictureSeats[1][7] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat8.PNG") );
-			pictureSeats[1][8] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat9.PNG") );
-			
-			spaceSeats[2][0] = new Rectangle( 942, 120, 58, 57 );			// right up
-			spaceSeats[2][1] = new Rectangle( 1083, 76, 54, 52 );
-			spaceSeats[2][2] = new Rectangle( 1305, 75, 50, 54 );
-			spaceSeats[2][3] = new Rectangle( 1453, 124, 54, 54 );
-			spaceSeats[2][4] = new Rectangle( 1515, 232, 53, 53 );
-			spaceSeats[2][5] = new Rectangle( 1456, 368, 51, 53 );
-			spaceSeats[2][6] = new Rectangle( 1295, 394, 50, 56 );
-			spaceSeats[2][7] = new Rectangle( 1097, 395, 51, 57 );
-			spaceSeats[2][8] = new Rectangle( 943, 367, 57, 53 );
-			pictureSeats[2][0] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat1.PNG") );
-			pictureSeats[2][1] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat2.PNG") );
-			pictureSeats[2][2] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat3.PNG") );
-			pictureSeats[2][3] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat4.PNG") );
-			pictureSeats[2][4] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat5.PNG") );
-			pictureSeats[2][5] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat6.PNG") );
-			pictureSeats[2][6] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat7.PNG") );
-			pictureSeats[2][7] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat8.PNG") );
-			pictureSeats[2][8] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat9.PNG") );
-			
-			spaceSeats[3][0] = new Rectangle( 933, 727, 47, 50 );			// right down
-			spaceSeats[3][1] = new Rectangle( 1055, 690, 55, 45 );
-			spaceSeats[3][2] = new Rectangle( 1253, 690, 46, 48 );
-			spaceSeats[3][3] = new Rectangle( 1385, 735, 55, 42 );
-			spaceSeats[3][4] = new Rectangle( 1441, 826, 46, 49 );
-			spaceSeats[3][5] = new Rectangle( 1385, 952, 48, 44 );
-			spaceSeats[3][6] = new Rectangle( 1241, 974, 50, 47 );
-			spaceSeats[3][7] = new Rectangle( 1068, 973, 50, 50 );
-			spaceSeats[3][8] = new Rectangle( 929, 950, 51, 50 );
-			pictureSeats[3][0] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat1.PNG") );
-			pictureSeats[3][1] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat2.PNG") );
-			pictureSeats[3][2] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat3.PNG") );
-			pictureSeats[3][3] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat4.PNG") );
-			pictureSeats[3][4] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat5.PNG") );
-			pictureSeats[3][5] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat6.PNG") );
-			pictureSeats[3][6] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat7.PNG") );
-			pictureSeats[3][7] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat8.PNG") );
-			pictureSeats[3][8] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat9.PNG") );						
-		} catch (Exception e) {
-			e.printStackTrace();
-		}		
+		SPACE_NOTEPAD = new Rectangle(gui.getLocation().x+10, gui.getLocation().y+110, gui.getWidth()-20, gui.getHeight()-120);
 		
 		if ( table == Bot_v1_1_0Tables.LEFT_UP )
 		{
-			logFile = new File( "c://pokerBot//bot_v1_2_0//loggingBotTableLeftUp.txt" );
-			hhFile = new File( "c://pokerBot//bot_v1_2_0//hhTableLeftUp.txt" );
-			parserFileHH = new File( "c://pokerBot//bot_v1_2_0//parserTableLeftUp.txt" );
-			sesFile = new File("c://pokerBot//bot_v1_2_0//sessionalHHTableLeftUp.txt");
+			logFile = new File( "c://pokerBot//bot_v1_3_x//loggingBotTableLeftUp.txt" );
+			hhFile = new File( "c://pokerBot//bot_v1_3_x//hhTableLeftUp.txt" );
+			parserFileHH = new File( "c://pokerBot//bot_v1_3_x//parserTableLeftUp.txt" );
+			sesFile = new File("c://pokerBot//bot_v1_3_x//sessionalHHTableLeftUp.txt");
 			
 			SPACE_TABLECHAT = new Rectangle(15, 548, 265, 49);
 			
@@ -476,32 +381,10 @@ public class Bot_v1_2_0  extends Thread {
 				SPACE_BUTTON_BET_RAISE = new Rectangle( 694, 546, 50, 18 );
 			}
 			
-			SPACE_SEATS = new Rectangle[ 9 ];
-			SPACE_SEATS[ 0 ] = new Rectangle( 128, 111, 51, 55);
-			SPACE_SEATS[ 1 ] = new Rectangle( 267, 66, 65, 51 );
-			SPACE_SEATS[ 2 ] = new Rectangle( 490, 68, 50, 52 );
-			SPACE_SEATS[ 3 ] = new Rectangle( 637, 113, 33, 55 );
-			SPACE_SEATS[ 4 ] = new Rectangle( 700, 223, 50, 50 );
-			SPACE_SEATS[ 5 ] = new Rectangle( 639, 359, 52, 54 );
-			SPACE_SEATS[ 6 ] = new Rectangle( 480, 389, 51, 49 );
-			SPACE_SEATS[ 7 ] = new Rectangle( 283, 386, 50, 55 );
-			SPACE_SEATS[ 8 ] = new Rectangle( 128, 357, 52, 53 );
-			
 			try {
 				PICTURE_BUTTON_FOLD = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureButtonFold.PNG") );
 				PICTURE_BUTTON_CKECK_CALL = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureButtonCheckCall.PNG") );
 				PICTURE_BUTTON_BET_RAISE = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureButtonBetRaise.PNG") );
-				
-				PICTURE_SEATS = new BufferedImage[ 9 ];
-				PICTURE_SEATS[ 0 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat1.PNG") );
-				PICTURE_SEATS[ 1 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat2.PNG") );
-				PICTURE_SEATS[ 2 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat3.PNG") );
-				PICTURE_SEATS[ 3 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat4.PNG") );
-				PICTURE_SEATS[ 4 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat5.PNG") );
-				PICTURE_SEATS[ 5 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat6.PNG") );
-				PICTURE_SEATS[ 6 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat7.PNG") );
-				PICTURE_SEATS[ 7 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat8.PNG") );
-				PICTURE_SEATS[ 8 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftUp//pictureSeat9.PNG") );
 
 			} catch ( Exception e ) {
 				e.printStackTrace();
@@ -509,10 +392,10 @@ public class Bot_v1_2_0  extends Thread {
 		}
 		else if ( table == Bot_v1_1_0Tables.LEFT_DOWN )
 		{
-			logFile = new File( "c://pokerBot//bot_v1_2_0//loggingBotTableLeftDown.txt" );
-			hhFile = new File( "c://pokerBot//bot_v1_2_0//hhTableLeftDown.txt" );
-			parserFileHH = new File( "c://pokerBot//bot_v1_2_0//parserTableLeftDown.txt" );
-			sesFile = new File("c://pokerBot//bot_v1_2_0//sessionalHHTableLeftDown.txt");
+			logFile = new File( "c://pokerBot//bot_v1_3_x//loggingBotTableLeftDown.txt" );
+			hhFile = new File( "c://pokerBot//bot_v1_3_x//hhTableLeftDown.txt" );
+			parserFileHH = new File( "c://pokerBot//bot_v1_3_x//parserTableLeftDown.txt" );
+			sesFile = new File("c://pokerBot//bot_v1_3_x//sessionalHHTableLeftDown.txt");
 			
 			SPACE_TABLECHAT = new Rectangle( 14, 1105, 328, 50 );
 			
@@ -526,42 +409,20 @@ public class Bot_v1_2_0  extends Thread {
 				SPACE_BUTTON_BET_RAISE = new Rectangle( 630, 1115, 50, 10 );
 			}
 			
-			SPACE_SEATS = new Rectangle[ 9 ];
-			SPACE_SEATS[ 0 ] = new Rectangle( 113, 729, 50, 50 );
-			SPACE_SEATS[ 1 ] = new Rectangle( 241, 684, 52, 52 );
-			SPACE_SEATS[ 2 ] = new Rectangle( 442, 688, 50, 50 );
-			SPACE_SEATS[ 3 ] = new Rectangle( 575, 727, 50, 50 );
-			SPACE_SEATS[ 4 ] = new Rectangle( 630, 825, 51, 50 );
-			SPACE_SEATS[ 5 ] = new Rectangle( 575, 950, 55, 50 );
-			SPACE_SEATS[ 6 ] = new Rectangle( 432, 973, 50, 50 );
-			SPACE_SEATS[ 7 ] = new Rectangle( 254, 974, 50, 50 );
-			SPACE_SEATS[ 8 ] = new Rectangle( 110, 950, 50, 50 );
-			
 			try {
 				PICTURE_BUTTON_FOLD = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureButtonFold.PNG") );
 				PICTURE_BUTTON_CKECK_CALL = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown/pictureButtonCheckCall.PNG") );
 				PICTURE_BUTTON_BET_RAISE = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureButtonBetRaise.PNG") );
-				
-				PICTURE_SEATS = new BufferedImage[ 9 ];
-				PICTURE_SEATS[ 0 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat1.PNG") );
-				PICTURE_SEATS[ 1 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat2.PNG") );
-				PICTURE_SEATS[ 2 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat3.PNG") );
-				PICTURE_SEATS[ 3 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat4.PNG") );
-				PICTURE_SEATS[ 4 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat5.PNG") );
-				PICTURE_SEATS[ 5 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat6.PNG") );
-				PICTURE_SEATS[ 6 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat7.PNG") );
-				PICTURE_SEATS[ 7 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat8.PNG") );
-				PICTURE_SEATS[ 8 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableLeftDown//pictureSeat9.PNG") );
 			} catch ( Exception e ) {
 				e.printStackTrace();
 			}
 		}
 		else if ( table == Bot_v1_1_0Tables.RIGHT_DOWN )
 		{
-			logFile = new File( "c://pokerBot//bot_v1_2_0//loggingBotTableRightDown.txt" );
-			hhFile = new File( "c://pokerBot//bot_v1_2_0//hhTableRightDown.txt" );
-			parserFileHH = new File( "c://pokerBot//bot_v1_2_0//parserTableRightDown.txt" );
-			sesFile = new File("c://pokerBot//bot_v1_2_0//sessionalHHTableRightDown.txt");
+			logFile = new File( "c://pokerBot//bot_v1_3_x//loggingBotTableRightDown.txt" );
+			hhFile = new File( "c://pokerBot//bot_v1_3_x//hhTableRightDown.txt" );
+			parserFileHH = new File( "c://pokerBot//bot_v1_3_x//parserTableRightDown.txt" );
+			sesFile = new File("c://pokerBot//bot_v1_3_x//sessionalHHTableRightDown.txt");
 			
 			SPACE_TABLECHAT = new Rectangle( 833, 1142, 322, 51 );
 			
@@ -575,42 +436,20 @@ public class Bot_v1_2_0  extends Thread {
 				SPACE_BUTTON_BET_RAISE = new Rectangle( 1440, 1110, 50, 15 );
 			}
 			
-			SPACE_SEATS = new Rectangle[ 9 ];
-			SPACE_SEATS[ 0 ] = new Rectangle( 933, 727, 47, 50 );
-			SPACE_SEATS[ 1 ] = new Rectangle( 1055, 690, 55, 45 );
-			SPACE_SEATS[ 2 ] = new Rectangle( 1253, 690, 46, 48 );
-			SPACE_SEATS[ 3 ] = new Rectangle( 1385, 735, 55, 42 );
-			SPACE_SEATS[ 4 ] = new Rectangle( 1441, 826, 46, 49 );
-			SPACE_SEATS[ 5 ] = new Rectangle( 1385, 952, 48, 44 );
-			SPACE_SEATS[ 6 ] = new Rectangle( 1241, 974, 50, 47 );
-			SPACE_SEATS[ 7 ] = new Rectangle( 1068, 973, 50, 50 );
-			SPACE_SEATS[ 8 ] = new Rectangle( 929, 950, 51, 50 );
-			
 			try {
 				PICTURE_BUTTON_FOLD = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureButtonFold.PNG") );
 				PICTURE_BUTTON_CKECK_CALL = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureButtonCheckCall.PNG") );
 				PICTURE_BUTTON_BET_RAISE = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureButtonBetRaise.PNG") );
-				
-				PICTURE_SEATS = new BufferedImage[ 9 ];
-				PICTURE_SEATS[ 0 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat1.PNG") );
-				PICTURE_SEATS[ 1 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat2.PNG") );
-				PICTURE_SEATS[ 2 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat3.PNG") );
-				PICTURE_SEATS[ 3 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat4.PNG") );
-				PICTURE_SEATS[ 4 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat5.PNG") );
-				PICTURE_SEATS[ 5 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat6.PNG") );
-				PICTURE_SEATS[ 6 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat7.PNG") );
-				PICTURE_SEATS[ 7 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat8.PNG") );
-				PICTURE_SEATS[ 8 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightDown//pictureSeat9.PNG") );
 			} catch ( Exception e ) {
 				e.printStackTrace();
 			}
 		}
 		else if ( table == Bot_v1_1_0Tables.RIGHT_UP )
 		{
-			logFile = new File( "c://pokerBot//bot_v1_2_0//loggingBotTableRightUp.txt" );
-			hhFile = new File( "c://pokerBot//bot_v1_2_0//hhTableRightUp.txt" );
-			parserFileHH = new File( "c://pokerBot//bot_v1_2_0//parserTableRightUp.txt" );
-			sesFile = new File("c://pokerBot//bot_v1_2_0//sessionalHHTableRightUp.txt");
+			logFile = new File( "c://pokerBot//bot_v1_3_x//loggingBotTableRightUp.txt" );
+			hhFile = new File( "c://pokerBot//bot_v1_3_x//hhTableRightUp.txt" );
+			parserFileHH = new File( "c://pokerBot//bot_v1_3_x//parserTableRightUp.txt" );
+			sesFile = new File("c://pokerBot//bot_v1_3_x//sessionalHHTableRightUp.txt");
 			
 			SPACE_TABLECHAT = new Rectangle( 834, 581, 361, 61 );
 			
@@ -624,32 +463,10 @@ public class Bot_v1_2_0  extends Thread {
 				SPACE_BUTTON_BET_RAISE = new Rectangle( 1510, 550, 50, 15 );
 			}
 			
-			SPACE_SEATS = new Rectangle[ 9 ];
-			SPACE_SEATS[ 0 ] = new Rectangle( 942, 120, 58, 57 );
-			SPACE_SEATS[ 1 ] = new Rectangle( 1083, 76, 54, 52 );
-			SPACE_SEATS[ 2 ] = new Rectangle( 1305, 75, 50, 54 );
-			SPACE_SEATS[ 3 ] = new Rectangle( 1453, 124, 54, 54 );
-			SPACE_SEATS[ 4 ] = new Rectangle( 1515, 232, 53, 53 );
-			SPACE_SEATS[ 5 ] = new Rectangle( 1456, 368, 51, 53 );
-			SPACE_SEATS[ 6 ] = new Rectangle( 1295, 394, 50, 56 );
-			SPACE_SEATS[ 7 ] = new Rectangle( 1097, 395, 51, 57 );
-			SPACE_SEATS[ 8 ] = new Rectangle( 943, 367, 57, 53 );
-			
 			try {
 				PICTURE_BUTTON_FOLD = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureButtonFold.PNG") );
 				PICTURE_BUTTON_CKECK_CALL = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureButtonCheckCall.PNG") );
 				PICTURE_BUTTON_BET_RAISE = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureButtonBetRaise.PNG") );
-				
-				PICTURE_SEATS = new BufferedImage[ 9 ];
-				PICTURE_SEATS[ 0 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat1.PNG") );
-				PICTURE_SEATS[ 1 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat2.PNG") );
-				PICTURE_SEATS[ 2 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat3.PNG") );
-				PICTURE_SEATS[ 3 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat4.PNG") );
-				PICTURE_SEATS[ 4 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat5.PNG") );
-				PICTURE_SEATS[ 5 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat6.PNG") );
-				PICTURE_SEATS[ 6 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat7.PNG") );
-				PICTURE_SEATS[ 7 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat8.PNG") );
-				PICTURE_SEATS[ 8 ] = ImageIO.read( new File("c://pokerBot//picturesWinnerPoker//bot_v1_1_0//tableRightUp//pictureSeat9.PNG") );
 			} catch ( Exception e ) {
 				e.printStackTrace();
 			}
@@ -714,6 +531,7 @@ public class Bot_v1_2_0  extends Thread {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	/**
 	 * This method is used when the bot has got an exception and therefore the whole bot has to be termined.

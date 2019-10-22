@@ -4,7 +4,7 @@ import strategy.strategyPokerChallenge.simulation.interfaces.INode;
 import strategy.strategyPokerChallenge.simulation.real.RealGame;
 import strategy.strategyPokerChallenge.simulation.real.RealPathSimulator;
 
-public class RealSimulationWorker implements Runnable {
+public class RealSimulationWorker extends Thread implements Runnable {
 	
 
 	private INode root;
@@ -25,9 +25,12 @@ public class RealSimulationWorker implements Runnable {
 			RealPathSimulator rps = new RealPathSimulator(root, new RealGame(game));
 			rps.simulatePath(startNode);
 		}
+		if (!interrupted())
+			this.interrupt();
 	}
 	
 	public synchronized void stopWork() {
 		this.realSimulationWorker = null;
+		this.interrupt();
 	}
 }

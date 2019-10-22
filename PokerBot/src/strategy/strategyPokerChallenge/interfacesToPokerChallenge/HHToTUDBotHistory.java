@@ -1,8 +1,6 @@
 package strategy.strategyPokerChallenge.interfacesToPokerChallenge;
 
 import java.awt.AWTException;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -60,9 +58,9 @@ public class HHToTUDBotHistory {
 	 * For parameters and exceptions please look look for parser.ParserCreatorWinnerPoker4Tables.parserCWP(...).
 	 */
 	public static void createPrivateHands( File source, File parserToTUDBotData, File sesFiles, Bot_v1_1_0Tables table, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName,
-			BufferedImage[] pictureSeats, Rectangle[] spaceSeats, boolean tabWasRemoved ) throws IOException, AWTException {
+			boolean tabWasRemoved ) throws IOException, AWTException {
 		HHToTUDBotHistory.hands = null;
-		HHToTUDBotHistory.hands = getHands(source, parserToTUDBotData, sesFiles, table, gameType, limit, maxSeatOnTable, playYouName, pictureSeats, spaceSeats, tabWasRemoved);
+		HHToTUDBotHistory.hands = getHands(source, parserToTUDBotData, sesFiles, table, gameType, limit, maxSeatOnTable, playYouName, tabWasRemoved);
 	}
 	
 	/**
@@ -70,11 +68,10 @@ public class HHToTUDBotHistory {
 	 * For more informations look at the other "createPrivateHands"-method.
 	 */
 	public static void createPrivateHands( File[] source, File[] parserToTUDBotData, File[] sesFiles, Bot_v1_1_0Tables table[], GameType gameType[], Limit limit[], int maxSeatOnTable[], String playYouName,
-			BufferedImage[][] pictureSeats, Rectangle[][] spaceSeats, boolean tWasRem ) throws IOException, AWTException {
+			boolean tWasRem ) throws IOException, AWTException {
 		HHToTUDBotHistory.hands = null;
 		
-		if ( source.length != parserToTUDBotData.length || parserToTUDBotData.length != table.length || table.length != gameType.length || gameType.length != limit.length ||
-				limit.length != maxSeatOnTable.length || maxSeatOnTable.length != pictureSeats.length || pictureSeats.length != spaceSeats.length )
+		if ( source.length != parserToTUDBotData.length || parserToTUDBotData.length != table.length || table.length != gameType.length || gameType.length != limit.length || limit.length != maxSeatOnTable.length )
 			throw new IllegalArgumentException("The passed arguments can not be correct because they do not have the same dimension!");
 		
 		ArrayList<ArrayList<HandHistory>> hhs = new ArrayList<ArrayList<HandHistory>>();
@@ -86,7 +83,7 @@ public class HHToTUDBotHistory {
 		for ( int i = 0; i < source.length; i++ ) {
 			if ( other.Tools.allLines(source[i]).length == 0 )
 				continue;
-			test = getHands(source[i], parserToTUDBotData[i], sesFiles[i], table[i], gameType[i], limit[i], maxSeatOnTable[i], playYouName, pictureSeats[i], spaceSeats[i], tWasRem);
+			test = getHands(source[i], parserToTUDBotData[i], sesFiles[i], table[i], gameType[i], limit[i], maxSeatOnTable[i], playYouName, tWasRem);
 			if ( test.length==0 )
 				continue;
 			handsA = test;
@@ -114,7 +111,7 @@ public class HHToTUDBotHistory {
 	 * For parameters and exceptions please look look for parser.ParserCreatorWinnerPoker4Tables.parserCWP(...).
 	 */
 	public static HandHistory[] getHands( File source, File parserToTUDBotData, File sesFile, Bot_v1_1_0Tables table, GameType gameType, Limit limit, int maxSeatOnTable, String playYouName,
-			BufferedImage[] pictureSeats, Rectangle[] spaceSeats, boolean tWasRemo ) throws IOException, AWTException {
+			boolean tWasRemo ) throws IOException, AWTException {
 		HandHistory[] hands;
 		
 		String[] allLinesWithoutTrim = Tools.allLines( source );
@@ -144,7 +141,7 @@ public class HHToTUDBotHistory {
 			heapW.flush();
 			heapW.close();
 			
-			hands[i] = ParserCreatorWinnerPoker4Tables.parserCWP(parserToTUDBotData, gameType, sesFile, limit, maxSeatOnTable, playYouName, pictureSeats, spaceSeats, tWasRemo);
+			hands[i] = ParserCreatorWinnerPoker4Tables.parserCWP(parserToTUDBotData, gameType, sesFile, limit, maxSeatOnTable, playYouName);
 			
 			j = indizes.get(i+1);
 		}
@@ -523,7 +520,7 @@ public class HHToTUDBotHistory {
 		strategy.strategyPokerChallenge.ca.ualberta.cs.poker.free.dynamics.Card.Rank r;
 		strategy.strategyPokerChallenge.ca.ualberta.cs.poker.free.dynamics.Card.Suit s;
 		
-		switch ( c.valueInt ) {
+		switch ( c.getRank().toInt() ) {
 		case 2:
 			r = strategy.strategyPokerChallenge.ca.ualberta.cs.poker.free.dynamics.Card.Rank.TWO; break;
 		case 3:
@@ -554,7 +551,7 @@ public class HHToTUDBotHistory {
 			throw new IllegalStateException( "The commited cardBasics.Card is not correct initialized!" );
 		}
 		
-		switch ( c.colourToInt ) {
+		switch ( c.getSuit().toInt() ) {
 		case 1:
 			s = strategy.strategyPokerChallenge.ca.ualberta.cs.poker.free.dynamics.Card.Suit.SPADES; break;
 		case 2:

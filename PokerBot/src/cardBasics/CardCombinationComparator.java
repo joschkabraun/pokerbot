@@ -14,9 +14,9 @@ public class CardCombinationComparator implements Comparator<CardCombination>
 			return -1;
 		else if( cardCombination1.combinationValue == cardCombination2.combinationValue )
 		{
-			if ( cardCombination1.highCard.valueInt < cardCombination2.highCard.valueInt )
+			if ( cardCombination1.highCard.getRank().toInt() < cardCombination2.highCard.getRank().toInt() )
 				return -1;
-			else if ( cardCombination1.highCard.valueInt == cardCombination2.highCard.valueInt )
+			else if ( cardCombination1.highCard.getRank().toInt() == cardCombination2.highCard.getRank().toInt() )
 				return 0;
 			else
 				return 1;

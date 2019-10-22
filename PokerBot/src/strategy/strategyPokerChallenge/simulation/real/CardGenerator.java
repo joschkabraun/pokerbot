@@ -1,5 +1,9 @@
 package strategy.strategyPokerChallenge.simulation.real;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Date;
 import java.util.Random;
 
 import strategy.strategyPokerChallenge.ca.ualberta.cs.poker.free.dynamics.Card;
@@ -55,6 +59,15 @@ public class CardGenerator {
 	}
 
 	public Card[] getHole(int bucket, int maxBucket) {
+		try {
+			File file = new File("c://pokerBot/bot_v1_2_0//debug//bucket//bucketing.txt");
+			FileWriter fw = new FileWriter(file, true);
+			fw.write(String.format("bucket: %d, maxBucket: %d, %tT%n", bucket, maxBucket, new Date()));
+			fw.flush();
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		Card[] result = new Card[2];
 		result[0] = getNextAndRemoveCard();
 		result[1] = getNextAndRemoveCard();

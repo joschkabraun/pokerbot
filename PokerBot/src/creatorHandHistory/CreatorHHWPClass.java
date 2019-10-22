@@ -57,6 +57,8 @@ public class CreatorHHWPClass
 	
 	private File fLog;
 	
+	private boolean used;
+	
 	/**
 	 * @deprecated because the old version of the PokerBot are longer supported and there are new things!
 	 */
@@ -71,17 +73,17 @@ public class CreatorHHWPClass
 			this.lastS = new String[1];
 			this.lastS[0] = "test";
 			switch ( f.getAbsolutePath() ) {
-			case "c:\\pokerBot\\bot_v1_2_0\\hhTableRightDown.txt":
-				this.fLog = new File("c://pokerBot//bot_v1_2_0//debug//creatorLogTableRightDown.txt");
+			case "c:\\pokerBot\\bot_v1_3_x\\hhTableRightDown.txt":
+				this.fLog = new File("c://pokerBot//bot_v1_3_x//debug//creatorLogTableRightDown.txt");
 				break;
-			case "c:\\pokerBot\\bot_v1_2_0\\hhTableRightUp.txt":
-				this.fLog = new File("c://pokerBot/bot_v1_2_0//debug//creatorLogTableRightUp.txt");
+			case "c:\\pokerBot\\bot_v1_3_x\\hhTableRightUp.txt":
+				this.fLog = new File("c://pokerBot/bot_v1_3_x//debug//creatorLogTableRightUp.txt");
 				break;
-			case "c:\\pokerBot\\bot_v1_2_0\\hhTableLeftDown.txt":
-				this.fLog = new File("c://pokerBot/bot_v1_2_0//debug//creatorLogTableLeftDown.txt");
+			case "c:\\pokerBot\\bot_v1_3_x\\hhTableLeftDown.txt":
+				this.fLog = new File("c://pokerBot/bot_v1_3_x//debug//creatorLogTableLeftDown.txt");
 				break;
-			case "c:\\pokerBot\\bot_v1_2_0\\hhTableLeftUp.txt":
-				this.fLog = new File("c://pokerBot/bot_v1_2_0//debug//creatorLogTableLeftUp.txt");
+			case "c:\\pokerBot\\bot_v1_3_x\\hhTableLeftUp.txt":
+				this.fLog = new File("c://pokerBot/bot_v1_3_x//debug//creatorLogTableLeftUp.txt");
 				break;
 			default:
 				throw new IllegalArgumentException("Bla bla!");
@@ -108,32 +110,32 @@ public class CreatorHHWPClass
 			this.lastS[0] = "test";
 			int numberPlayer;
 			switch ( f.getAbsolutePath() ) {
-			case "c:\\pokerBot\\bot_v1_2_0\\hhTableRightDown.txt":
-				this.fLog = new File("c://pokerBot//bot_v1_2_0//debug//creatorLogTableRightDown.txt");
+			case "c:\\pokerBot\\bot_v1_3_x\\hhTableRightDown.txt":
+				this.fLog = new File("c://pokerBot//bot_v1_3_x//debug//creatorLogTableRightDown.txt");
 				System.out.println("Please enter the number of players for the table RIGHT-DOWN: ");
 				numberPlayer = new java.util.Scanner(System.in).nextInt();
 				fw.write(String.format(numberPlayer+"%n"));
 				fw.flush();
 				fw.close();
 				break;
-			case "c:\\pokerBot\\bot_v1_2_0\\hhTableRightUp.txt":
-				this.fLog = new File("c://pokerBot/bot_v1_2_0//debug//creatorLogTableRightUp.txt");
+			case "c:\\pokerBot\\bot_v1_3_x\\hhTableRightUp.txt":
+				this.fLog = new File("c://pokerBot/bot_v1_3_x//debug//creatorLogTableRightUp.txt");
 				System.out.println("Please enter the number of players for the table RIGHT-UP: ");
 				numberPlayer = new java.util.Scanner(System.in).nextInt();
 				fw.write(String.format(numberPlayer+"%n"));
 				fw.flush();
 				fw.close();
 				break;
-			case "c:\\pokerBot\\bot_v1_2_0\\hhTableLeftDown.txt":
-				this.fLog = new File("c://pokerBot/bot_v1_2_0//debug//creatorLogTableLeftDown.txt");
+			case "c:\\pokerBot\\bot_v1_3_x\\hhTableLeftDown.txt":
+				this.fLog = new File("c://pokerBot/bot_v1_3_x//debug//creatorLogTableLeftDown.txt");
 				System.out.println("Please enter the number of players for the table LEFT-DOWN: ");
 				numberPlayer = new java.util.Scanner(System.in).nextInt();
 				fw.write(String.format(numberPlayer+"%n"));
 				fw.flush();
 				fw.close();
 				break;
-			case "c:\\pokerBot\\bot_v1_2_0\\hhTableLeftUp.txt":
-				this.fLog = new File("c://pokerBot/bot_v1_2_0//debug//creatorLogTableLeftUp.txt");
+			case "c:\\pokerBot\\bot_v1_3_x\\hhTableLeftUp.txt":
+				this.fLog = new File("c://pokerBot/bot_v1_3_x//debug//creatorLogTableLeftUp.txt");
 				System.out.println("Please enter the number of players for the table LEFT-UP: ");
 				numberPlayer = new java.util.Scanner(System.in).nextInt();
 				fw.write(String.format(numberPlayer+"%n"));
@@ -141,11 +143,22 @@ public class CreatorHHWPClass
 				fw.close();
 				break;
 			default:
-				throw new IllegalArgumentException("Bla bla!");
+				this.fLog = new File("c://pokerBot/bot_v1_2_0//debug//creatorLogTableLeftUp.txt");
+				System.out.println("Please enter the number of players for the table LEFT-UP: ");
+				numberPlayer = new java.util.Scanner(System.in).nextInt();
+				fw.write(String.format(numberPlayer+"%n"));
+				fw.flush();
+				fw.close();
+//				throw new IllegalArgumentException("Bla bla!");
 			}
 		} catch ( AWTException | IOException e ) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void createHH(Rectangle notepad) throws Exception {
+		this.rectNP = notepad;
+		createHH();
 	}
 	
 	/**
@@ -154,42 +167,22 @@ public class CreatorHHWPClass
 	 */
 	public void createHH() throws Exception
 	{
+		this.used = false;
+		String[] lSplit = null;
+		int counter;
 		try {
-			Point p = Tools.createPointIn( rectTC) ;
-			r.mouseMove (p.x, p.y ); 										// start getting the whole text in the clipboard
-			r.mousePress( InputEvent.BUTTON1_DOWN_MASK );
-			r.mouseRelease( InputEvent.BUTTON1_DOWN_MASK );
-			r.keyPress( KeyEvent.VK_CONTROL );
-			r.keyPress( KeyEvent.VK_A );
-			r.keyRelease( KeyEvent.VK_A );
-			r.keyPress( KeyEvent.VK_C );
-			r.keyRelease( KeyEvent.VK_C );
-			r.keyRelease( KeyEvent.VK_CONTROL );							// end getting the new text in the clipboard
+			String line = getText();
 			
-			synchronized (r) { r.wait(30); }								// It takes some time until the system has had time to update the clipboard.
-			
-			String line = Tools.getClipboardByNotepadS(rectNP);
-			
-			for ( int i = 0; i < 26; i++ ) {							// sometimes is the creator to fast and the new line (in the table chat) is not already there
-				if (bots.Bot.debug_normal) {					// for testing
-					if (line.equals("") || line.equals(" "))
-						continue;
-					try {
-						System.out.println("line.substring(line.length()-lastS[lastS.length-1].length()): " + line.substring(line.length()-lastS[lastS.length - 1].length()));
-						System.out.print("lastS[lastS.length-1]: " + lastS[lastS.length - 1]);
-						System.out.println("line.substring(line.length()-lastS[lastS.length-1].length()).equals(lastS[lastS.length-1]): " + line.substring(line.length()- lastS[lastS.length - 1].length()).equals(lastS[lastS.length - 1]));
-						System.out.println();
-					} catch (Throwable e) {
-						System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-						System.err.println("line: " + line);
-						System.err.println("lastS[lastS.length-1]: " + lastS[lastS.length - 1]);
-						throw e;
-					}
+			for ( counter = 0; counter < 52; counter++ ) {		// sometimes is the creator to fast and the new line (in the table chat) is not already there
+				if ( line.equals("") || line.length() < 5 ) {
+					line = getText();
+					continue;
+				} else if (CreatorHHWPThread.isHTML(line) && counter == 0) {
+					lSplit = htmlToNormal(line.split("\n"));
+					break;
 				}
 				
-				
 				boolean isPreviousText;
-				
 				if ( lastS.length > 10 ) {
 					String s = "";
 					for ( int j = lastS.length-10; j < lastS.length; j++ )
@@ -203,28 +196,21 @@ public class CreatorHHWPClass
 				} else 
 					isPreviousText = line.substring(line.length()-lastS[lastS.length-1].length()).equals(lastS[lastS.length-1]);
 				
-				
-				if ( line.equals( "" ) || CreatorHHWPThread.isHTML(line) || (! line.startsWith("Geber: "))		// sometimes is the line which was read html-code
-						|| isPreviousText || (line.length()<5) ) {												// sometimes the line is full of things
-					synchronized ( r ) { r.wait(30); }															// which were previous read into the clipboard
-					
-					Point p2 = Tools.createPointIn(rectTC);
-					r.mouseMove(p2.x, p2.y); 								// start getting the whole text in the clipboard
-					r.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-					r.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-					r.keyPress(KeyEvent.VK_CONTROL);
-					r.keyPress(KeyEvent.VK_A);
-					r.keyRelease(KeyEvent.VK_A);
-					r.keyPress(KeyEvent.VK_C);
-					r.keyRelease(KeyEvent.VK_CONTROL);
-					r.keyRelease(KeyEvent.VK_C); 							// end getting the new text in the clipboard
-					
-					synchronized (r) { r.wait(30); }						// It takes some time until the system has had time to update the clipboard.
-					
-					line = Tools.getClipboardByNotepadS(rectNP);
+				if ( (! line.startsWith("Geber: ")) || isPreviousText ) {
+					line = getText();
 				} else
 					break;
 			}
+			
+			FileWriter fwr = new FileWriter(new File("c://pokerBot/bot_v1_3_x//debug//counter.txt"), true);
+			fwr.write(String.format(counter+"%n"));
+			if (counter == 52 && ! line.equals("")) {
+				fwr.write(String.format("Attention!%n"));
+				fwr.write(line);
+				fwr.write(String.format("%n%n%n"));
+			}
+			fwr.flush();
+			fwr.close();
 			
 			if (bots.Bot.debug_normal)
 				try { 										// for testing
@@ -233,14 +219,37 @@ public class CreatorHHWPClass
 					fw.flush();
 					fw.close();
 				} catch (Exception e2) {
-					throw new Exception(e2);
+					e2.printStackTrace();
 				}
 			
-			
-			String[] lSplit = line.split( "\n" );
+			if (lSplit == null)
+				lSplit = line.split( "\n" );
 			for ( int i = 0; i < lSplit.length; i++ )
 				lSplit[i] =  lSplit[i] + "\n";
-//				lSplit[i] =  lSplit[i] + "\r\n";
+			
+			File file = new File("c://pokerBot/bot_v1_2_0//debug//bug//bug_log.txt");
+			FileWriter filewriter = new FileWriter(file, true);
+			ArrayList<String> results = new ArrayList<String>();
+			for (int i = 0; i < lSplit.length; i++) {
+				String s = lSplit[i];
+				if (s.length() > 2)
+					if (s.charAt(s.length()-2) == ' ')
+						if (s.charAt(s.length()-3) == ' ') {
+							results.add(s);
+							lSplit[i] = s.substring(0, s.length()-2) + "\n";
+						}
+			}
+			if (results.size() > 0) {
+				filewriter.write(String.format("Here is the bug!!!%n"));
+				for (String s : lSplit)
+					filewriter.write(String.format(s+"%n"));
+				filewriter.write(String.format("In the following are the \"wrong\" strings:%n"));
+				for (String s : results)
+					filewriter.write(String.format(s+"%n"));
+				filewriter.write(String.format("%n%n%n%n%n"));
+				filewriter.flush();
+				filewriter.close();
+			}
 			
 			if (bots.Bot.debug_normal)
 				try { 										// for testing
@@ -287,13 +296,9 @@ public class CreatorHHWPClass
 				writer.close();
 				FileWriter writer2 = new FileWriter(s, true);
 				for ( String s : lSplit )											// the whole hand history have to be scanned
-					if ( s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt \n") || s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt.*") ||
-							s.matches("Geber: .+ hat den Tisch verlassen \n") || s.matches("Geber: .+ hat den Tisch verlassen.*") ) {
-						System.out.println("CRRRRRRRRRRRRRRRRRRRRRRRRRAAAAAAAAAAAAZZZZZZZZZZYYYYYYYYY");
-						System.out.println(s);
-						System.out.println("CRRRRRRRRRRRRRRRRRRRRRRRRRAAAAAAAAAAAAZZZZZZZZZZYYYYYYYYY");
+					if ( s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt.{0,2}\n") || s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt.*") ||
+							s.matches("Geber: .+ hat den Tisch verlassen.{0,2}\n") || s.matches("Geber: .+ hat den Tisch verlassen.*") )
 						writer2.write(s + String.format("%n"));
-					}
 				writer2.flush();
 				writer2.close();				
 				
@@ -329,35 +334,66 @@ public class CreatorHHWPClass
 						System.out.println(s);
 				}
 				
-				if ( line.startsWith( "Geber: " ) ) {
-					FileWriter writer = new FileWriter( f, true );
-					FileWriter writerS = new FileWriter(s, true);
-					FileWriter fw = new FileWriter(this.fLog, true);					// for testing
+				FileWriter writer = new FileWriter( f, true );
+				FileWriter writerS = new FileWriter(s, true);
+				FileWriter fw = new FileWriter(this.fLog, true);					// for testing
+				if ( bots.Bot.debug_normal )
+					fw.write(String.format("%nrest: " + "%n"));
+				for (String s : rest) {
 					if ( bots.Bot.debug_normal )
-						fw.write(String.format("%nrest: " + "%n"));
-					for (String s : rest) {
-						if ( bots.Bot.debug_normal )
-							fw.write(String.format(s.substring(0) + "%n"));
-						writer.write( String.format( s.substring(0) + "%n" ) );
-						if ( s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt \n") || s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt.*") ||
-								s.matches("Geber: .+ hat den Tisch verlassen \n") || s.matches("Geber: .+ hat den Tisch verlassen.*") )
-							writerS.write(String.format(s.substring(0) + "%n"));
-					}
-					writer.flush();
-					writer.close();
-					writerS.flush();
-					writerS.close();
-					fw.flush();
-					fw.close();
+						fw.write(String.format(s.substring(0) + "%n"));
+					writer.write( String.format( s.substring(0) + "%n" ) );
+					if ( s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt.{0,2}\n") || s.matches("Geber: Spieler .+ hat sich an den Tisch gesetzt.*") ||
+							s.matches("Geber: .+ hat den Tisch verlassen.{0,2}\n") || s.matches("Geber: .+ hat den Tisch verlassen.*") )
+						writerS.write(String.format(s.substring(0) + "%n"));
 				}
+				writer.flush();
+				writer.close();
+				writerS.flush();
+				writerS.close();
+				fw.flush();
+				fw.close();
 			}
 			
 			lastS = lSplit;
 			for ( int i = 0; i < 10; i++ )
 				Tools.clearClipboard();
 		} catch ( Exception e ) {
+			FileWriter fwr = new FileWriter(new File("c://pokerBot/bot_v1_3_x//debug//exception.txt"), true);
+			try {
+				fwr.write(String.format("Exception: %n"));
+				fwr.write(String.format("e.toString(): " + e.toString()+"%n"));
+				fwr.write(String.format("e.getCause(): " + e.getCause() + "%n%n%n%n"));
+				fwr.flush();
+				fwr.close();
+			} catch (IOException ioe) {
+				throw ioe;
+			}
 			throw new Exception( e );
 		}
+	}
+	
+	/**This method copies first the text of the table-chat into the clipboard, pastes than the text into a editor
+	 * and puts concluding the text again into the clipboard. 
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	private String getText() throws Exception {
+		Point p = Tools.createPointIn( rectTC) ;
+		r.mouseMove (p.x, p.y ); 										// start getting the whole text in the clipboard
+		r.mousePress( InputEvent.BUTTON1_DOWN_MASK );
+		r.mouseRelease( InputEvent.BUTTON1_DOWN_MASK );
+		r.keyPress( KeyEvent.VK_CONTROL );
+		r.keyPress( KeyEvent.VK_A );
+		r.keyRelease( KeyEvent.VK_A );
+		r.keyPress( KeyEvent.VK_C );
+		r.keyRelease( KeyEvent.VK_C );
+		r.keyRelease( KeyEvent.VK_CONTROL );							// end getting the new text in the clipboard
+		
+		synchronized (r) { r.wait(30); }								// It takes some time until the system has had time to update the clipboard.
+		
+		return Tools.getClipboardByNotepadS(this.rectNP);
 	}
 	
 	/**
@@ -368,7 +404,7 @@ public class CreatorHHWPClass
 	 * @param B the array of strings from which you want know which strings are in B but are after A (which is also in B).
 	 * @return the strings which are in B but are after A in B.
 	 */
-	public static String[] notIncludedStrings( String[] A, String[] B ) {
+	public String[] notIncludedStrings( String[] A, String[] B ) {
 		StringBuilder sbA = new StringBuilder();
 		StringBuilder sbB = new StringBuilder();
 		for ( String s : A )
@@ -383,15 +419,30 @@ public class CreatorHHWPClass
 					int helpIndex = sA.indexOf(B[0]+B[1]+B[2]+B[3]+B[4]+B[5]+B[6]+B[7]+B[8]+B[9]);
 					sA = sA.substring(helpIndex);
 				} catch ( ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException e ) {
-					File file = new File("c://pokerBot//bot_v1_2_0//debug//specialExceptionInCreatorHHWPClassNotIncludedStrings.txt");
+					File file = new File("c://pokerBot//bot_v1_3_x//debug//specialExceptionInCreatorHHWPClassNotIncludedStrings.txt");
 					try {
-					FileWriter filewriter = new FileWriter(file);
-					filewriter.write("A:\n" + other.Tools.arraysToString(A) + "\n");
-					filewriter.write("B:\n" + other.Tools.arraysToString(B));
+					FileWriter filewriter = new FileWriter(file, true);
+					StringBuilder a = new StringBuilder();
+					for (String s : A)
+						a.append(s);
+					StringBuilder b = new StringBuilder();
+					for (String s : B)
+						b.append(s);
+					filewriter.write("A:\n" + a + "\n");
+					filewriter.write("B:\n" + b);
+					filewriter.write(String.format("%n%n%n%n%n%n"));
+					filewriter.flush();
+					filewriter.close();
 					} catch (IOException r) {
+						StringBuilder a = new StringBuilder();
+						for (String s : A)
+							a.append(String.format("%s%n", s));
+						StringBuilder b = new StringBuilder();
+						for (String s : B)
+							b.append(String.format("%s%n", s));
 						System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
-						System.out.println("A:\n" + other.Tools.arraysToString(A));
-						System.out.println("B:\n" + other.Tools.arraysToString(B));
+						System.out.println("A:\n" + a);
+						System.out.println("B:\n" + b);
 						System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
 					}
 					throw e;
@@ -410,11 +461,113 @@ public class CreatorHHWPClass
 				System.out.println("sB: 777" + sB + "888");
 				System.out.println("OOOOOOMMMMMGGGGGGGG");
 			}
+			System.out.println("a");
+			
+			int hallo = -1;
+			for ( int i = sA.length()-1; i > 0; i--)
+				if (sB.indexOf(sA.substring(0, i)) > -1) {
+					hallo = i;
+					break;
+				}
+			System.out.println("hallo: "+hallo);
+			System.out.println(sA.substring(0, hallo));
+			System.out.println("sA: 777" + sA + "888");
+			System.out.println("sB: 777" + sB + "888");
+			
+			if (! used) {
+				String[] A2 = new String[A.length];
+				String[] B2 = new String[B.length];
+				String s;
+				
+				for (int i = 0; i < A.length; i++) {				// deletes "  " at the end of lines
+					s = A[i];
+					if (s.length() > 1)
+						if ( s.charAt(s.length()-2) == ' ')
+							if ( s.charAt(s.length()-3) == ' ') {
+								A2[i] = s.substring(0, s.length()-2) + "\n";
+								continue;
+							}
+					A2[i] = s;
+				}
+				for (int i = 0; i < B.length; i++) {
+					s = B[i];
+					if (s.length() > 1)
+						if ( s.charAt(s.length()-2) == ' ')
+							if ( s.charAt(s.length()-3) == ' ') {
+								B2[i] = s.substring(0, s.length()-2) + "\n";
+								continue;
+							}
+					B2[i] = s;
+				}
+				
+				this.used = true;
+				return notIncludedStrings(A2, B2);
+			}
+			
+			
 			throw new IllegalArgumentException("A is not included in B!");
 		}
 		String restS = sB.substring(index + sA.length());
 		String[] rest = restS.split("\n");
 		return rest;
+	}
+	
+	/**
+	 * This is a method especially programmed for parsing the HTML-Code, which is sometimes produced by the algorithm of the CreatorHHWPClass/-Thread, into normal text. 
+	 * 
+	 * @return
+	 */
+	public static String[] htmlToNormal(String[] sa) {
+		int start = 0;
+		for (int i=0; i<sa.length; i++)
+			if (sa[i].startsWith("<TR>") || sa[i].startsWith("<TD>")) {
+				start = i;
+				break;
+			}
+		
+		ArrayList<String> sl = new ArrayList<String>();
+		for (int i=start; i<sa.length; i++)
+			if (sa[i].startsWith("<TD>"))
+				sl.add(clearAngleBracket(sa[i]).toString());
+			else if(! sa[i].startsWith("<TR>"))											// because sometimes one line is split off into two parts
+				sl.set(sl.size()-1, sl.get(sl.size()-1).concat(clearAngleBracketMoreSafe(sa[i]).toString()));
+		
+		return other.Tools.toArrayS(sl);
+	}
+	
+	/**
+	 * @return the parameter s without "<", ">" and the the text which is enclosed by "< ... >". So this method is written for HTML-Code.
+	 */
+	private static StringBuilder clearAngleBracket(String s) {
+		StringBuilder sb = new StringBuilder();
+		boolean append = true;
+		for ( int i=0; i<s.length(); i++ ) {
+			char c = s.charAt(i);
+			if (c == '<')
+				append = false;
+			else if (c == '>')
+				append = true;
+			else if (! append)
+				continue;
+			else
+				sb.append(c);
+		}
+		if (sb.length() > 1)
+			if (sb.charAt(sb.length()-1) != ' ')
+				sb.append(' ');
+			else
+				if (sb.charAt(sb.length()-2) == ' ')
+					sb.deleteCharAt(sb.charAt(sb.length()-2));
+		return sb;
+	}
+	
+	private static StringBuilder clearAngleBracketMoreSafe(String s) {
+		for ( int i = 0; i < s.length(); i++ )
+			if (s.charAt(i) == '>')
+				return clearAngleBracket(s.substring(i+1));
+			else if (s.charAt(i) == '<')
+				return clearAngleBracket(s);
+		return clearAngleBracket(s);
 	}
 	
 }

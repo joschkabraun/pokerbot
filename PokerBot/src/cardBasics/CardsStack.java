@@ -2,6 +2,9 @@ package cardBasics;
 
 import java.util.*;
 
+import cardBasics.Card.Rank;
+import cardBasics.Card.Suit;
+
 /**
  * 
  * @author Joschka J. Braun
@@ -16,14 +19,11 @@ public class CardsStack extends CardList
 	{
 		if ( iMax <= 4 && jMax <= 13 )
 		{
-			String[] values = new String[] { "two", "three", "four", "five",
-					"six", "seven", "eight", "nine", "ten", "jack", "queen",
-					"king", "ace" };
-			String[] colours = new String[] { "spades", "hearts", "diamonds",
-					"clubs" };
+			Rank[] ranks = Rank.values();
+			Suit[] suits = Suit.values();
 			for (int i = 0; i < iMax; i++)
 				for (int j = 0; j < jMax; j++)
-					this.add(new Card(values[j], colours[i]));
+					this.add(new Card(ranks[j], suits[i]));
 		}
 
 	}
@@ -34,15 +34,12 @@ public class CardsStack extends CardList
 			this.add( new Card( cardsStack.get( i ) ) );
 	}
 	
-	public CardsStack()
-	{
-		String[] values = new String[] { "two", "three", "four", "five", "six",
-				"seven", "eight", "nine", "ten", "jack", "queen", "king", "ace" };
-		String[] colours = new String[] { "spades", "hearts", "diamonds",
-				"clubs" };
+	public CardsStack() {
+		Rank[] ranks = Rank.values();
+		Suit[] suits = Suit.values();
 		for (int i = 0; i < 4; i++)
 			for (int j = 0; j < 13; j++)
-				this.add(new Card(values[j], colours[i]));
+				this.add(new Card(ranks[j], suits[i]));
 	}
 	
 	public void mixing( int howOften )
@@ -84,12 +81,11 @@ public class CardsStack extends CardList
 	public int howManyCardsWithTheSameValueInThis( Card card )
 	{
 		int returnValue = 0;
-		String[] colours = new String[]{ "spades", "hearts", "diamonds", "clubs" };
+		Suit[] suits = Suit.values();
 		
 		for ( int i = 0; i < 4; i++ )
-			if ( card.colour != colours[ i ] )
-				{
-					Card card2 = new Card( card.value, colours[ i ] );
+			if ( card.getSuit() != suits[ i ] ) {
+					Card card2 = new Card( card.getRank(), suits[ i ] );
 					if ( this.includes( card2 ) )
 						++returnValue;
 				}
@@ -97,24 +93,10 @@ public class CardsStack extends CardList
 		return returnValue;
 	}
 	
-	public int howManyCardsWithTheSameColourInThis( Card card )
-	{
+	public int howManyCardsWithTheSameColourInThis( Card card ) {
 		CardsStack copy = this.clone();
-		
 		List<CardList> colours = copy.separateColours();
-		String colour = card.colour;
-		int colourAtColours = 0;
-		
-		if ( colour == "spades" )
-			colourAtColours = 0;
-		else if ( colour == "hearts" )
-			colourAtColours = 1;
-		else if ( colour == "diamonds" )
-			colourAtColours = 2;
-		else if ( colour == "clubs" )
-			colourAtColours = 3;
-		
-		return 	colours.get( colourAtColours ).size();
+		return colours.get(card.getSuit().toInt()).size();
 	}
 	
 }

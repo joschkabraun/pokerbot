@@ -52,6 +52,7 @@ public class Interrupter extends Thread
 	public void run()
 	{
 		
+		Object o = new Object();
 		Keyboard keyboard = new Keyboard();
 		keyboard.addListener( new KeyboardListener() {
 			public void keyPressed( boolean keydown, int vk ) {
@@ -65,6 +66,11 @@ public class Interrupter extends Thread
 		
 		try {
 			while ( true ) {
+				lock.lock();
+				synchronized (o) {
+					o.wait(1000);
+				}
+				lock.unlock();
 				lock.lock();
 				for ( int i = 0; i < ins.size(); i++ )
 					if ( this.ins.get(i).available() == 0 )

@@ -62,9 +62,9 @@ public class CardCombination implements Comparator<CardCombination>
 			return -1;
 		else if( cardCombination1.combinationValue == cardCombination2.combinationValue )
 		{
-			if ( cardCombination1.highCard.valueInt < cardCombination2.highCard.valueInt )
+			if ( cardCombination1.highCard.getRank().toInt() < cardCombination2.highCard.getRank().toInt() )
 				return -1;
-			else if ( cardCombination1.highCard.valueInt == cardCombination2.highCard.valueInt )
+			else if ( cardCombination1.highCard.getRank().toInt() == cardCombination2.highCard.getRank().toInt() )
 				return 0;
 			else
 				return 1;
@@ -169,7 +169,7 @@ public class CardCombination implements Comparator<CardCombination>
 		
 		if ( cc1.combinationValue == cc2.combinationValue )
 		{
-			CardCombination higherCardCombination = ( cc1.highCard.valueInt > cc2.highCard.valueInt ) ?  cc1 : cc2;
+			CardCombination higherCardCombination = ( cc1.highCard.getRank().toInt() > cc2.highCard.getRank().toInt() ) ?  cc1 : cc2;
 			
 			if ( cc1.equals(higherCardCombination) )
 			{

@@ -15,9 +15,9 @@ public class CardComparatorByValueInt implements Comparator<Card>
 	@Override
 	public int compare( Card card1, Card card2 )
 	{
-		if ( card1.valueInt < card2.valueInt )
+		if ( card1.getRank().toInt() < card2.getRank().toInt() )
 			return -1;
-		else if ( card1.valueInt == card2.valueInt )
+		else if ( card1.getRank().toInt() == card2.getRank().toInt() )
 			return 0;
 		else
 			return 1;

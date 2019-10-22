@@ -2,6 +2,9 @@ package cardBasics;
 
 import java.util.*;
 
+import cardBasics.Card.Rank;
+import cardBasics.Card.Suit;
+
 @SuppressWarnings("serial")
 public class CardList extends ArrayList<Card>
 
@@ -60,9 +63,8 @@ public class CardList extends ArrayList<Card>
 		Card[] thisAsArray = new Card[ this.size() ];
 		CardList thisJustValueInt = new CardList();
 		
-		for ( int i = 0; i < this.size(); i++ )
-		{
-			thisJustValueInt.add( i, new Card( this.get( i ).value, "undefined" ) );
+		for ( int i = 0; i < this.size(); i++ ) {
+			thisJustValueInt.add(i, new Card( this.get(i).getRank(), Suit.UNDEFINED ));
 			thisAsArray[ i ] = thisJustValueInt.get( i );
 		}
 		
@@ -107,11 +109,11 @@ public class CardList extends ArrayList<Card>
 	
 	public boolean isOneColour()
 	{
-		String colourOfFirst = this.get( 0 ).colour;
+		Suit suitOfFirst = this.get(0).getSuit();
 		
 		for ( int i = 1; i < this.size(); i++ )
 		{
-			if ( this.get( i ).colour != colourOfFirst )
+			if ( this.get(i).getSuit() != suitOfFirst )
 				return false;
 		}
 		
@@ -194,14 +196,14 @@ public class CardList extends ArrayList<Card>
 		
 		for ( int i = 0; i < copy.size(); i++ )
 		{
-			if ( copy.get( i ).colour == "spades" )
-				spades.add( copy.get( i ) );
-			else if ( copy.get( i ).colour == "hearts" )
-				hearts.add( copy.get( i ) );
-			else if ( copy.get( i ).colour == "diamonds" )
-				diamonds.add( copy.get( i ) );
-			else if ( copy.get( i ).colour == "clubs" )
-				clubs.add( copy.get( i ) );
+			if ( copy.get(i).getSuit() == Suit.SPADES )
+				spades.add( copy.get(i) );
+			else if ( copy.get(i).getSuit() == Suit.HEARTS )
+				hearts.add( copy.get(i) );
+			else if ( copy.get(i).getSuit() == Suit.DIAMONDS )
+				diamonds.add( copy.get(i) );
+			else if ( copy.get(i).getSuit() == Suit.CLUBS )
+				clubs.add( copy.get(i) );
 		}
 		
 		return returnValue;
@@ -299,7 +301,7 @@ public class CardList extends ArrayList<Card>
 			{
 				int howOften = 0;
 				for ( int k = i+1; k < i+howManyCards; k++ )
-					if ( (copy.get(i).valueInt + (k-i)) == copy.get(k).valueInt )
+					if ( (copy.get(i).getRank().toInt() + (k-i)) == copy.get(k).getRank().toInt() )
 						++howOften;
 				if ( howOften == howManyCards-1 )
 					return true;
@@ -318,12 +320,12 @@ public class CardList extends ArrayList<Card>
 		CardList copy = new CardList( this );
 		copy.sortByCardValue();
 		
-		int valueFirstCard = copy.get(0).valueInt;
+		int valueFirstCard = copy.get(0).getRank().toInt();
 		int val = valueFirstCard;
 		int howOften = 0;
 		
 		for ( int i = 1; i < copy.size(); i++ )
-			if ( (val+i) == copy.get(i).valueInt )
+			if ( (val+i) == copy.get(i).getRank().toInt() )
 				++howOften;
 		
 		if ( howOften == copy.size()-1 )
@@ -341,15 +343,15 @@ public class CardList extends ArrayList<Card>
 	public CardList cardsBetweenBeginningAndEndMissed()
 	{
 		CardList returnValue = new CardList();
-		Card card = new Card( "two", "spades" );
-		int beginning = this.get( 0 ).valueInt;
+		Card card = new Card( Rank.TWO, Suit.SPADES );
+		int beginning = this.get( 0 ).getRank().toInt();
 		
-		for ( int i = 1; i < this.get( this.size()-1 ).valueInt-beginning; i++ )
+		for ( int i = 1; i < this.get( this.size()-1 ).getRank().toInt()-beginning; i++ )
 		{
 			card.set( beginning+i , 1 );
 			int howOften = 0;
 			for ( int j = 0; j < this.size(); j++ )
-				if ( card.valueInt != this.get( j ).valueInt )
+				if ( card.getRank().toInt() != this.get( j ).getRank().toInt() )
 					++howOften;
 			if ( howOften == this.size() )
 				returnValue.add( new Card( card ) );
@@ -386,9 +388,9 @@ public class CardList extends ArrayList<Card>
 			
 			while ( i < copy.size()-2 )
 			{
-				if  (copy.get( i ).valueInt == copy.get( i-1 ).valueInt )
-					if ( copy.get( i ).valueInt != copy.get( i+1 ).valueInt )
-						if ( copy.get( i ).valueInt != copy.get( i-2 ).valueInt )
+				if  (copy.get( i ).getRank().toInt() == copy.get( i-1 ).getRank().toInt() )
+					if ( copy.get( i ).getRank().toInt() != copy.get( i+1 ).getRank().toInt() )
+						if ( copy.get( i ).getRank().toInt() != copy.get( i-2 ).getRank().toInt() )
 						{
 							whichPairsAreInThis.add( new CardCombination( new Card[]{ copy.get( i-1 ), copy.get( i ) }, "pair" ) );
 							i += 3;
@@ -400,33 +402,33 @@ public class CardList extends ArrayList<Card>
 		
 		if ( copy.size() > 3 )
 		{
-			if ( copy.get( 0 ).valueInt == copy.get( 1 ).valueInt )
-				if ( copy.get( 0 ).valueInt != copy.get( 2 ).valueInt )
+			if ( copy.get( 0 ).getRank().toInt() == copy.get( 1 ).getRank().toInt() )
+				if ( copy.get( 0 ).getRank().toInt() != copy.get( 2 ).getRank().toInt() )
 					whichPairsAreInThis.add( new CardCombination( "pair", copy.get( 0 ), copy.get( 1 ) ) );
 			
-			if ( copy.get( copy.size()-2).valueInt == copy.get( copy.size()-3 ).valueInt ) {
-				if ( copy.get( copy.size()-2 ).valueInt != copy.get( copy.size()-1 ).valueInt )
+			if ( copy.get( copy.size()-2).getRank().toInt() == copy.get( copy.size()-3 ).getRank().toInt() ) {
+				if ( copy.get( copy.size()-2 ).getRank().toInt() != copy.get( copy.size()-1 ).getRank().toInt() )
 					whichPairsAreInThis.add( new CardCombination( new Card[]{ copy.get( copy.size()-3 ), copy.get( copy.size()-2 ) }, "pair") ); }
-			else if ( copy.get( copy.size()-1 ).valueInt == copy.get( copy.size()-2 ).valueInt ) {
-					if ( copy.get( copy.size()-1 ).valueInt != copy.get( copy.size()-3 ).valueInt )
+			else if ( copy.get( copy.size()-1 ).getRank().toInt() == copy.get( copy.size()-2 ).getRank().toInt() ) {
+					if ( copy.get( copy.size()-1 ).getRank().toInt() != copy.get( copy.size()-3 ).getRank().toInt() )
 						whichPairsAreInThis.add( new CardCombination( new Card[]{ copy.get( copy.size()-2 ), copy.get( copy.size()-1 ) }, "pair") ); }
 		}
 		
 		else if ( copy.size() == 3 )
 		{
-			if ( copy.get( 0 ).valueInt == copy.get( 1 ).valueInt )
+			if ( copy.get( 0 ).getRank().toInt() == copy.get( 1 ).getRank().toInt() )
 			{
-				if ( copy.get( 0 ).valueInt != copy.get( 2 ).valueInt )
+				if ( copy.get( 0 ).getRank().toInt() != copy.get( 2 ).getRank().toInt() )
 					whichPairsAreInThis.add( new CardCombination( "pair", copy.get( 0 ), copy.get( 1 ) ) );
 			}
 			
 			else
-				if ( copy.get( 1 ).valueInt == copy.get( 2 ).valueInt )
+				if ( copy.get( 1 ).getRank().toInt() == copy.get( 2 ).getRank().toInt() )
 					whichPairsAreInThis.add( new CardCombination( "pair", copy.get( 1 ), copy.get( 2 ) ) );			
 		}
 		
 		else if ( copy.size() == 2 )
-			if ( copy.get( 0 ).valueInt == copy.get( 1 ).valueInt )
+			if ( copy.get( 0 ).getRank().toInt() == copy.get( 1 ).getRank().toInt() )
 				whichPairsAreInThis.add( new CardCombination( "pair", new Card( copy.get( 0 ) ), new Card( copy.get( 1 ) ) ) );
 			
 		return whichPairsAreInThis;
@@ -457,9 +459,9 @@ public class CardList extends ArrayList<Card>
 		
 		while ( i < copy.size()-2 )
 		{
-			if ( copy.get( i ).valueInt == copy.get( i-1 ).valueInt )
-				if ( copy.get( i ).valueInt == copy.get( i-2 ).valueInt )
-					if ( copy.get( i ).valueInt != copy.get( i+1 ).valueInt )
+			if ( copy.get( i ).getRank().toInt() == copy.get( i-1 ).getRank().toInt() )
+				if ( copy.get( i ).getRank().toInt() == copy.get( i-2 ).getRank().toInt() )
+					if ( copy.get( i ).getRank().toInt() != copy.get( i+1 ).getRank().toInt() )
 					{
 						whichTripletsAreInThis.add( new CardCombination( new Card[]{ copy.get( i-2 ), copy.get( i-1 ), copy.get( i ) },
 								"threeOfAKind" ) );
@@ -471,16 +473,16 @@ public class CardList extends ArrayList<Card>
 		
 		if ( copy.size() > 3 )
 		{		
-			if ( copy.get( copy.size()-1 ).valueInt == copy.get( copy.size()-2).valueInt )
-				if ( copy.get( copy.size()-1 ).valueInt == copy.get( copy.size()-3 ).valueInt )
-					if ( copy.get( copy.size()-1 ).valueInt != copy.get( copy.size()-4 ).valueInt )
+			if ( copy.get( copy.size()-1 ).getRank().toInt() == copy.get( copy.size()-2).getRank().toInt() )
+				if ( copy.get( copy.size()-1 ).getRank().toInt() == copy.get( copy.size()-3 ).getRank().toInt() )
+					if ( copy.get( copy.size()-1 ).getRank().toInt() != copy.get( copy.size()-4 ).getRank().toInt() )
 						whichTripletsAreInThis.add( new CardCombination( new Card[]{ copy.get( copy.size()-1 ), copy.get( copy.size()-2 ),
 								copy.get( copy.size()-3 ) }, "threeOfAKind") );
 		}
 		
 		else if ( copy.size() == 3 )
-			if ( copy.get( 0 ).valueInt == copy.get( 1 ).valueInt )
-				if ( copy.get( 0 ).valueInt == copy.get( 2 ).valueInt )
+			if ( copy.get( 0 ).getRank().toInt() == copy.get( 1 ).getRank().toInt() )
+				if ( copy.get( 0 ).getRank().toInt() == copy.get( 2 ).getRank().toInt() )
 					whichTripletsAreInThis.add( new CardCombination( "threeOfAKind", new Card( copy.get( 0 ) ), new Card( copy.get(1) ), new Card( copy.get(2) ) ) );
 		
 		return whichTripletsAreInThis;
@@ -504,18 +506,18 @@ public class CardList extends ArrayList<Card>
 		{
 			int howOften = 0;
 			for ( int j = 1; j < 5; j++ )
-				if ( (copy.get( i ).valueInt+j) == copy.get( i+j ).valueInt )
+				if ( (copy.get( i ).getRank().toInt()+j) == copy.get( i+j ).getRank().toInt() )
 					++howOften;
 			if ( howOften == 4 )
 				whichStraightsAreInThis.add( new CardCombination( "straight",
 						copy.get( i ), copy.get( i+1 ), copy.get( i+2 ), copy.get( i+3 ), copy.get( i+4 ) ) );
 		}
 		
-		if ( copy.get( copy.size()-1 ).value == "ace" )
-			if ( copy.get( 0 ).value == "two" )
-				if ( copy.get( 1 ).value == "three" )
-					if( copy.get( 2 ).value == "four" )
-						if( copy.get( 3 ).value == "five" )
+		if ( copy.get(copy.size()-1).getRank() == Rank.ACE )
+			if ( copy.get(0).getRank() == Rank.TWO )
+				if ( copy.get(1).getRank() == Rank.THREE )
+					if( copy.get(2).getRank() == Rank.FOUR )
+						if( copy.get(3).getRank() == Rank.FIVE )
 							whichStraightsAreInThis.add( new CardCombination( "straight",
 									copy.get( copy.size()-1 ), copy.get( 0 ), copy.get( 1 ), copy.get( 2 ), copy.get( 3 ) ) );
 		
@@ -595,9 +597,9 @@ public class CardList extends ArrayList<Card>
 		
 		while ( i < copy.size() )
 		{
-			if ( copy.get( i ).valueInt == copy.get( i-1 ).valueInt )
-				if ( copy.get( i ).valueInt == copy.get( i-2 ).valueInt )
-					if ( copy.get( i ).valueInt == copy.get( i-3 ).valueInt )
+			if ( copy.get( i ).getRank().toInt() == copy.get( i-1 ).getRank().toInt() )
+				if ( copy.get( i ).getRank().toInt() == copy.get( i-2 ).getRank().toInt() )
+					if ( copy.get( i ).getRank().toInt() == copy.get( i-3 ).getRank().toInt() )
 					{
 						whichFullHousesAreInThis.add( new CardCombination( "fullHouse",
 								copy.get( i ), copy.get( i-1 ), copy.get( i-2 ), copy.get( i-3 ) ) );
@@ -656,7 +658,7 @@ public class CardList extends ArrayList<Card>
 		else
 		{
 			for ( int i = 0; i < straightFlushsInThis.size(); i++ )
-				if ( straightFlushsInThis.get( i ).highCard.value == "ace" )
+				if ( straightFlushsInThis.get( i ).highCard.getRank() == Rank.ACE )
 					whichRoyalFlushsAreInThis.add( new CardCombination( straightFlushsInThis.get( i ).cards, "royalFlush" ) );
 		}
 		
@@ -679,7 +681,7 @@ public class CardList extends ArrayList<Card>
 			return false;
 		else
 		{
-			if ( this.get( 0 ).valueInt == this.get( 1 ).valueInt )
+			if ( this.get( 0 ).getRank().toInt() == this.get( 1 ).getRank().toInt() )
 				return true;
 			else
 				return false;
@@ -694,8 +696,8 @@ public class CardList extends ArrayList<Card>
 		{
 			CardList copy = this.clone();
 			copy.sortByCardValue();
-			if ( copy.get( 0 ).valueInt == copy.get( 1 ).valueInt )
-				if ( copy.get( 2 ).valueInt == copy.get( 3 ).valueInt )
+			if ( copy.get( 0 ).getRank().toInt() == copy.get( 1 ).getRank().toInt() )
+				if ( copy.get( 2 ).getRank().toInt() == copy.get( 3 ).getRank().toInt() )
 					return true;
 			return false;
 		}
@@ -707,8 +709,8 @@ public class CardList extends ArrayList<Card>
 			return false;
 		else
 		{
-			if ( this.get( 0 ).value == this.get( 1 ).value )
-				if ( this.get( 0 ).value == this.get( 2 ).value )
+			if ( this.get(0).getRank() == this.get(1).getRank() )
+				if ( this.get(0).getRank() == this.get(2).getRank() )
 					return true;
 			return false;
 		}
@@ -725,7 +727,7 @@ public class CardList extends ArrayList<Card>
 			int howOften = 0;
 			
 			for ( int i = 1; i < 5; i++ )
-				if ( copy.get( 0 ).valueInt+i == copy.get( i ).valueInt )
+				if ( copy.get( 0 ).getRank().toInt()+i == copy.get( i ).getRank().toInt() )
 					++howOften;
 			
 			if ( howOften == 4 )
@@ -767,7 +769,7 @@ public class CardList extends ArrayList<Card>
 			int howOften = 0;
 			
 			for ( int i = 1; i < 4; i++ )
-				if ( copy.get( 0 ).valueInt == copy.get( i ).valueInt )
+				if ( copy.get( 0 ).getRank().toInt() == copy.get( i ).getRank().toInt() )
 					++howOften;
 			
 			if ( howOften == 3 )
@@ -791,7 +793,7 @@ public class CardList extends ArrayList<Card>
 		{
 			CardList copy = this.clone();
 			copy.sortByCardValue();
-			if ( copy.get( 4 ).value == "ace" )
+			if ( copy.get(4).getRank() == Rank.ACE )
 				return true;
 			else
 				return false;
@@ -866,12 +868,12 @@ public class CardList extends ArrayList<Card>
 		for ( int i = 0; i < copy.whichPairsAreInThis().size(); i++ )
 			allPairsInThis.add( copy.whichPairsAreInThis().get( i ).cards.get( 0 ), copy.whichPairsAreInThis().get( i ).cards.get( 1 ) );
 		
-		String[] colours = new String[]{ "spades", "hearts", "diamonds", "clubs" };
+		Suit[] suits = Suit.values();
 		for( int i = 0; i < pairsInThis.size(); i++ )
 			for ( int j = 0; j < 4; j++ )
-				if ( pairsInThis.get( i ).colour != colours[ j ] )
+				if ( pairsInThis.get( i ).getSuit() != suits[j] )
 				{
-					Card card = new Card( pairsInThis.get( i ).value, colours[ j ] );
+					Card card = new Card( pairsInThis.get(i).getRank(), suits[ j ] );
 					if ( stack.includes( card ) )
 						returnValue += stack.size() - stack.howManyCardsWithTheSameValueInThis( pairsInThis.get( i ) );
 				}
@@ -882,13 +884,13 @@ public class CardList extends ArrayList<Card>
 		{
 			int howOften = 0;
 			for ( int j = 0; j < 4; j++ )
-				if ( copy.get( i ).colour != colours[ j ] )
+				if ( copy.get( i ).getSuit() != suits[ j ] )
 					for ( int k = 0; k < 4; k++ )
-						if ( copy.get( i ).colour != colours[ k ] )
-							if ( colours[ k ] != colours[ j ] )
+						if ( copy.get(i).getSuit() != suits[ k ] )
+							if ( suits[ k ] != suits[ j ] )
 							{
-								Card card1 = new Card( copy.get( i ).value, colours[ j ] );
-								Card card2 = new Card( copy.get( i ).value, colours[ k ] );
+								Card card1 = new Card( copy.get( i ).getRank(), suits[ j ] );
+								Card card2 = new Card( copy.get( i ).getRank(), suits[ k ] );
 								if ( stack.includes( card1 ) && stack.includes( card2 ) )
 									++howOften;
 							}
@@ -914,14 +916,14 @@ public class CardList extends ArrayList<Card>
 		copy.remove( pairsTripletsInThis );
 		copy.sortByCardValue();
 		
-		Card card1 = new Card( "two", "spades" );
-		Card card2 = new Card( "two", "spades" );
+		Card card1 = new Card(Rank.TWO, Suit.SPADES);
+		Card card2 = new Card(Rank.TWO, Suit.SPADES);
 		
 		for ( int i = 2; i < copy.size(); i++ )
 		{
-			int difference = copy.get( i ).valueInt - copy.get( i-2 ).valueInt;
+			int difference = copy.get( i ).getRank().toInt() - copy.get( i-2 ).getRank().toInt();
 			
-			if ( copy.get( i-2 ).valueInt == 2 )
+			if ( copy.get( i-2 ).getRank().toInt() == 2 )
 			{
 				if ( difference == 2 )
 				{
@@ -955,7 +957,7 @@ public class CardList extends ArrayList<Card>
 				}
 			}
 			
-			else if ( copy.get( i-2 ).valueInt == 3 )
+			else if ( copy.get( i-2 ).getRank().toInt() == 3 )
 			{
 				if ( difference == 2 )
 				{
@@ -995,16 +997,16 @@ public class CardList extends ArrayList<Card>
 			else
 			{
 				if (difference == 2) {
-					card1.set( copy.get( i ).valueInt+1, copy.get( i ).colourToInt);
-					card2.set (copy.get( i ).valueInt+2, copy.get( i ).colourToInt);
+					card1.set( copy.get( i ).getRank().toInt()+1, copy.get( i ).getSuit().toInt());
+					card2.set (copy.get( i ).getRank().toInt()+2, copy.get( i ).getSuit().toInt());
 					returnValue += stack.howManyCardsWithTheSameValueInThis( card1 ) * stack.howManyCardsWithTheSameValueInThis( card2 );
 					
-					card1.set( copy.get( i-2 ).valueInt-1, copy.get( i-2 ).colourToInt );
+					card1.set( copy.get( i-2 ).getRank().toInt()-1, copy.get( i-2 ).getSuit().toInt() );
 					
-					card2.set( copy.get( i-2 ).valueInt-2, copy.get( i-2 ).colourToInt );
+					card2.set( copy.get( i-2 ).getRank().toInt()-2, copy.get( i-2 ).getSuit().toInt() );
 					returnValue += stack.howManyCardsWithTheSameValueInThis( card1 ) * stack.howManyCardsWithTheSameValueInThis( card2 );
 					
-					card2.set( copy.get( i ).valueInt+1, copy.get( i ).colourToInt );		// card1 remains the same.
+					card2.set( copy.get( i ).getRank().toInt()+1, copy.get( i ).getSuit().toInt() );		// card1 remains the same.
 					returnValue += stack.howManyCardsWithTheSameValueInThis( card1 ) * stack.howManyCardsWithTheSameValueInThis( card2 );
 				}
 				
@@ -1015,10 +1017,10 @@ public class CardList extends ArrayList<Card>
 					card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 0 ) );
 					int cardsLikeCard1 = stack.howManyCardsWithTheSameValueInThis( card1 );
 					
-					card2.set( copy.get( i ).valueInt+1, copy.get( i ).colourToInt );
+					card2.set( copy.get( i ).getRank().toInt()+1, copy.get( i ).getSuit().toInt() );
 					returnValue += stack.howManyCardsWithTheSameValueInThis( card2 ) * cardsLikeCard1;
 					
-					card2.set( copy.get( i-2 ).valueInt-1, copy.get( i-2 ).colourToInt );
+					card2.set( copy.get( i-2 ).getRank().toInt()-1, copy.get( i-2 ).getSuit().toInt() );
 					returnValue += stack.howManyCardsWithTheSameValueInThis( card2 ) * cardsLikeCard1;
 				}
 				
@@ -1048,18 +1050,18 @@ public class CardList extends ArrayList<Card>
 			if ( colours.size() == 4 )
 				for ( int j = 2; j < 15; j++ )
 				{
-					Card card = new Card( j, colours.get( 0 ).colour );
+					Card card = new Card(Rank.toRank(j), colours.get(0).getSuit());
 					if ( stack.includes( card ) && colours.doesNotInclude( card ) )
 						returnValue += stack.size()-8;
 				}
 			else if ( colours.size() == 3 )
 				for ( int j = 2; j < 15; j++ )
 				{
-					Card card1 = new Card( j, colours.get( 0 ).colour );
+					Card card1 = new Card(Rank.toRank(j), colours.get(0).getSuit());
 					if( stack.includes( card1 ) && colours.doesNotInclude( card1 ) )
 						for ( int k = 2; k < 15; k++ )
 						{
-							Card card2 = new Card( k, colours.get( 0 ).colour );
+							Card card2 = new Card(Rank.toRank(k), colours.get(0).getSuit());
 							if ( stack.includes( card2 ) && colours.doesNotInclude( card2 ) &&  (! card1.equals(card2)) )
 								++returnValue;
 						}
@@ -1184,18 +1186,18 @@ public class CardList extends ArrayList<Card>
 			copy.remove( pairsTripletsInThis );
 			copy.sortByCardValue();
 			
-			Card card1 = new Card( "two", "spades" );
-			Card card2 = new Card( "two", "spades" );
+			Card card1 = new Card(Rank.TWO, Suit.SPADES);
+			Card card2 = new Card(Rank.TWO, Suit.SPADES);
 			
 			for ( int i = 2; i < copy.size(); i++ )
 			{
-				int difference = copy.get( i ).valueInt - copy.get( i-2 ).valueInt;
-				int colourInt = copy.get( i ).colourToInt;
+				int difference = copy.get( i ).getRank().toInt() - copy.get( i-2 ).getRank().toInt();
+				int colourInt = copy.get( i ).getSuit().toInt();
 				
-				if ( (colourInt != copy.get(i-1).colourToInt) || (colourInt != copy.get(i-2).colourToInt) )
+				if ( (colourInt != copy.get(i-1).getSuit().toInt()) || (colourInt != copy.get(i-2).getSuit().toInt()) )
 					continue;
 				
-				if ( copy.get( i-2 ).valueInt == 2 )
+				if ( copy.get( i-2 ).getRank().toInt() == 2 )
 				{
 					if ( difference == 2 )
 					{
@@ -1213,7 +1215,7 @@ public class CardList extends ArrayList<Card>
 					else if ( difference == 3 )
 					{
 						CardList theActualThreeCards = new CardList( copy.get( i-2 ), copy.get( i-1 ), copy.get( i ) );
-						card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 0 ).valueInt, colourInt );
+						card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 0 ).getRank().toInt(), colourInt );
 						
 						card2.set( 14, colourInt );
 						if ( stack.includes( card1 ) && stack.includes( card2 ) )
@@ -1227,14 +1229,14 @@ public class CardList extends ArrayList<Card>
 					else if ( difference == 4 )
 					{
 						CardList theActualThreeCards = new CardList( copy.get( i-2 ), copy.get( i-1 ), copy.get( i ) );
-						card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 0 ).valueInt, colourInt );
-						card2.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 1 ).valueInt, colourInt );
+						card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 0 ).getRank().toInt(), colourInt );
+						card2.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 1 ).getRank().toInt(), colourInt );
 						if ( stack.includes( card1 ) && stack.includes( card2 ) )
 							++returnValue;
 					}
 				}
 				
-				else if ( copy.get( i-2 ).valueInt == 3 )
+				else if ( copy.get( i-2 ).getRank().toInt() == 3 )
 				{
 					if ( difference == 2 )
 					{
@@ -1256,7 +1258,7 @@ public class CardList extends ArrayList<Card>
 					else if ( difference == 3 )
 					{
 						CardList theActualThreeCards = new CardList( copy.get( i-2 ), copy.get( i-1 ), copy.get( i ) );
-						card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get(0).valueInt, colourInt );
+						card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get(0).getRank().toInt(), colourInt );
 						
 						card2.set( 2, colourInt );
 						if ( stack.includes( card1 ) && stack.includes( card2 ) )
@@ -1270,8 +1272,8 @@ public class CardList extends ArrayList<Card>
 					else if ( difference == 4 )
 					{
 						CardList theActualThreeCards = new CardList( copy.get( i-2 ), copy.get( i-1 ), copy.get( i ) );
-						card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 0 ).valueInt, colourInt );
-						card2.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 1 ).valueInt, colourInt );
+						card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 0 ).getRank().toInt(), colourInt );
+						card2.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 1 ).getRank().toInt(), colourInt );
 						if ( stack.includes( card1 ) && stack.includes( card2 ) )
 							++returnValue;
 					}
@@ -1281,18 +1283,18 @@ public class CardList extends ArrayList<Card>
 				{
 					if (difference == 2)
 					{
-						card1.set( copy.get( i ).valueInt+1, colourInt );
-						card2.set (copy.get( i ).valueInt+2, colourInt );
+						card1.set( copy.get( i ).getRank().toInt()+1, colourInt );
+						card2.set (copy.get( i ).getRank().toInt()+2, colourInt );
 						if ( stack.includes( card1 ) && stack.includes( card2 ) )
 							++returnValue;
 						
-						card1.set( copy.get( i-2 ).valueInt-1, colourInt );
+						card1.set( copy.get( i-2 ).getRank().toInt()-1, colourInt );
 						
-						card2.set( copy.get( i-2 ).valueInt-2, colourInt );
+						card2.set( copy.get( i-2 ).getRank().toInt()-2, colourInt );
 						if ( stack.includes( card1 ) && stack.includes( card2 ) )
 							++returnValue;
 						
-						card2.set( copy.get( i ).valueInt+1, colourInt );		// card1 remains the same.
+						card2.set( copy.get( i ).getRank().toInt()+1, colourInt );		// card1 remains the same.
 						if ( stack.includes( card1 ) && stack.includes( card2 ) )
 							++returnValue;
 					}
@@ -1300,13 +1302,13 @@ public class CardList extends ArrayList<Card>
 					else if (difference == 3)
 					{
 						CardList theActualThreeCards = new CardList( copy.get( i-2 ), copy.get( i-1 ), copy.get( i ) );
-						card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get(0).valueInt, colourInt );
+						card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get(0).getRank().toInt(), colourInt );
 						
-						card2.set( copy.get(i).valueInt+1, colourInt );
+						card2.set( copy.get(i).getRank().toInt()+1, colourInt );
 						if ( stack.includes( card1 ) && stack.includes( card2 ) )
 							++returnValue;
 						
-						card2.set( copy.get(i-2).valueInt-1, colourInt );
+						card2.set( copy.get(i-2).getRank().toInt()-1, colourInt );
 						if ( stack.includes( card1 ) && stack.includes( card2 ) )
 							++returnValue;						
 					}
@@ -1314,8 +1316,8 @@ public class CardList extends ArrayList<Card>
 					else if (difference == 4)
 					{
 						CardList theActualThreeCards = new CardList( copy.get( i-2 ), copy.get( i-1 ), copy.get( i ) );
-						card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 0 ).valueInt, colourInt );
-						card2.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 1 ).valueInt, colourInt );
+						card1.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 0 ).getRank().toInt(), colourInt );
+						card2.set( theActualThreeCards.cardsBetweenBeginningAndEndMissed().get( 1 ).getRank().toInt(), colourInt );
 						if ( stack.includes( card1 ) && stack.includes( card2 ) )
 							++returnValue;
 					}
@@ -1344,43 +1346,43 @@ public class CardList extends ArrayList<Card>
 		if ( copy.numberOfPossibilitiesForStraightFlush( stack ) == 0 )
 			return returnValue;
 		
-		else if ( copy.getHighCard().valueInt != 14 )
-			if ( copy.getHighCard().valueInt != 13 )
-				if ( copy.getHighCard().valueInt != 12 )
+		else if ( copy.getHighCard().getRank().toInt() != 14 )
+			if ( copy.getHighCard().getRank().toInt() != 13 )
+				if ( copy.getHighCard().getRank().toInt() != 12 )
 					return returnValue;
 		
 		else if ( ! last3Cards.isOneColour() )
 			return returnValue;
 		
-		else if ( copy.get( size-3 ).valueInt <= 9 )
+		else if ( copy.get( size-3 ).getRank().toInt() <= 9 )
 			return returnValue;
 		
 		else
 		{
-			Card card1 = new Card( "two", "spades" );
-			Card card2 = new Card( "two", "spades" );
+			Card card1 = new Card( Rank.TWO, Suit.SPADES );
+			Card card2 = new Card( Rank.TWO, Suit.SPADES );
 			
-			if ( copy.includes( new Card( "ten", copy.getHighCard().colour ) ) )
+			if ( copy.includes( new Card(Rank.TEN, copy.getHighCard().getSuit() ) ) )
 			{
-				if ( copy.getHighCard().valueInt == 14 )
+				if ( copy.getHighCard().getRank().toInt() == 14 )
 				{
-					CardList tenAndAce = new CardList( new Card( "ten", copy.getHighCard().colour ), new Card( copy.getHighCard() ) );
+					CardList tenAndAce = new CardList( new Card(Rank.TEN, copy.getHighCard().getSuit() ), new Card( copy.getHighCard() ) );
 					CardList neededCards = tenAndAce.cardsBetweenBeginningAndEndMissed();
 					
-					card1.set( neededCards.get( 0 ).valueInt, copy.getHighCard().colourToInt );
-					card2.set( neededCards.get( 1 ).valueInt, copy.getHighCard().colourToInt );
+					card1.set( neededCards.get(0).getRank().toInt(), copy.getHighCard().getSuit().toInt() );
+					card2.set( neededCards.get( 1 ).getRank().toInt(), copy.getHighCard().getSuit().toInt() );
 					
 					if ( stack.includes( card1 ) && stack.includes( card2 ) )
 						++returnValue;
 				}
 				else
 				{
-					card1.set( 14, copy.getHighCard().colourToInt );
+					card1.set( 14, copy.getHighCard().getSuit().toInt() );
 					
-					CardList tenAndAce = new CardList( new Card( "ten", copy.getHighCard().colour ), new Card( copy.getHighCard() ) );
+					CardList tenAndAce = new CardList( new Card(Rank.TEN, copy.getHighCard().getSuit() ), new Card( copy.getHighCard() ) );
 					CardList neededCards = tenAndAce.cardsBetweenBeginningAndEndMissed();
 					
-					card2.set( neededCards.get( 0 ).valueInt, copy.getHighCard().colourToInt );
+					card2.set( neededCards.get( 0 ).getRank().toInt(), copy.getHighCard().getSuit().toInt() );
 					
 					if ( stack.includes( card1 ) && stack.includes( card2 ) )
 						++returnValue;
@@ -1389,21 +1391,21 @@ public class CardList extends ArrayList<Card>
 			
 			else
 			{
-				card1.set( 10, copy.getHighCard().colourToInt );
+				card1.set( 10, copy.getHighCard().getSuit().toInt() );
 				
-				if ( copy.getHighCard().valueInt == 14 )
+				if ( copy.getHighCard().getRank().toInt() == 14 )
 				{
-					CardList tenAndAce = new CardList( new Card( "ten", copy.getHighCard().colour ), new Card( copy.getHighCard() ) );
+					CardList tenAndAce = new CardList( new Card(Rank.TEN, copy.getHighCard().getSuit()), new Card( copy.getHighCard() ) );
 					CardList neededCards = tenAndAce.cardsBetweenBeginningAndEndMissed();
 					
-					card2.set( neededCards.get( 0 ).valueInt, copy.getHighCard().colourToInt );
+					card2.set( neededCards.get( 0 ).getRank().toInt(), copy.getHighCard().getSuit().toInt() );
 					
 					if( stack.includes( card1 ) && stack.includes( card2 ) )
 						++returnValue;
 				}
 				else
 				{
-					card2.set( 14, copy.getHighCard().colourToInt );
+					card2.set( 14, copy.getHighCard().getSuit().toInt() );
 					
 					if ( stack.includes( card1 ) && stack.includes( card2 ) )
 						++returnValue;
@@ -1431,7 +1433,7 @@ public class CardList extends ArrayList<Card>
 		if ( (probability *= this.numberOfPossibilitesForRoyalFlush(stack)) > 0 )
 		{
 			for ( int i = 0; i < 5; i++ )
-				returnValueCards.add( new Card(999, 999) );
+				returnValueCards.add(new Card(Rank.UNDEFINED, Suit.UNDEFINED));
 			returnValue.set( returnValueCards, "royalFlush", probability );
 		}
 		
@@ -1440,7 +1442,7 @@ public class CardList extends ArrayList<Card>
 			if ( (probability *= this.numberOfPossibilitiesForStraightFlush(stack)) > 0 )
 			{
 				for ( int i = 0; i < 5; i++ )
-					returnValueCards.add( new Card(999, 999) );
+					returnValueCards.add(new Card(Rank.UNDEFINED, Suit.UNDEFINED));
 				returnValue.set( returnValueCards, "straightFlush", probability );
 			}
 			
@@ -1449,7 +1451,7 @@ public class CardList extends ArrayList<Card>
 				if ( (probability *= this.numberOfPossibilitiesForQuadruplet(stack)) > 0 )
 				{
 					for ( int i = 0; i < 4; i++ )
-						returnValueCards.add( new Card(999, 999) );
+						returnValueCards.add(new Card(Rank.UNDEFINED, Suit.UNDEFINED));
 					returnValue.set( returnValueCards, "fourOfAKind", probability );
 				}
 				
@@ -1458,7 +1460,7 @@ public class CardList extends ArrayList<Card>
 					if ( (probability *= this.numberOfPossibilitiesForFullHouse(stack)) > 0 )
 					{
 						for ( int i = 0; i < 5; i++ )
-							returnValueCards.add( new Card(999, 999) );
+							returnValueCards.add(new Card(Rank.UNDEFINED, Suit.UNDEFINED));
 						returnValue.set( returnValueCards, "fullHouse", probability );
 					}
 					
@@ -1467,7 +1469,7 @@ public class CardList extends ArrayList<Card>
 						if ( (probability *= this.numberOfPossibilitiesForFlush(stack)) > 0 )
 						{
 							for ( int i = 0; i < 5; i++ )
-								returnValueCards.add( new Card(999, 999) );
+								returnValueCards.add(new Card(Rank.UNDEFINED, Suit.UNDEFINED));
 							returnValue.set( returnValueCards, "flush", probability );
 						}
 						
@@ -1476,7 +1478,7 @@ public class CardList extends ArrayList<Card>
 							if ( (probability *= this.numberOfPossibilitiesForStraight(stack)) > 0 )
 							{
 								for ( int i = 0; i < 5; i++ )
-									returnValueCards.add( new Card(999, 999) );
+									returnValueCards.add(new Card(Rank.UNDEFINED, Suit.UNDEFINED));
 								returnValue.set( returnValueCards, "straight", probability );
 							}
 							
@@ -1485,7 +1487,7 @@ public class CardList extends ArrayList<Card>
 								if ( (probability *= this.numberOfPossibilitiesForTriple(stack)) > 0 )
 								{
 									for ( int i = 0; i < 3; i++ )
-										returnValueCards.add( new Card(999, 999) );
+										returnValueCards.add(new Card(Rank.UNDEFINED, Suit.UNDEFINED));
 									returnValue.set( returnValueCards, "threeOfAKind", probability );
 								}
 								
@@ -1494,7 +1496,7 @@ public class CardList extends ArrayList<Card>
 									if ( (probability *= this.numberOfPossibilitiesForTwoPair(stack)) > 0 )
 									{
 										for ( int i = 0; i < 4; i++ )
-											returnValueCards.add( new Card(999, 999) );
+											returnValueCards.add(new Card(Rank.UNDEFINED, Suit.UNDEFINED));
 										returnValue.set( returnValueCards, "twoPair", probability );
 									}
 									
@@ -1503,7 +1505,7 @@ public class CardList extends ArrayList<Card>
 										if ( (probability *= this.numberOfPossibilitiesForOnePair(stack)) > 0 )
 										{
 											for ( int i = 0; i < 2; i++ )
-												returnValueCards.add( new Card(999, 999) );
+												returnValueCards.add(new Card(Rank.UNDEFINED, Suit.UNDEFINED));
 											returnValue.set( returnValueCards, "pair", probability );
 										}
 										
@@ -1511,7 +1513,7 @@ public class CardList extends ArrayList<Card>
 										{
 											probability *= this.numberOfPossibilitesForHighCard(stack);
 											for ( int i = 0; i < 2; i++ )
-												returnValueCards.add( new Card(999, 999) );
+												returnValueCards.add(new Card(Rank.UNDEFINED, Suit.UNDEFINED));
 											returnValue.set( returnValueCards, "highCard", probability );
 										}
 									}
@@ -1609,7 +1611,7 @@ public class CardList extends ArrayList<Card>
 	public static boolean isOverPair( CardList yourCards, CardList board )
 	{
 		if ( yourCards.isOnePair() )
-			if ( board.getHighCard().valueInt < yourCards.get(0).valueInt )
+			if ( board.getHighCard().getRank().toInt() < yourCards.get(0).getRank().toInt() )
 				return true;
 		return false;
 	}
@@ -1665,7 +1667,7 @@ public class CardList extends ArrayList<Card>
 	
 	public static boolean isOverCards( CardList yourCards, CardList board )
 	{
-		if ( (yourCards.get(0).valueInt > board.getHighCard().valueInt) && (yourCards.get(1).valueInt > board.getHighCard().valueInt) )
+		if ( (yourCards.get(0).getRank().toInt() > board.getHighCard().getRank().toInt()) && (yourCards.get(1).getRank().toInt() > board.getHighCard().getRank().toInt()) )
 			return true;
 		return false;			
 	}

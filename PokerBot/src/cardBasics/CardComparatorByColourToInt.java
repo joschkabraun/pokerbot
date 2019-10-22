@@ -15,9 +15,9 @@ public class CardComparatorByColourToInt implements Comparator<Card>
 	@Override
 	public int compare( Card card1, Card card2 )
 	{
-		if ( card1.colourToInt < card2.colourToInt )
+		if ( card1.getSuit().toInt() < card2.getSuit().toInt() )
 			return -1;
-		else if ( card1.colourToInt == card2.colourToInt )
+		else if ( card1.getSuit().toInt() == card2.getSuit().toInt() )
 			return 0;
 		else
 			return 1;

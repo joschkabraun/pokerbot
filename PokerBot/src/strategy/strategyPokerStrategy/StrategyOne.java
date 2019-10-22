@@ -39,7 +39,7 @@ public class StrategyOne
 		Action retAct = new Action( "fold" );
 		CardList cards = new CardList( you.startCards );
 		cards.sortByCardValue();
-		int value = 100 * cards.get(1).valueInt + cards.get(0).valueInt;
+		int value = 100 * cards.get(1).getRank().toInt() + cards.get(0).getRank().toInt();
 		
 		boolean isOneColour = cards.isOneColour();
 		

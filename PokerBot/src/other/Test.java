@@ -17,15 +17,10 @@ public class Test
 	
 	public static final boolean debug = false;
 	
-	public static void main( String[] args ) throws Throwable {
-		createAction();
-	}
-	
-	public static void createAction() throws Throwable {
+	public static void main(String[] args) throws Throwable {
 		File sesFile = new File("c://pokerBot//bot_v1_2_0//sessionalHHTableLeftUp.txt");
 		HandHistory hh = parser.ParserCreatorWinnerPoker4Tables.parserMainCWP(new File("c://pokerBot//bot_v1_2_0//hhTableLeftUp.txt"),
-				new File("c://pokerBot//bot_v1_2_0//parserTableLeftUp.txt"), sesFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9,
-				"walk10er", new BufferedImage[1], new Rectangle[1], true);
+				new File("c://pokerBot//bot_v1_2_0//parserTableLeftUp.txt"), sesFile, GameType.HOLD_EM, Limit.FIXED_LIMIT, 9, "walk10er");
 		System.out.println(hh);
 		
 		File[] source = {new File("c://pokerBot//bot_v1_2_0//hhTableLeftDown.txt"), new File("c://pokerBot//bot_v1_2_0//hhTableLeftUp.txt"),
@@ -39,11 +34,9 @@ public class Test
 		Limit[] limit = {Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT, Limit.FIXED_LIMIT};
 		int[] maxSeatOnTable = {9, 9, 9, 9};
 		String playYouName = "walk10er";
-		BufferedImage[][] picutreSeats = new BufferedImage[4][0];
-		Rectangle[][] spaceSeats = new Rectangle[4][0];
 		
 		strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createPrivateHands(source, parsers, sesFiles, table, gameType,
-				limit, maxSeatOnTable, playYouName, picutreSeats, spaceSeats, true);
+				limit, maxSeatOnTable, playYouName, true);
 		
 		strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createCONSTANT(hh);
 		ClientRingDynamics crd = strategy.strategyPokerChallenge.interfacesToPokerChallenge.HHToTUDBotHistory.createRingDynamics(hh, hh.getPlayerYou("walk10er"));
@@ -51,7 +44,7 @@ public class Test
 		Action action = strategy.strategyPokerChallenge.interfacesToPokerChallenge.StrategyTwo.actionFor(hh, hh.getPlayerYou("walk10er"), sesFile, new BufferedImage[1],
 				new Rectangle[1], crd, true);
 		
-		System.out.println(action);
+		System.out.println(action);		
 	}
 	
 }
