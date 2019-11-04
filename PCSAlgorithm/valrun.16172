@@ -1,0 +1,110 @@
+==16172== Memcheck, a memory error detector
+==16172== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==16172== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==16172== Command: ./Main
+==16172== Parent PID: 15101
+==16172== 
+--16172-- 
+--16172-- Valgrind options:
+--16172--    --tool=memcheck
+--16172--    -v
+--16172--    --track-origins=yes
+--16172--    --num-callers=8
+--16172--    --freelist-vol=1000000
+--16172--    --error-limit=no
+--16172--    --leak-check=full
+--16172--    --log-file=valrun.%p
+--16172-- Contents of /proc/version:
+--16172--   Linux version 3.13.0-24-generic (buildd@komainu) (gcc version 4.8.2 (Ubuntu 4.8.2-19ubuntu1) ) #47-Ubuntu SMP Fri May 2 23:31:42 UTC 2014
+--16172-- Arch and hwcaps: X86, x86-mmxext-sse1-sse2
+--16172-- Page sizes: currently 4096, max supported 4096
+--16172-- Valgrind library directory: /usr/lib/valgrind
+==16172== Warning: --freelist-big-blocks value 1000000 has no effect
+==16172== as it is >= to --freelist-vol value 1000000
+--16172-- Reading syms from /lib/i386-linux-gnu/ld-2.19.so
+--16172--   Considering /lib/i386-linux-gnu/ld-2.19.so ..
+--16172--   .. CRC mismatch (computed 19686c0d wanted 131a893d)
+--16172--   Considering /usr/lib/debug/lib/i386-linux-gnu/ld-2.19.so ..
+--16172--   .. CRC is valid
+--16172-- Reading syms from /mnt/hgfs/c/programmieren/workspace/PCSAlgorithm/Main
+--16172-- Reading syms from /usr/lib/valgrind/memcheck-x86-linux
+--16172--   Considering /usr/lib/valgrind/memcheck-x86-linux ..
+--16172--   .. CRC mismatch (computed e09cad6a wanted c3463efc)
+--16172--    object doesn't have a symbol table
+--16172--    object doesn't have a dynamic symbol table
+--16172-- Scheduler: using generic scheduler lock implementation.
+--16172-- Reading suppressions file: /usr/lib/valgrind/default.supp
+==16172== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-16172-by-user-on-???
+==16172== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-16172-by-user-on-???
+==16172== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-16172-by-user-on-???
+==16172== 
+==16172== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==16172== don't want to do, unless you know exactly what you're doing,
+==16172== or are doing some strange experiment):
+==16172==   /usr/lib/valgrind/../../bin/vgdb --pid=16172 ...command...
+==16172== 
+==16172== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==16172==   /path/to/gdb ./Main
+==16172== and then give GDB the following command
+==16172==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=16172
+==16172== --pid is optional if only one valgrind process is running
+==16172== 
+--16172-- REDIR: 0x4017ed0 (strlen) redirected to 0x38066872 (???)
+--16172-- REDIR: 0x4017ce0 (index) redirected to 0x3806684d (???)
+--16172-- Reading syms from /usr/lib/valgrind/vgpreload_core-x86-linux.so
+--16172--   Considering /usr/lib/valgrind/vgpreload_core-x86-linux.so ..
+--16172--   .. CRC mismatch (computed da218fa9 wanted d8f40358)
+--16172--    object doesn't have a symbol table
+--16172-- Reading syms from /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so
+--16172--   Considering /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so ..
+--16172--   .. CRC mismatch (computed f1cf8ee0 wanted 71765c70)
+--16172--    object doesn't have a symbol table
+==16172== WARNING: new redirection conflicts with existing -- ignoring it
+--16172--     old: 0x04017ed0 (strlen              ) R-> (0000.0) 0x38066872 ???
+--16172--     new: 0x04017ed0 (strlen              ) R-> (2007.0) 0x0402d480 strlen
+--16172-- Reading syms from /lib/i386-linux-gnu/libm-2.19.so
+--16172--   Considering /lib/i386-linux-gnu/libm-2.19.so ..
+--16172--   .. CRC mismatch (computed 65e47b8b wanted 582b65c1)
+--16172--   Considering /usr/lib/debug/lib/i386-linux-gnu/libm-2.19.so ..
+--16172--   .. CRC is valid
+--16172-- Reading syms from /lib/i386-linux-gnu/libc-2.19.so
+--16172--   Considering /lib/i386-linux-gnu/libc-2.19.so ..
+--16172--   .. CRC mismatch (computed 5d09535b wanted a0f93bfb)
+--16172--   Considering /usr/lib/debug/lib/i386-linux-gnu/libc-2.19.so ..
+--16172--   .. CRC is valid
+--16172-- REDIR: 0x410d920 (strnlen) redirected to 0x4024580 (_vgnU_ifunc_wrapper)
+--16172-- REDIR: 0x410f8d0 (strncasecmp) redirected to 0x4024580 (_vgnU_ifunc_wrapper)
+--16172-- REDIR: 0x4115250 (memrchr) redirected to 0x4024580 (_vgnU_ifunc_wrapper)
+--16172-- REDIR: 0x4128290 (wcslen) redirected to 0x4024580 (_vgnU_ifunc_wrapper)
+--16172-- REDIR: 0x410dad0 (__GI_strrchr) redirected to 0x402ce50 (__GI_strrchr)
+--16172-- REDIR: 0x41091f0 (malloc) redirected to 0x402a110 (malloc)
+--16172-- REDIR: 0x410f3a0 (memset) redirected to 0x4024580 (_vgnU_ifunc_wrapper)
+--16172-- REDIR: 0x41bef00 (__memset_sse2) redirected to 0x4030820 (memset)
+--16172-- REDIR: 0x41097a0 (free) redirected to 0x402b370 (free)
+--16172-- REDIR: 0x410e6a0 (strstr) redirected to 0x4031460 (strstr)
+--16172-- REDIR: 0x410ee10 (__GI_memchr) redirected to 0x402e7d0 (__GI_memchr)
+--16172-- REDIR: 0x410fa90 (__GI_memcpy) redirected to 0x402f090 (__GI_memcpy)
+--16172-- REDIR: 0x4111740 (__GI___rawmemchr) redirected to 0x4030ea0 (__GI___rawmemchr)
+--16172-- REDIR: 0x4111810 (strchrnul) redirected to 0x4030e50 (strchrnul)
+==16172== 
+==16172== HEAP SUMMARY:
+==16172==     in use at exit: 8,175,996 bytes in 1 blocks
+==16172==   total heap usage: 3,676,376 allocs, 3,676,375 frees, 129,269,460,644 bytes allocated
+==16172== 
+==16172== Searching for pointers to 1 not-freed blocks
+==16172== Checked 65,760 bytes
+==16172== 
+==16172== 8,175,996 bytes in 1 blocks are definitely lost in loss record 1 of 1
+==16172==    at 0x402A17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==16172==    by 0x804B5FE: get_average_strategy (Main.c:953)
+==16172==    by 0x804B85C: main (Main.c:980)
+==16172== 
+==16172== LEAK SUMMARY:
+==16172==    definitely lost: 8,175,996 bytes in 1 blocks
+==16172==    indirectly lost: 0 bytes in 0 blocks
+==16172==      possibly lost: 0 bytes in 0 blocks
+==16172==    still reachable: 0 bytes in 0 blocks
+==16172==         suppressed: 0 bytes in 0 blocks
+==16172== 
+==16172== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==16172== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

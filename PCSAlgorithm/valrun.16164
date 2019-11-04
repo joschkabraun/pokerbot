@@ -1,0 +1,116 @@
+==16164== Memcheck, a memory error detector
+==16164== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==16164== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==16164== Command: ./Main
+==16164== Parent PID: 15101
+==16164== 
+--16164-- 
+--16164-- Valgrind options:
+--16164--    --tool=memcheck
+--16164--    -v
+--16164--    --track-origins=yes
+--16164--    --num-callers=8
+--16164--    --freelist-vol=1000000
+--16164--    --error-limit=no
+--16164--    --leak-check=full
+--16164--    --log-file=valrun.%p
+--16164-- Contents of /proc/version:
+--16164--   Linux version 3.13.0-24-generic (buildd@komainu) (gcc version 4.8.2 (Ubuntu 4.8.2-19ubuntu1) ) #47-Ubuntu SMP Fri May 2 23:31:42 UTC 2014
+--16164-- Arch and hwcaps: X86, x86-mmxext-sse1-sse2
+--16164-- Page sizes: currently 4096, max supported 4096
+--16164-- Valgrind library directory: /usr/lib/valgrind
+==16164== Warning: --freelist-big-blocks value 1000000 has no effect
+==16164== as it is >= to --freelist-vol value 1000000
+--16164-- Reading syms from /lib/i386-linux-gnu/ld-2.19.so
+--16164--   Considering /lib/i386-linux-gnu/ld-2.19.so ..
+--16164--   .. CRC mismatch (computed 19686c0d wanted 131a893d)
+--16164--   Considering /usr/lib/debug/lib/i386-linux-gnu/ld-2.19.so ..
+--16164--   .. CRC is valid
+--16164-- Reading syms from /mnt/hgfs/c/programmieren/workspace/PCSAlgorithm/Main
+--16164-- Reading syms from /usr/lib/valgrind/memcheck-x86-linux
+--16164--   Considering /usr/lib/valgrind/memcheck-x86-linux ..
+--16164--   .. CRC mismatch (computed e09cad6a wanted c3463efc)
+--16164--    object doesn't have a symbol table
+--16164--    object doesn't have a dynamic symbol table
+--16164-- Scheduler: using generic scheduler lock implementation.
+--16164-- Reading suppressions file: /usr/lib/valgrind/default.supp
+==16164== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-16164-by-user-on-???
+==16164== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-16164-by-user-on-???
+==16164== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-16164-by-user-on-???
+==16164== 
+==16164== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==16164== don't want to do, unless you know exactly what you're doing,
+==16164== or are doing some strange experiment):
+==16164==   /usr/lib/valgrind/../../bin/vgdb --pid=16164 ...command...
+==16164== 
+==16164== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==16164==   /path/to/gdb ./Main
+==16164== and then give GDB the following command
+==16164==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=16164
+==16164== --pid is optional if only one valgrind process is running
+==16164== 
+--16164-- REDIR: 0x4017ed0 (strlen) redirected to 0x38066872 (???)
+--16164-- REDIR: 0x4017ce0 (index) redirected to 0x3806684d (???)
+--16164-- Reading syms from /usr/lib/valgrind/vgpreload_core-x86-linux.so
+--16164--   Considering /usr/lib/valgrind/vgpreload_core-x86-linux.so ..
+--16164--   .. CRC mismatch (computed da218fa9 wanted d8f40358)
+--16164--    object doesn't have a symbol table
+--16164-- Reading syms from /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so
+--16164--   Considering /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so ..
+--16164--   .. CRC mismatch (computed f1cf8ee0 wanted 71765c70)
+--16164--    object doesn't have a symbol table
+==16164== WARNING: new redirection conflicts with existing -- ignoring it
+--16164--     old: 0x04017ed0 (strlen              ) R-> (0000.0) 0x38066872 ???
+--16164--     new: 0x04017ed0 (strlen              ) R-> (2007.0) 0x0402d480 strlen
+--16164-- Reading syms from /lib/i386-linux-gnu/libm-2.19.so
+--16164--   Considering /lib/i386-linux-gnu/libm-2.19.so ..
+--16164--   .. CRC mismatch (computed 65e47b8b wanted 582b65c1)
+--16164--   Considering /usr/lib/debug/lib/i386-linux-gnu/libm-2.19.so ..
+--16164--   .. CRC is valid
+--16164-- Reading syms from /lib/i386-linux-gnu/libc-2.19.so
+--16164--   Considering /lib/i386-linux-gnu/libc-2.19.so ..
+--16164--   .. CRC mismatch (computed 5d09535b wanted a0f93bfb)
+--16164--   Considering /usr/lib/debug/lib/i386-linux-gnu/libc-2.19.so ..
+--16164--   .. CRC is valid
+--16164-- REDIR: 0x410d920 (strnlen) redirected to 0x4024580 (_vgnU_ifunc_wrapper)
+--16164-- REDIR: 0x410f8d0 (strncasecmp) redirected to 0x4024580 (_vgnU_ifunc_wrapper)
+--16164-- REDIR: 0x4115250 (memrchr) redirected to 0x4024580 (_vgnU_ifunc_wrapper)
+--16164-- REDIR: 0x4128290 (wcslen) redirected to 0x4024580 (_vgnU_ifunc_wrapper)
+--16164-- REDIR: 0x410dad0 (__GI_strrchr) redirected to 0x402ce50 (__GI_strrchr)
+--16164-- REDIR: 0x41091f0 (malloc) redirected to 0x402a110 (malloc)
+--16164-- REDIR: 0x410f3a0 (memset) redirected to 0x4024580 (_vgnU_ifunc_wrapper)
+--16164-- REDIR: 0x41bef00 (__memset_sse2) redirected to 0x4030820 (memset)
+--16164-- REDIR: 0x41097a0 (free) redirected to 0x402b370 (free)
+--16164-- REDIR: 0x410e6a0 (strstr) redirected to 0x4031460 (strstr)
+--16164-- REDIR: 0x410ee10 (__GI_memchr) redirected to 0x402e7d0 (__GI_memchr)
+--16164-- REDIR: 0x410fa90 (__GI_memcpy) redirected to 0x402f090 (__GI_memcpy)
+--16164-- REDIR: 0x4111740 (__GI___rawmemchr) redirected to 0x4030ea0 (__GI___rawmemchr)
+--16164-- REDIR: 0x4111810 (strchrnul) redirected to 0x4030e50 (strchrnul)
+--16164-- core    : 180355072/180355072  max/curr mmap'd, 0/0 unsplit/split sb unmmap'd,  137158256/137158256 max/curr,     2467781/ 146324144 totalloc-blocks/bytes,     2467011 searches 4 rzB
+--16164-- dinfo   : 14856192/10756096  max/curr mmap'd, 3/1 unsplit/split sb unmmap'd,  12999456/ 8408296 max/curr,       98621/  28579168 totalloc-blocks/bytes,       98694 searches 4 rzB
+--16164-- client  : 123641856/123641856  max/curr mmap'd, 2/0 unsplit/split sb unmmap'd,  120445592/120445592 max/curr,       45564/ 188182696 totalloc-blocks/bytes,       45664 searches 20 rzB
+--16164-- demangle:    65536/       0  max/curr mmap'd, 0/1 unsplit/split sb unmmap'd,        32/       0 max/curr,           2/        64 totalloc-blocks/bytes,           1 searches 4 rzB
+--16164-- ttaux   :   131072/  131072  max/curr mmap'd, 0/0 unsplit/split sb unmmap'd,     58424/   43216 max/curr,         451/    109960 totalloc-blocks/bytes,         450 searches 4 rzB
+==16164== 
+==16164==     Valgrind's memory management: out of memory:
+==16164==        newSuperblock's request for 4194304 bytes failed.
+==16164==        481071104 bytes have already been allocated.
+==16164==     Valgrind cannot continue.  Sorry.
+==16164== 
+==16164==     There are several possible reasons for this.
+==16164==     - You have some kind of memory limit in place.  Look at the
+==16164==       output of 'ulimit -a'.  Is there a limit on the size of
+==16164==       virtual memory or address space?
+==16164==     - You have run out of swap space.
+==16164==     - Valgrind has a bug.  If you think this is the case or you are
+==16164==     not sure, please let us know and we'll try to fix it.
+==16164==     Please note that programs can take substantially more memory than
+==16164==     normal when running under Valgrind tools, eg. up to twice or
+==16164==     more, depending on the tool.  On a 64-bit machine, Valgrind
+==16164==     should be able to make use of up 32GB memory.  On a 32-bit
+==16164==     machine, Valgrind should be able to use all the memory available
+==16164==     to a single process, up to 4GB if that's how you have your
+==16164==     kernel configured.  Most 32-bit Linux setups allow a maximum of
+==16164==     3GB per process.
+==16164== 
+==16164==     Whatever the reason, Valgrind cannot continue.  Sorry.
